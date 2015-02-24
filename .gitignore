@@ -22,5 +22,8 @@ bower_components
 # Directory-based project format:
 .idea/
 
+<<<<<<< HEAD
 # OS X
 .DS_Store
+=======
+>>>>>>> 5dd80357afe519098f104349e887e6bb75e0540b

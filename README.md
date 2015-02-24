@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 A.I.-Revolution
 ===============
 
@@ -25,3 +26,8 @@ Developing
 ----------
 
 Coming soon
+=======
+# A.I.-Revolution
+
+An automatic prototype builder for DIA algorithms 
+>>>>>>> 5dd80357afe519098f104349e887e6bb75e0540b
