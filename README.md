@@ -25,4 +25,3 @@ Developing
 ----------
 
 Coming soon
-===========
