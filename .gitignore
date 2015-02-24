@@ -14,16 +14,8 @@ public/
 node_modules
 bower_components
 
-# WebStorm
-# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
-
-*.iml
-
 # Directory-based project format:
 .idea/
 
-<<<<<<< HEAD
 # OS X
 .DS_Store
-=======
->>>>>>> 5dd80357afe519098f104349e887e6bb75e0540b
