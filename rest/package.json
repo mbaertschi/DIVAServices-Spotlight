@@ -1,0 +1,23 @@
+{
+  "name": "dummy-rest-server",
+  "version": "0.0.0",
+  "description": "Dummy REST-Server for A.I.-Revolution",
+  "main": "server.js",
+  "author": "Michael Bärtschi",
+  "license": "GNU GPL v2",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/mbaertschi/A.I.-Revolution.git"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "2.1.x"
+  },
+  "scripts": {
+    "start": "coffee server.coffee"
+  },
+  "dependencies": {
+    "coffee-script": "^1.9.1",
+    "express": "^4.10.7"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "ai-revolution",
+  "version": "0.0.0",
+  "main": "public/javascripts/app.js",
+  "appPath": "app",
+  "authors": [
+    "Michael Bärtschi <michael.baertschi@zebbra.ch>"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+  }
+}

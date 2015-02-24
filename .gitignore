@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+public/
+
+# Dependency directories
+node_modules
+bower_components
+
+# WebStorm
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
+
+*.iml
+
+# Directory-based project format:
+.idea/
+
+# OS X
+.DS_Store

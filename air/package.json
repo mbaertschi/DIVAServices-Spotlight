@@ -1,0 +1,33 @@
+{
+  "name": "ai-revolution",
+  "version": "0.0.0",
+  "description": "Web Application for AI Services",
+  "main": "server.js",
+  "author": "Michael Bärtschi",
+  "license": "GNU GPL v2",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/mbaertschi/A.I.-Revolution.git"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "2.1.x"
+  },
+  "scripts": {
+    "start": "brunch watch -s",
+    "test": "brunch test"
+  },
+  "dependencies": {
+    "auto-reload-brunch": "^1.7.5",
+    "clean-css-brunch": "^1.7.1",
+    "coffee-script-brunch": "^1.8.1",
+    "coffeelint-brunch": "^1.7.0",
+    "connect-slashes": "^1.3.0",
+    "css-brunch": "^1.7.0",
+    "less-brunch": "~1.7.1",
+    "express": "^4.10.7",
+    "jaded-brunch": "^1.7.11",
+    "javascript-brunch": "^1.7.1",
+    "uglify-js-brunch": "^1.7.7"
+  }
+}
