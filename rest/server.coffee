@@ -1,6 +1,6 @@
-express = require("express")
-http    = require("http")
-sysPath = require("path")
+express     = require 'express'
+http        = require 'http'
+sysPath     = require 'path'
 
 app = express()
 
@@ -60,5 +60,5 @@ app.use (err, req, res, next) ->
 server = http.createServer(app)
 server.timeout = 2000
 
-server.listen 3333, ->
-  console.log 'Server listening on port 3333'
+server.listen 8081, ->
+  console.log 'Server listening on port 8081'

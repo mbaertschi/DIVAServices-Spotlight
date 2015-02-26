@@ -24,4 +24,8 @@ Installation
 Developing
 ----------
 
-Coming soon
+To start and stop dummy rest server and web client with one command:
+
+    npm -g install foreman
+    nf start
+
