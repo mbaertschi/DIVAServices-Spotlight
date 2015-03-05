@@ -1,12 +1,13 @@
 'use strict'
 
-Unchained = angular.module 'app', [
+AIRevolution = angular.module 'app', [
   'ui.router'
   'ui.bootstrap'
-  'app.navigation'
+  'lodash'
+  'app.dashboard'
 ]
 
-Unchained.config [
+AIRevolution.config [
   '$urlRouterProvider'
 
   # redirect to / if URL is unknown
@@ -14,4 +15,13 @@ Unchained.config [
     $urlRouterProvider.otherwise ($injector) ->
       $state = $injector.get '$state'
       $state.go 'dashboard'
+]
+
+AIRevolution.config [
+  '$stateProvider'
+
+  ($stateProvider) ->
+    $stateProvider.state 'main',
+      abstract: true
+      templateUrl: 'partials/main.html'
 ]

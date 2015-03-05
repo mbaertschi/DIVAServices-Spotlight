@@ -40,5 +40,5 @@ html.no-js(lang='en-us', ng-app='app')
     link(rel='apple-touch-startup-image', href='images/splash/ipad-portrait.png', media='screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait)')
     link(rel='apple-touch-startup-image', href='images/splash/iphone.png', media='screen and (max-device-width: 320px)')
 
-  body
-    | Hello World
+  body.ng-cloak.fixed-header.fixed-navigation.fixed-ribbon.fixed-page-footer
+    div(ui-view='')
