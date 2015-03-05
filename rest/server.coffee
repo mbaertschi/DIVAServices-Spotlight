@@ -9,10 +9,10 @@ app.get '/', (req, res) ->
   records =
     url1:
       name: 'Url 1'
-      url: 'http://localhost:3333/url1'
+      url: 'http://localhost:8081/url1'
     url2:
       name: 'Url 2'
-      url: 'http://localhost:3333/url2'
+      url: 'http://localhost:8081/url2'
   res.send records
 
 app.get '/url1', (req, res) ->

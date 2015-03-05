@@ -3,7 +3,9 @@ async       = require 'async'
 logger      = require './logger'
 _           = require 'lodash'
 
-exports.get = (settings, callback) ->
+loader = exports = module.exports = {}
+
+loader.get = (settings, callback) ->
   callback 'please specify options in your settings' if not settings?.options?
 
   settings.options.timeout ||= 8000
@@ -18,7 +20,6 @@ exports.get = (settings, callback) ->
       next null, body
   ), (err, result) ->
     logger.log 'debug', "#{settings.retries} attempts failed with err: #{err}", 'Loader' if err?
-    return callback err if err?
     callback err, result
 
 

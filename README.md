@@ -19,6 +19,9 @@ Installation
     ```
     npm install -g brunch
     npm install
+
+    npm install -g bower
+    bower install
     ```
 
 Developing
@@ -26,6 +29,16 @@ Developing
 
 To start and stop dummy rest server and web client with one command:
 
-    npm -g install foreman
+    npm -g install pm2
     nf start
 
+    Exiting foreman does not stop the pm2 process. Use pm2 delete [id] to stop backend server
+
+For manually starting backend server
+
+    pm2 start ./config/processes.dev.json
+
+For manually starting web client
+
+    cd web
+    brunch w -s

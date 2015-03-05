@@ -4,7 +4,9 @@ fse         = require 'fs-extra'
 nconf       = require 'nconf'
 _           = require 'lodash'
 
-exports.parse = (structure, callback) ->
+parser = exports = module.exports = {}
+
+parser.parse = (structure, callback) ->
   async.waterfall [
     (next) ->
       _checkValidStructure structure, (err, validStructure) ->
@@ -57,4 +59,3 @@ _storeNewStructure = (newStructure, callback) ->
     return callback err if err?
     fse.writeFile dir, JSON.stringify(JSON.parse(newStructure), null, 4), (err) ->
       callback err
-

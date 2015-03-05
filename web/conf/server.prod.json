@@ -1,0 +1,21 @@
+{
+  "logger": [
+    {
+      "type": "file",
+      "filename": "logs/server.log",
+      "maxLogSize": 10485760,
+      "backups": 5
+    },
+    {
+      "type": "console"
+    }
+  ],
+  "poller": {
+    "interval": 20000,
+    "rootUrl": "http://localhost:8081",
+    "retries": 7
+  },
+  "parser": {
+    "fileLocation": "./app/assets/structure.json"
+  }
+}

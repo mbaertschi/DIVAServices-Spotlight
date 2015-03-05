@@ -10,5 +10,5 @@
 #   > npm -g install foreman
 #   > nf start
 #
-api: cd rest && coffee server.coffee
+api: cd config && pm2 start processes.dev.json
 web: cd web && brunch watch -s

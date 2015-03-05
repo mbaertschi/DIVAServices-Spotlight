@@ -1,0 +1,13 @@
+{
+  "apps" : [{
+    "name"            : "server",
+    "script"          : "../rest/server.coffee",
+    "ignore_watch"    : ["[\\/\\\\]\\./", "node_modules"],
+    "watch"           : false,
+    "log_file"        : "../rest/logs/server.dev.log",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z",
+    "env"             : {
+      "NODE_ENV"      : "prod"
+    }
+  }]
+}
