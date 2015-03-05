@@ -12,7 +12,7 @@ nconf.file './conf/server.' + process.env.NODE_ENV + '.json'
 
 # start the poller
 poller      = require './lib/poller'
-poller.run()
+#poller.run()
 
 # start the web service
 exports.startServer = (port, path, callback) ->
