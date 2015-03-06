@@ -34,11 +34,11 @@ _checkValidStructure = (structure, callback) ->
     valid = true
   catch e
     valid = false
-
-  if valid
-    callback null, structure
-  else
-    callback 'Not a valid JSON format'
+  finally
+    if valid
+      callback null, structure
+    else
+      callback 'Not a valid JSON format'
 
 _compareStructures = (newStructure, callback) ->
   _loadStructure (err, oldStructure) ->

@@ -19,7 +19,7 @@ _nextIteration = (callback) ->
   _loadStructure (err, structure) ->
     if err?
       # we only log error message, but we don't stop server here (callback initializes next iteration)
-      logger.log 'error', "loading of url structure failed! #{err}", 'Poller'
+      logger.log 'error', "poller iteration status=failed. #{err}", 'Poller'
       seconds = (parseInt nconf.get 'poller:interval') / 1000
       logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
       setTimeout (-> callback()), nconf.get 'poller:interval'

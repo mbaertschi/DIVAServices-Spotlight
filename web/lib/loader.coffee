@@ -6,7 +6,7 @@ _           = require 'lodash'
 loader = exports = module.exports = {}
 
 loader.get = (settings, callback) ->
-  callback 'please specify options in your settings' if not settings?.options?
+  return callback 'please specify options in your settings' if not settings?.options?
 
   settings.options.timeout ||= 8000
   settings.options.headers ||= {}
