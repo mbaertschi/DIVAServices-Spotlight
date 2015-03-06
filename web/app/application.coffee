@@ -5,6 +5,7 @@ AIRevolution = angular.module 'app', [
   'ui.bootstrap'
   'lodash'
   'app.dashboard'
+  'app.docs'
 ]
 
 AIRevolution.config [
@@ -23,5 +24,5 @@ AIRevolution.config [
   ($stateProvider) ->
     $stateProvider.state 'main',
       abstract: true
-      templateUrl: 'partials/main.html'
+      templateUrl: 'layout/partials/main.html'
 ]
