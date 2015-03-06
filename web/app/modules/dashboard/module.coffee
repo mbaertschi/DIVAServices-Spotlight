@@ -8,6 +8,7 @@ module.config [
       parent: 'main'
       url: '/'
       templateUrl: '/modules/dashboard/template.html'
+      controller: 'DashboardPageController'
       data:
         title: 'Dashboard'
 ]
