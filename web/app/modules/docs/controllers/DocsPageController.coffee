@@ -1,4 +1,4 @@
-angular.module('app').controller 'DocsPageController', [
+angular.module('app.docs').controller 'DocsPageController', [
   '$scope'
 
   ($scope) ->

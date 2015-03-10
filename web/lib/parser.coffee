@@ -23,7 +23,7 @@ parser.parse = (structure, callback) ->
       _storeNewStructure validStructure, (err) ->
         return callback err if err?
         logger.log 'info', 'save new structure status=succeeded', 'Parser'
-        callback()
+        callback null, validStructure
     else
       logger.log 'info', 'no changes to apply', 'Parser'
       callback()

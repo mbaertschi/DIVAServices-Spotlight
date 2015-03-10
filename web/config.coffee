@@ -15,6 +15,10 @@ exports.config =
       joinTo:
         'javascripts/app.js': /^app/
         'javascripts/vendor.js': /^(vendor|bower_components)/
+      order:
+        before: [
+          'app/**/module.coffee'
+        ]
 
     stylesheets:
       defaultExtension: 'less'

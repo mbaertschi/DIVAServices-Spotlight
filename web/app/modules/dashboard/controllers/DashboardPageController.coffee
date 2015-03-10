@@ -1,4 +1,4 @@
-angular.module('app').controller 'DashboardPageController', [
+angular.module('app.dashboard').controller 'DashboardPageController', [
   'alertService'
   'notificationService'
 

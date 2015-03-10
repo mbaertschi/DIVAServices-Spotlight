@@ -24,7 +24,7 @@ _nextIteration = (callback) ->
       logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
       setTimeout (-> callback()), nconf.get 'poller:interval'
     else
-      parser.parse structure, (err) ->
+      parser.parse structure, (err, newStructure) ->
         if err?
           logger.log 'warn', "could not parse structure and no changes were applied. Error = #{err}", 'Poller'
         else

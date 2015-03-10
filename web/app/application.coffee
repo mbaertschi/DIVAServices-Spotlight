@@ -6,6 +6,7 @@ AIRevolution = angular.module 'app', [
   'lodash'
   'app.dashboard'
   'app.docs'
+  'app.algorithms'
 ]
 
 AIRevolution.config [
