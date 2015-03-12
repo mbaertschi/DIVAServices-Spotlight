@@ -16,6 +16,6 @@
     "retries": 7
   },
   "parser": {
-    "fileLocation": "./app/assets/structure.json"
+    "fileLocation": "./data/structure.json"
   }
 }

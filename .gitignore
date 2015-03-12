@@ -19,3 +19,6 @@ bower_components
 
 # OS X
 .DS_Store
+
+# Project files
+data/

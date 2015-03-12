@@ -4,6 +4,7 @@ AIRevolution = angular.module 'app', [
   'ui.router'
   'ui.bootstrap'
   'lodash'
+  'btford.socket-io'
   'app.dashboard'
   'app.docs'
   'app.algorithms'
