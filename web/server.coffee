@@ -20,7 +20,7 @@ exports.startServer = (port, path, callback) ->
   app = express()
   server = http.Server app
   server.timeout = 2000
-  
+
   io = require('socket.io')(server)
   io.on 'connection', require './routes/socket'
 
@@ -32,6 +32,8 @@ exports.startServer = (port, path, callback) ->
   app.use slashes(false)
 
   app.get '/api/algorithms', api.algorithms
+
+  app.post '/api/algorithm', api.algorithm
 
   # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->

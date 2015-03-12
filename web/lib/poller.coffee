@@ -22,16 +22,22 @@ poller = exports = module.exports = class Poller
       if err?
         # we only log error message, but we don't stop server here (callback initializes next iteration)
         logger.log 'error', "iteration status=failed. #{err}", 'Poller'
+        seconds = (parseInt nconf.get 'poller:interval') / 1000
+        logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
+        setTimeout (-> callback()), nconf.get 'poller:interval'
       else
         parser.parse structure, (err, newStructure) =>
           if err?
             logger.log 'warn', "could not parse structure and no changes were applied. Error = #{err}", 'Poller'
+            seconds = (parseInt nconf.get 'poller:interval') / 1000
+            logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
+            setTimeout (-> callback()), nconf.get 'poller:interval'
           else
             logger.log 'info', 'iteration status=succeeded', 'Poller'
             if newStructure? then @pusher.push newStructure
-      seconds = (parseInt nconf.get 'poller:interval') / 1000
-      logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
-      setTimeout (-> callback()), nconf.get 'poller:interval'
+            seconds = (parseInt nconf.get 'poller:interval') / 1000
+            logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
+            setTimeout (-> callback()), nconf.get 'poller:interval'
 
   _loadStructure: (callback) ->
     settings =

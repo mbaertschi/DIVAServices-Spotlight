@@ -8,6 +8,7 @@ AIRevolution = angular.module 'app', [
   'app.dashboard'
   'app.docs'
   'app.algorithms'
+  'app.algorithm'
 ]
 
 AIRevolution.config [

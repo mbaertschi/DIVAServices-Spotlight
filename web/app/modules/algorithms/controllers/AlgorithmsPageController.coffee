@@ -1,15 +1,15 @@
 angular.module('app.algorithms').controller 'AlgorithmsPageController', [
   '$scope'
   'notificationService'
-  'algorithmService'
+  'algorithmsService'
   'mySocket'
   '_'
+  '$state'
 
-  ($scope, notificationService, algorithmService, mySocket, _) ->
+  ($scope, notificationService, algorithmsService, mySocket, _, $state) ->
     $scope.algorithms = {}
 
     $scope.$on 'socket:update structure', (ev, data) ->
-      data = JSON.parse(data)
       if not _.isEqual(data, $scope.algorithms)
         notificationService.add
           title: 'Updated'
@@ -26,7 +26,7 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
         timeout: 5000
 
     retrieveLinks = ->
-      algorithmService.fetch().then (res) ->
+      algorithmsService.fetch().then (res) ->
         $scope.algorithms = res.data
       , (err) ->
         notificationService.add
@@ -36,4 +36,7 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
           timeout: 5000
 
     retrieveLinks()
+
+    $scope.thisAlgorithm = (algorithm) ->
+      $state.go 'algorithm', {id: algorithm.index}
 ]

@@ -36,14 +36,20 @@ _checkValidStructure = (structure, callback) ->
     valid = false
   finally
     if valid
-      callback null, structure
+      _structure =
+        records: []
+      i = 0
+      _.forIn JSON.parse(structure), (value, key) ->
+        value.index = i++
+        _structure.records.push value
+      callback null, _structure
     else
       callback 'Not a valid JSON format'
 
 _compareStructures = (newStructure, callback) ->
   _loadStructure (err, oldStructure) ->
     return callback err if err?
-    isEqual = _.isEqual oldStructure, JSON.parse(newStructure)
+    isEqual = _.isEqual oldStructure, newStructure
     callback null, !isEqual
 
 _loadStructure = (callback) ->
@@ -57,5 +63,5 @@ _storeNewStructure = (newStructure, callback) ->
   dir = nconf.get 'parser:fileLocation'
   fse.ensureFile dir, (err) ->
     return callback err if err?
-    fse.writeFile dir, JSON.stringify(JSON.parse(newStructure), null, 4), (err) ->
+    fse.writeFile dir, JSON.stringify(newStructure, null, 4), (err) ->
       callback err

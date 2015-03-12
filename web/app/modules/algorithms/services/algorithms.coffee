@@ -1,4 +1,4 @@
-angular.module('app.algorithms').factory 'algorithmService', [
+angular.module('app.algorithms').factory 'algorithmsService', [
   '$http'
 
   ($http) ->

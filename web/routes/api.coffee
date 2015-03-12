@@ -13,3 +13,6 @@ api.algorithms = (req, res) ->
       res.status(404).json error: 'Not found'
     else
       res.status(200).json structure
+
+api.algorithm = (req, res) ->
+  console.log req

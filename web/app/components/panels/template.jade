@@ -1,0 +1,10 @@
+.panel.panel-plain
+  .panel-heading(ng-if='heading || icon')
+    i(class='fa fa-{{icon}}', ng-if='icon')
+    = ' '
+    | {{heading}}
+    .text-muted.pull-right.panel-config(ng-if='openAlgorithm', ng-click='goTo()')
+      | Use this algorithm
+      =' '
+      i.fa.fa-arrow-right
+  .panel-body(ng-transclude='ng-transclude')

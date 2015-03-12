@@ -57,3 +57,4 @@ exports.config =
 
   server:
     path: 'server.coffee'
+    port: 3000
