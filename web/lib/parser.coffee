@@ -30,7 +30,7 @@ parser.parse = (structure, callback) ->
 
 _checkValidStructure = (structure, callback) ->
   try
-    JSON.parse structure
+    structure = JSON.parse structure
     valid = true
   catch e
     valid = false
@@ -39,9 +39,16 @@ _checkValidStructure = (structure, callback) ->
       _structure =
         records: []
       i = 0
-      _.forIn JSON.parse(structure), (value, key) ->
-        value.index = i++
-        _structure.records.push value
+      _.forIn structure, (algorithm, key) ->
+        skip = false
+        _.each nconf.get('parser:mandatoryFields'), (field) ->
+          if not (field in _.keys algorithm)
+            logger.log 'info', "skipping algorithm #{algorithm.name} because field #{field} is missing", 'Parser'
+            skip = true
+          else
+            skip = false
+            algorithm.index = i++
+        if not skip then _structure.records.push algorithm
       callback null, _structure
     else
       callback 'Not a valid JSON format'
