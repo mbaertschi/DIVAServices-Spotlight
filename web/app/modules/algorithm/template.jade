@@ -7,9 +7,9 @@
     button.btn-primary.btn-xs(ui-sref='algorithms') here
     = ' '
     | to go back to algorithms page.
-  .col-md-12
+  .col-md-12(ng-if='algorithm')
     panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()')
-      .col-md-12
+      .col-md-12()
         form.dropzone(action='/upload', data-smart-dropzone='dropzoneConfig')
       .col-md-12
         | {{algorithm}}

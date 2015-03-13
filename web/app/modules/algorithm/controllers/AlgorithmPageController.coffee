@@ -28,7 +28,14 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         abstractAlgorithm = res.data.records[$stateParams.id]
         if abstractAlgorithm?.url?
           algorithmService.fetch(abstractAlgorithm.url).then (res) ->
-            $scope.algorithm = JSON.parse res.data
+            try
+              $scope.algorithm = JSON.parse res.data
+            catch e
+              notificationService.add
+                title: 'Error'
+                content: 'Could not parse algorithm information'
+                type: 'error'
+                timeout: 5000
           , (err) ->
             notificationService.add
               title: 'Error'
