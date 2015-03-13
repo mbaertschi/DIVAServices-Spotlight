@@ -47,8 +47,9 @@ _checkValidStructure = (structure, callback) ->
             skip = true
           else
             skip = false
-            algorithm.index = i++
-        if not skip then _structure.records.push algorithm
+        if not skip
+          algorithm.index = i++
+          _structure.records.push algorithm
       callback null, _structure
     else
       callback 'Not a valid JSON format'

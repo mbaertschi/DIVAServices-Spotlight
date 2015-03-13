@@ -16,7 +16,7 @@
     "retries": 7
   },
   "parser": {
-    "fileLocation": "./data/structure.json",
+    "fileLocation": "./data/structure.dev.json",
     "mandatoryFields": ["name", "url"]
   }
 }
