@@ -3,5 +3,7 @@
   
 .row
   .col-md-4(ng-repeat='algorithm in algorithms.records')
-    panel(heading='{{algorithm.name}}', icon='info', go-to='thisAlgorithm(algorithm)')
+    panel(heading='{{algorithm.name}}', icon='info', height='400')
       | {{algorithm.description}}
+      .pull-right
+        button.btn.btn-primary.btn-xs.hvr-grow-shadow(ng-click='thisAlgorithm(algorithm)') Use me

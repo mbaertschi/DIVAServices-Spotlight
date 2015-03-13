@@ -11,6 +11,7 @@ sysPath     = require 'path'
 slashes     = require 'connect-slashes'
 fse         = require 'fs-extra'
 _           = require 'lodash'
+bodyParser  = require 'body-parser'
 api         = require './routes/api'
 Poller      = require './lib/poller'
 
@@ -30,6 +31,9 @@ exports.startServer = (port, path, callback) ->
 
   # Redirect requests that include a trailing slash.
   app.use slashes(false)
+
+  # Enable body parsing for json
+  app.use bodyParser.json()
 
   app.get '/api/algorithms', api.algorithms
 

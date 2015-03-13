@@ -4,7 +4,7 @@
     = ' '
     | {{heading}}
     .text-muted.pull-right.panel-config(ng-if='openAlgorithm', ng-click='goTo()')
-      | Use this algorithm
+      | Go back
       =' '
-      i.fa.fa-arrow-right
+      i.fa.fa-arrow-left
   .panel-body(ng-transclude='ng-transclude')
