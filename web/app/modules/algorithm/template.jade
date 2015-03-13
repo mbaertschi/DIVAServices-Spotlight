@@ -9,4 +9,7 @@
     | to go back to algorithms page.
   .col-md-12
     panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()')
-      | {{algorithm}}
+      .col-md-12
+        form.dropzone(action='/upload', data-smart-dropzone='dropzoneConfig')
+      .col-md-12
+        | {{algorithm}}

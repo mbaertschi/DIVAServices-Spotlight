@@ -1,0 +1,83 @@
+.dropzone {
+  background-image: -webkit-gradient(linear,left top,right bottom,color-stop(0.25,rgba(0,0,0,.03)),color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5,rgba(0,0,0,.03)),color-stop(0.75,rgba(0,0,0,.03)),color-stop(0.75,transparent),to(transparent));
+  background-image: -webkit-linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
+  background-image: -moz-linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
+  background-image: -ms-linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
+  background-image: -o-linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
+  background-image: linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
+  background-color: #FAFCFD;
+  background-size: 16px 16px;
+
+  .dz-preview, .dropzone-previews .dz-preview {
+    background: rgba(255,255,255,.8);
+    position: relative;
+    display: inline-block;
+    margin: 17px;
+    vertical-align: top;
+    border: 1px solid #acacac;
+    padding: 6px;
+    -webkit-box-shadow: 1px 1px 4px rgba(0,0,0,.16);
+    box-shadow: 1px 1px 4px rgba(0,0,0,.16);
+    font-size: 14px;
+  }
+
+  .dz-preview.dz-processing .dz-progress, .dropzone-previews .dz-preview.dz-processing .dz-progress {
+    display: block;
+  }
+
+  .dz-preview .dz-error-mark svg, .dz-preview .dz-success-mark svg, .dropzone-previews .dz-preview .dz-error-mark svg, .dropzone-previews .dz-preview .dz-success-mark svg {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
+    text-align: center;
+    right: -70px;
+    top: 10px;
+  }
+
+  .dz-preview .dz-error-message, .dropzone-previews .dz-preview .dz-error-message {
+    display: none;
+    position: absolute;
+    top: -5px;
+    left: -20px;
+    background: rgba(245,245,245,.8);
+    padding: 8px 10px;
+    color: #800;
+    min-width: 140px;
+    max-width: 500px;
+    z-index: 500;
+  }
+
+  .dz-preview.dz-error .dz-error-mark, .dz-preview.dz-success .dz-success-mark, .dropzone-previews .dz-preview.dz-error .dz-error-mark, .dropzone-previews .dz-preview.dz-success .dz-success-mark {
+    display: block;
+  }
+
+  .dz-preview .dz-error-mark, .dz-preview .dz-success-mark, .dropzone-previews .dz-preview .dz-error-mark, .dropzone-previews .dz-preview .dz-success-mark {
+    display: none;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    font-size: 30px;
+    text-align: center;
+    right: -10px;
+    top: -10px;
+  }
+
+  a.dz-remove, .dropzone-previews a.dz-remove {
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#3883c5),color-stop(1,#4a90cc));
+    background-image: -webkit-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+    background-image: -moz-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+    background-image: -o-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+    background-image: -ms-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+    background-image: linear-gradient(top,#3883c5 0,#4a90cc 100%);
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    border: 1px solid #3276b1;
+    text-decoration: none;
+    display: block;
+    padding: 4px 5px;
+    text-align: center;
+    color: #fff;
+    margin-top: 26px;
+  }
+}

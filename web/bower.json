@@ -21,7 +21,8 @@
     "angular-bootstrap": "~0.12.1",
     "angular-lodash-module": "~1.1.0",
     "angular-socket-io": "~0.7.0",
-    "socket.io-client": "~1.3.5"
+    "socket.io-client": "~1.3.5",
+    "dropzone": "~4.0.1"
   },
   "overrides": {
     "socket.io-client": {
