@@ -9,7 +9,13 @@
     | to go back to algorithms page.
   .col-md-12(ng-if='algorithm')
     panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()')
-      .col-md-12()
-        form.dropzone(action='/upload', data-smart-dropzone='dropzoneConfig')
-      .col-md-12
-        | {{algorithm}}
+      | {{algorithm}}
+    .panel.panel-plain.panel-body
+      form.dropzone(action='/upload', data-smart-dropzone='dropzoneConfig')
+    .panel.panel-plain.panel-body(ng-disabled='true')
+      h1.text-center Here will come the image cropping
+    .panel.panel-plain.panel-body(ng-disabled='true')
+      h1.text-center Here will come the image filters
+    .panel.panel-plain.panel-body(ng-disabled='true')
+      h1.text-center Here will come the highlighting of regions of interest
+      
