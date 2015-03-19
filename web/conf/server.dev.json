@@ -11,12 +11,16 @@
     }
   ],
   "poller": {
-    "interval": 10000,
+    "run": true,
+    "interval": 60000,
     "rootUrl": "http://localhost:8081",
     "retries": 7
   },
   "parser": {
     "fileLocation": "./data/structure.dev.json",
     "mandatoryFields": ["name", "url"]
+  },
+  "pusher": {
+    "run": true
   }
 }

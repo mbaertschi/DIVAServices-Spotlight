@@ -9,7 +9,7 @@ poller = exports = module.exports = class Poller
 
   constructor: (io) ->
     logger.log 'info', 'initializing', 'Poller'
-    @pusher = new Pusher(io)
+    if io? then @pusher = new Pusher(io)
 
   run: =>
     async.forever @_nextIteration, (err) ->
@@ -34,7 +34,7 @@ poller = exports = module.exports = class Poller
             setTimeout (-> callback()), nconf.get 'poller:interval'
           else
             logger.log 'info', 'iteration status=succeeded', 'Poller'
-            if newStructure? then @pusher.push newStructure
+            if newStructure? and @pusher? then @pusher.push newStructure
             seconds = (parseInt nconf.get 'poller:interval') / 1000
             logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
             setTimeout (-> callback()), nconf.get 'poller:interval'

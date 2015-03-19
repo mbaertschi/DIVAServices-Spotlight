@@ -43,8 +43,13 @@ exports.startServer = (port, path, callback) ->
   app.all '*', (req, res) ->
     res.sendfile sysPath.join(path, 'index.html')
 
-  # start the poller
-  poller = new Poller(io)
-  poller.run()
+  # start the poller if defined
+  if nconf.get 'poller:run'
+    # start the pusher if defined
+    if nconf.get 'pusher:run'
+      poller = new Poller(io)
+    else
+      poller = new Poller()
+    poller.run()
 
   server.listen port, callback
