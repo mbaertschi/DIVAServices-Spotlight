@@ -1,6 +1,6 @@
 'use strict'
 
-AIRevolution = angular.module 'app', [
+DiaDistributed = angular.module 'app', [
   'ui.router'
   'ui.bootstrap'
   'lodash'
@@ -11,7 +11,7 @@ AIRevolution = angular.module 'app', [
   'app.algorithm'
 ]
 
-AIRevolution.config [
+DiaDistributed.config [
   '$urlRouterProvider'
 
   # redirect to / if URL is unknown
@@ -21,7 +21,7 @@ AIRevolution.config [
       $state.go 'dashboard'
 ]
 
-AIRevolution.config [
+DiaDistributed.config [
   '$stateProvider'
 
   ($stateProvider) ->

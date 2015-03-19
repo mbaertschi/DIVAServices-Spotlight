@@ -1,7 +1,7 @@
 exports.config = {
 
   specs: [
-    'specs/**/*.coffee'
+    './e2e/specs/**/*.coffee'
   ],
 
   // Start these browsers, currently available:
@@ -31,7 +31,7 @@ exports.config = {
     console.log('Loading root URL ...');
     browser.get('/');
 
-    var consoleHelper = require('./helpers/console');
+    var consoleHelper = require('./e2e/helpers/console');
     afterEach(consoleHelper.expectEmptyConsole);
   }
 

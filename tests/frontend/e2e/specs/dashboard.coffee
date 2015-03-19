@@ -12,5 +12,5 @@ describe 'Dashboard Page', ->
     it 'has the breadcrumb Home / Dashboard', ->
       expect(page.breadcrumbs).toEqual ['Home', 'Dashboard']
 
-    it 'has the title Welcome> To the AI Revolution project', ->
-      expect(page.title).toEqual 'Welcome> To the AI Revolution project'
+    it 'has the title Welcome> To the DIA-Distributed project', ->
+      expect(page.title).toEqual 'Welcome> To the DIA-Distributed project'
