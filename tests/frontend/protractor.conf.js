@@ -33,6 +33,15 @@ exports.config = {
 
     var consoleHelper = require('./e2e/helpers/console');
     afterEach(consoleHelper.expectEmptyConsole);
+  },
+
+  resultJsonOutputFile: './e2e/results.json',
+
+  afterLaunch: function() {
+    var fs = require('fs'),
+        log = fs.readFileSync('./e2e/results.json', 'utf8'),
+        printer = require('./printJson');
+    printer.printFromJson(JSON.parse(log));
   }
 
 };

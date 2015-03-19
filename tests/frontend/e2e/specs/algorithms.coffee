@@ -9,13 +9,13 @@ describe 'Algorithms Page', ->
 
   describe 'Layout', ->
 
-    it 'has the breadcrumb Home / Algorithms', ->
+    it 'Algorithms page has the breadcrumb Home / Algorithms', ->
       expect(page.breadcrumbs).toEqual ['Home', 'Algorithms']
 
-    it 'has the title Algorithms> Get your work done', ->
+    it 'Algorithms page has the title Algorithms> Get your work done', ->
       expect(page.title).toEqual 'Algorithms> Get your work done'
 
   describe 'Algorithms', ->
 
-    it 'it shows all four dummy algorithms from the dummy backend', ->
+    it 'Algorithms page shows all four dummy algorithms from the dummy backend', ->
       expect(page.algorithms.count()).toEqual 4
