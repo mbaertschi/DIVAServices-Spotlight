@@ -1,7 +1,7 @@
-A.I.-Revolution Web App
+DIA-Distributed Web App
 =======================
 
-Web frontend (single page) for A.I.-Revolution project
+Web frontend (single page) for DIA-Distributed project
 
 Getting started
 ---------------
@@ -20,5 +20,3 @@ Start `brunch` with integrated server:
 > * brunch watch -s
 
 Then goto [http://localhost:3333](http://localhost:3333)
-
-

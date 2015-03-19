@@ -2,13 +2,16 @@
 # Configuration file for forman. Simplifies development
 # by starting all required processes at once.
 #
-# Ruby version:
-#   > gem install foreman
-#   > foreman start
-#
 # Node version:
 #   > npm -g install foreman
 #   > nf start
 #
-api: cd config && pm2 start processes.dev.json
+
+# we first have to make sure, that the backend server isn't running
+pre: pm2 delete all
+
+# start the backend server
+api: cd rest && pm2 start processes.dev.json
+
+# start the server
 web: cd web && brunch watch -s

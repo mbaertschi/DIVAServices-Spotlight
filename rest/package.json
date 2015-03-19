@@ -1,7 +1,7 @@
 {
   "name": "dummy-rest-server",
   "version": "0.0.0",
-  "description": "Dummy REST-Server for A.I.-Revolution",
+  "description": "Dummy REST-Server for DIA-Distributed",
   "main": "server.js",
   "author": "Michael Bärtschi",
   "license": "GNU GPL v2",

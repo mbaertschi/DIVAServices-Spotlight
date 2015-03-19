@@ -1,5 +1,5 @@
 {
-  "name": "ai-revolution",
+  "name": "dia-distributed",
   "version": "0.0.0",
   "description": "Web Application for AI Services",
   "main": "server.js",

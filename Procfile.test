@@ -1,0 +1,12 @@
+#
+# Configuration file for foreman used by frontend tests
+#
+
+# we first have to make sure, that the backend server isn't running
+pre: pm2 delete all
+
+# start the backend server
+api: cd rest && pm2 start processes.dev.json
+
+# start the server
+web: cd web && brunch watch -s --production

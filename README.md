@@ -1,7 +1,7 @@
-A.I.-Revolution
+DIA-Distributed
 ===============
 
-Unified repository for both, dummy rest server and client components for the A.I.-Revolution project
+Unified repository for both, dummy rest server and client components for the DIA-Distributed project
 
 Installation
 ------------
