@@ -1,14 +1,8 @@
 angular.module('app.dashboard').controller 'DashboardPageController', [
+  '$scope'
   'alertService'
   'notificationService'
 
-  (alertService, notificationService) ->
-
-    # notificationService.add
-    #   title: 'Test'
-    #   description: 'Test description'
-    #   type: 'danger'
-    #   timeout: 3000
-    #
-    # alertService.add 'info', 'test info', 3
+  ($scope, alertService, notificationService) ->
+    
 ]

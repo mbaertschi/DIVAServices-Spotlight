@@ -1,4 +1,6 @@
-module = angular.module 'app.algorithm', []
+module = angular.module 'app.algorithm', [
+  'ui.router'
+]
 
 module.config [
   '$stateProvider'

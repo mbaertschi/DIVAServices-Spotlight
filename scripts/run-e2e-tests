@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+SERVER_PID=0
+export NODE_ENV=dev
+
+# start server
+function start_server {
+  printf "Starting testserver ... "
+  nf -j Procfile.test start > /dev/null 2>&1 &
+  SERVER_PID=$!
+  sleep 5 # wait for server
+  printf "OK (PID $SERVER_PID)\n"
+}
+
+# callback to stop server on exit
+function stop_server {
+  if ps -p $SERVER_PID > /dev/null; then
+    printf "Stopping testserver (PID $SERVER_PID) ..."
+    kill -SIGINT $SERVER_PID
+    sleep 2
+    kill 0
+  fi
+}
+
+# stop server on exit and signals
+trap 'stop_server' SIGINT SIGTERM EXIT
+
+# start server
+start_server
+
+cd tests/frontend
+
+echo 'Installing dependencies ...'
+npm install
+
+echo 'Running tests ...'
+npm run e2e
+
+cd ../..

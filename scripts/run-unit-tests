@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+cd tests/frontend
+
+echo 'Running tests ...'
+npm run unit
+
+cd ../..

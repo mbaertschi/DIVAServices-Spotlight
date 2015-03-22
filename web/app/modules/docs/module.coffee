@@ -1,4 +1,6 @@
-module = angular.module 'app.docs', []
+module = angular.module 'app.docs', [
+  'ui.router'
+]
 
 module.config [
   '$stateProvider'

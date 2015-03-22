@@ -6,7 +6,7 @@
 pre: pm2 delete all
 
 # start the backend server
-api: cd rest && pm2 start processes.dev.json
+api: cd rest && pm2 start processes.test.json
 
 # start the server
 web: cd web && brunch watch -s --production

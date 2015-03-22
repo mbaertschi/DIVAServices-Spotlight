@@ -1,22 +1,39 @@
-DIA-Distributed Web App
-=======================
+#DIA-Distributed Web App
 
 Web frontend (single page) for DIA-Distributed project
 
 Getting started
 ---------------
 
-Install brunch and dependencies
+###Requirements:
+You need to have `npm` installed.
 
-> * npm -g install brunch
-> * npm install
+Install `brunch`, `coffee-script`, and `foreman`
 
-Install JS components:
+```bash
+npm -g install bower
+npm -g install foreman
+npm -g install brunch
+npm -g install coffee-script
+```
 
-> * bower install
+###Install dependencies:
+Assuming you are in the web folder and `npm` is installed.
+```bash
+npm install
+```
 
-Start `brunch` with integrated server:
+###Install JS components:
+Assuming you are in the web folder and `npm` is installed.
+```bash
+bower install
+```
 
-> * brunch watch -s
+###Starting the application
+Assuming you are in the root folder of the application.
+```bash
+export NODE_ENV=dev
+nf start
+```
 
-Then goto [http://localhost:3333](http://localhost:3333)
+Then goto [http://localhost:3000](http://localhost:3000)

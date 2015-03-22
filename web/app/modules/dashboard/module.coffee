@@ -1,4 +1,6 @@
-module = angular.module 'app.dashboard', []
+module = angular.module 'app.dashboard', [
+  'ui.router'
+]
 
 module.config [
   '$stateProvider'
