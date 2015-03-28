@@ -16,8 +16,9 @@ api.algorithms = (req, res) ->
       res.status(200).json structure
 
 api.algorithm = (req, res) ->
-  return res.status(404).json 'error': 'Not found' if not req.body?.url
-  url = req.body.url
+  params = req.query
+  return res.status(404).json 'error': 'Not found' if not params.host and not params.algorithm
+  url = 'http://' + params.host + '/' + params.algorithm
 
   settings =
     options:

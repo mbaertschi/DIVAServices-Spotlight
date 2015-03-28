@@ -38,5 +38,10 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
     retrieveLinks()
 
     $scope.thisAlgorithm = (algorithm) ->
-      $state.go 'algorithm', {id: algorithm.index}
+      url = new URL algorithm.url
+      host = url.host
+      algorithm = url.pathname
+      if algorithm
+        algorithm = algorithm.substring(1)
+      $state.go 'algorithm', {host: host, algorithm: algorithm}
 ]

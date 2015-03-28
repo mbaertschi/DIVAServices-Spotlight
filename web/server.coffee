@@ -35,7 +35,7 @@ exports.startServer = (port, path, callback) ->
 
   app.get '/api/algorithms', api.algorithms
 
-  app.post '/api/algorithm', api.algorithm
+  app.get '/api/algorithm', api.algorithm
 
   # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->
