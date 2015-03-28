@@ -15,17 +15,20 @@ Unified repository for both, dummy rest server and client components for the DIA
     * [PM2](https://github.com/Unitech/pm2) ``npm install -g pm2``
     * [karma-cli](https://www.npmjs.com/package/karma-cli) ``npm install -g karma-cli``
   3. Change to the ``rest`` directory and let NPM install the necessary libraries:
+
     ```bash
     cd rest
     npm install
     ```
   4. Change to the ``web`` directory and install the required Node.JS modules:
+
     ```bash
     cd web
     npm install
     bower install
     ```
   5. Change to the ``tests`` directory and install the required Node.js modules:
+
   ```bash
   cd tests/frontend
   npm install
@@ -34,11 +37,13 @@ Unified repository for both, dummy rest server and client components for the DIA
 ## Environments
 The DIA-Distributed application can be started within two environments.
   1. Developing mode
+
   ```bash
   export NODE_ENV=dev
   ```
   This configuration is recommended if you want to develop. It is also mandatory for running the tests.
   2. Production mode
+
   ```bash
   export NODE_ENV=prod
   ```
@@ -52,18 +57,20 @@ Assuming you are in the root folder. Execute the following scripts:
 ./scripts/run-unit-tests (runs the karma-jasmine unit tests)
 ```
 If you want to run the tests with npm:
-1. e2e
-```bash
-cd /
-nf -j Procfile.test start
-cd tests/frontend
-npm run e2e
-```
-2. unit
-```bash
-cd /tests/frontend
-npm run unit
-```
+  1. e2e
+
+  ```bash
+  cd /
+  nf -j Procfile.test start
+  cd tests/frontend
+  npm run e2e
+  ```
+  2. unit
+
+  ```bash
+  cd /tests/frontend
+  npm run unit
+  ```
 
 ## Developing
 
