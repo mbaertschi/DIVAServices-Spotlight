@@ -3,7 +3,9 @@ angular.module('app.algorithm').factory 'algorithmService', [
 
   ($http) ->
 
-    fetch: (url) ->
-      $http.post('/api/algorithm', url: url).then (res) ->
-        res
+    fetch: (host, algorithm) ->
+      $http.get('/api/algorithm', params:
+        algorithm: algorithm
+        host: host).then (res) ->
+          res
 ]

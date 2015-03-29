@@ -1,5 +1,4 @@
 logger      = require './logger'
-nconf       = require 'nconf'
 
 pusher = exports = module.exports = class Pusher
 
@@ -7,6 +6,14 @@ pusher = exports = module.exports = class Pusher
     logger.log 'info', 'initializing', 'Pusher'
     @io = io
 
-  push: (newStructure) =>
-    logger.log 'info', "pushing new structure, #{newStructure}", 'Pusher'
-    @io.emit 'update structure', newStructure
+  update: (algorithms) =>
+    logger.log 'info', 'pushing algorithm updates', 'Pusher'
+    @io.emit 'update algorithms', algorithms
+
+  add: (algorithms) =>
+    logger.log 'info', 'pushing new algorithms', 'Pusher'
+    @io.emit 'add algorithms', algorithms
+
+  delete: (algorithms) =>
+    logger.log 'info', 'pushing algorithms to remove', 'Pusher'
+    @io.emit 'delete algorithms', algorithms

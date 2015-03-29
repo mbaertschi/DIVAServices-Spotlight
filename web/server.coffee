@@ -9,8 +9,6 @@ express     = require 'express'
 http        = require 'http'
 sysPath     = require 'path'
 slashes     = require 'connect-slashes'
-fse         = require 'fs-extra'
-_           = require 'lodash'
 bodyParser  = require 'body-parser'
 api         = require './routes/api'
 Poller      = require './lib/poller'
@@ -37,7 +35,7 @@ exports.startServer = (port, path, callback) ->
 
   app.get '/api/algorithms', api.algorithms
 
-  app.post '/api/algorithm', api.algorithm
+  app.get '/api/algorithm', api.algorithm
 
   # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->

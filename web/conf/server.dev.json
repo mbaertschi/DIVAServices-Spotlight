@@ -17,10 +17,12 @@
     "retries": 7
   },
   "parser": {
-    "fileLocation": "./data/structure.dev.json",
     "mandatoryFields": ["name", "url"]
   },
   "pusher": {
     "run": true
+  },
+  "mongoDB": {
+    "url": "localhost:27017/dia?auto_reconnect"
   }
 }

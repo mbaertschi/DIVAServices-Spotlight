@@ -29,6 +29,7 @@ app.get '/url1', (req, res) ->
   records =
     name: 'Algorithm 1'
     description: 'Description for Url 1'
+    url: 'http://localhost:8081/url1'
     methods: [
       get: 'returns this information'
       post: 'use this algorithm'
@@ -46,6 +47,7 @@ app.get '/url2', (req, res) ->
   records =
     name: 'Algorithm 2'
     description: 'Description for Url 2'
+    url: 'http://localhost:8081/url2'
     methods: [
       get: 'returns this information'
       post: 'use this algorithm'
@@ -63,6 +65,7 @@ app.get '/url3', (req, res) ->
   records =
     name: 'Algorithm 3'
     description: 'Description for Url 3'
+    url: 'http://localhost:8081/url3'
     methods: [
       get: 'returns this information'
       post: 'use this algorithm'
@@ -80,6 +83,7 @@ app.get '/url4', (req, res) ->
   records =
     name: 'Algorithm 4'
     description: 'Description for Url 4'
+    url: 'http://localhost:8081/url4'
     methods: [
       get: 'returns this information'
       post: 'use this algorithm'
