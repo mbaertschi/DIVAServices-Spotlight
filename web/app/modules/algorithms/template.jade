@@ -1,9 +1,13 @@
 .row
   big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithms', 'Get your work done']", icon='tasks')
   
-.row
-  .col-md-4(ng-repeat='algorithm in algorithms.records')
+.row.algorithms-page
+  .col-md-4(ng-repeat='algorithm in algorithms')
     panel(heading='{{algorithm.name}}', icon='info', height='400')
-      | {{algorithm.description}}
+      ul
+        li.host.text-muted
+          | Hosted by {{algorithm.host}}
+        li.description
+          | {{algorithm.description}}
       .pull-right
         button.btn.btn-primary.btn-xs.hvr-grow-shadow(ng-click='thisAlgorithm(algorithm)') Use me

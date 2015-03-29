@@ -5,6 +5,6 @@ class AlgorithmsPage extends PageObject
   url: '#/algorithms'
 
   @has 'algorithms', ->
-    element.all @by.repeater('algorithm in algorithms.records')
+    element.all @by.repeater('algorithm in algorithms')
 
 module.exports = AlgorithmsPage

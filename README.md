@@ -6,6 +6,7 @@ Unified repository for both, dummy rest server and client components for the DIA
 
   1. Checkout the repository
   2. Install the mandatory dependencies:
+    * [mongoDB](http://www.mongodb.org/)
     * [Node.js](https://nodejs.org/)
     * [npm](https://www.npmjs.com/)
     * [CoffeeScript](http://coffeescript.org/) ``npm install -g coffee-script``

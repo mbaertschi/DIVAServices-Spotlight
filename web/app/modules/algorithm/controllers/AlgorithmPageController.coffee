@@ -2,16 +2,13 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$scope'
   '$stateParams'
   'algorithmService'
-  'algorithmsService'
   'notificationService'
   'mySocket'
   '$state'
   '$timeout'
-  '_'
 
-  ($scope, $stateParams, algorithmService, algorithmsService, notificationService, mySocket, $state, $timeout, _) ->
+  ($scope, $stateParams, algorithmService, notificationService, mySocket, $state, $timeout) ->
     $scope.algorithm = null
-    abstractAlgorithm = null
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -41,31 +38,31 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
           type: 'warning'
           timeout: 5000
 
-      # we need to store the abstract representation of this algorithm
-      algorithmsService.fetch().then (res) ->
-        algorithms = res.data.records
-        angular.forEach algorithms, (alg) ->
-          if alg.url is url
-            abstractAlgorithm = alg
-
     requestAlgorithm()
 
     $scope.goBack = ->
       $state.go 'algorithms'
 
-    $scope.$on 'socket:update structure', (ev, data) ->
-      available = false
-      _.each data, (alg) ->
-        if _.isEqual alg, abstractAlgorithm
-          available = true
-      if not available
-        notificationService.add
-          title: 'Warning'
-          content: 'This algorithm has been removed. Going back to algorithms page in 5 seconds'
-          type: 'warning'
-          timeout: 5000
-        $timeout (-> $state.go 'algorithms'), 5000
+    $scope.$on 'socket:update algorithms', (ev, algorithms) ->
+      angular.forEach algorithms, (algorithm) ->
+        if $scope.algorithm?.url is algorithm.url
+          notificationService.add
+            title: 'Warning'
+            content: 'This algorithm has been updated. Going back to algorithms page in 5 seconds'
+            type: 'warning'
+            timeout: 5000
+          $timeout (-> $state.go 'algorithms'), 5000
 
+    $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
+      angular.forEach algorithms, (algorithm) ->
+        if algorithm.url is $scope.algorithm.url
+          notificationService.add
+            title: 'Sorry'
+            content: 'This algorithm has been removed. Going back to algorithms page in 5 seconds'
+            type: 'danger'
+            timeout: 5000
+          $timeout (-> $state.go 'algorithms'), 5000
+          
     $scope.$on 'socket:error', (ev, data) ->
       notificationService.add
         title: 'Error'

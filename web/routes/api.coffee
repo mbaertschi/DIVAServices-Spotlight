@@ -2,18 +2,26 @@ fse         = require 'fs-extra'
 nconf       = require 'nconf'
 _           = require 'lodash'
 loader      = require '../lib/loader'
+mongoose    = require 'mongoose'
 
 api = exports = module.exports = {}
 
 api.algorithms = (req, res) ->
-  dir = nconf.get 'parser:fileLocation'
-  fse.readJson dir, (err, structure) ->
+  Algorithm = mongoose.model 'Algorithm'
+
+  fields =
+    name: true
+    description: true
+    url: true
+    host: true
+
+  Algorithm.find {}, fields, (err, algorithms) ->
     if err?
       res.status(404).json error: 'There was an error while loading the algorithms'
-    else if _.isEqual({}, structure)
+    else if algorithms.length is 0
       res.status(404).json error: 'Not found'
     else
-      res.status(200).json structure
+      res.status(200).json algorithms
 
 api.algorithm = (req, res) ->
   params = req.query

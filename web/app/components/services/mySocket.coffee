@@ -3,7 +3,9 @@ angular.module('app').factory 'mySocket', [
 
   (socketFactory) ->
     mySocket = socketFactory()
-    mySocket.forward 'update structure'
+    mySocket.forward 'update algorithms'
+    mySocket.forward 'add algorithms'
+    mySocket.forward 'delete algorithms'
     mySocket.forward 'error'
     mySocket
 ]
