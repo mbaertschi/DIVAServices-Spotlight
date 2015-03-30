@@ -3,7 +3,7 @@
 #
 
 # start the backend server
-api: cd rest && forever -m 5 --minUptime 1000 --spinSleepTime 5000 --watch -c coffee server.coffee
+api: cd rest && forever -m 5 --minUptime 1000 --spinSleepTime 3000 --watch -c coffee server.coffee
 
 # start the server
 web: cd web && brunch watch -s --production
