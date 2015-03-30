@@ -13,7 +13,7 @@ Unified repository for both, dummy rest server and client components for the DIA
     * [Brunch](http://brunch.io/) ``npm install -g brunch``
     * [Bower](http://bower.io/) ``npm install -g bower``
     * [Node Foreman](https://github.com/strongloop/node-foreman) ``npm install -g  foreman``
-    * [PM2](https://github.com/Unitech/pm2) ``npm install -g pm2``
+    * [forever](https://github.com/foreverjs/forever) ``npm install -g forever``
     * [karma-cli](https://www.npmjs.com/package/karma-cli) ``npm install -g karma-cli``
   3. Change to the ``rest`` directory and let NPM install the necessary libraries:
 
@@ -30,10 +30,19 @@ Unified repository for both, dummy rest server and client components for the DIA
     ```
   5. Change to the ``tests`` directory and install the required Node.js modules:
 
-  ```bash
-  cd tests/frontend
-  npm install
-  ```
+    ```bash
+    cd tests/frontend
+    npm install
+    ```
+  6. Create the folder logs under /web/
+  7. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 11 in ``Procfile``)
+
+    Assuming you are in the root folder
+    ```bash
+    cd web/node_modules/mongo-express
+    cp config.default.js config.js
+    ```
+    Then change the port on line 46 to ``8083``. If you have any authentication settings on your mongoDB, please configure the ``config.js`` file according to it.
 
 ## Environments
 The DIA-Distributed application can be started within two environments.
@@ -79,15 +88,13 @@ To start and stop dummy rest server and web client with one command:
 
 ```bash
 nf start
-
-Exiting foreman does not stop the pm2 process. Use pm2 delete [id] to stop backend server
 ```
 
 For manually starting backend server
 
 ```bash
-cd /rest
-pm2 start ./processes.dev.json
+cd rest
+forever -m 5 --minUptime 1000 --spinSleepTime 5000 --watch -c coffee server.coffee
 ```
 
 For manually starting web client
