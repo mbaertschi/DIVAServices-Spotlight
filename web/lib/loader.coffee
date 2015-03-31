@@ -15,9 +15,7 @@ loader.get = (settings, callback) ->
 
   async.retry settings.retries, ((next) ->
     settings.counter++
-    _load settings, (err, body) ->
-      return next err if err?
-      next null, body
+    _load settings, next
   ), (err, result) ->
     logger.log 'debug', "#{settings.retries} attempts failed with err: #{err}", 'Loader' if err?
     callback err, result

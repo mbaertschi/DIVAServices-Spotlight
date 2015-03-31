@@ -11,11 +11,18 @@
     }
   ],
   "poller": {
-    "interval": 20000,
+    "run": true,
+    "interval": 60000,
     "rootUrl": "http://localhost:8081",
     "retries": 7
   },
   "parser": {
-    "fileLocation": "./data/structure.json"
+    "mandatoryFields": ["name", "url"]
+  },
+  "pusher": {
+    "run": true
+  },
+  "mongoDB": {
+    "url": "localhost:27017/dia?auto_reconnect"
   }
 }

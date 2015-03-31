@@ -12,6 +12,8 @@ slashes     = require 'connect-slashes'
 bodyParser  = require 'body-parser'
 api         = require './routes/api'
 Poller      = require './lib/poller'
+Pusher      = require './lib/pusher'
+Mongo       = require './lib/mongo'
 
 # start the web service
 exports.startServer = (port, path, callback) ->
@@ -20,9 +22,21 @@ exports.startServer = (port, path, callback) ->
   server = http.Server app
   server.timeout = 2000
 
-  io = require('socket.io')(server)
-  io.on 'connection', require './routes/socket'
+  # initialize the mongoDB
+  @db = new Mongo
 
+  # start the pusher if defined
+  if nconf.get 'pusher:run'
+    io = require('socket.io')(server)
+    pusher = new Pusher io
+
+  # start the poller if defined
+  if nconf.get 'poller:run'
+    if nconf.get 'pusher:run'
+      poller = new Poller @db, pusher
+    else
+      poller = new Poller @db
+    poller.run()
 
   # Route all static files to http paths.
   app.use '', express.static(sysPath.resolve(path))
@@ -40,14 +54,5 @@ exports.startServer = (port, path, callback) ->
   # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->
     res.sendfile sysPath.join(path, 'index.html')
-
-  # start the poller if defined
-  if nconf.get 'poller:run'
-    # start the pusher if defined
-    if nconf.get 'pusher:run'
-      poller = new Poller(io)
-    else
-      poller = new Poller()
-    poller.run()
 
   server.listen port, callback
