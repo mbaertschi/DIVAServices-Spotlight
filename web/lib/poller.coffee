@@ -3,18 +3,16 @@ async       = require 'async'
 nconf       = require 'nconf'
 loader      = require './loader'
 parser      = require './parser'
-Pusher      = require './pusher'
-Mongo       = require './mongo'
 _           = require 'lodash'
 mongoose    = require 'mongoose'
 
 poller = exports = module.exports = class Poller
 
-  constructor: (io) ->
+  constructor: (db, pusher) ->
     logger.log 'info', 'initializing', 'Poller'
-    @db = new Mongo
+    @db = db
     @Algorithm = mongoose.model('Algorithm')
-    if io? then @pusher = new Pusher(io)
+    if (nconf.get 'pusher:run') then @pusher = pusher
 
   run: =>
     async.forever @_nextIteration, (err) ->
@@ -36,13 +34,15 @@ poller = exports = module.exports = class Poller
         logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
         setTimeout (-> callback()), nconf.get 'poller:interval'
       else
-        if nconf.get('pusher:run')
-          if (changedAlgorithms?.length > 0)
+        if @pusher
+          if changedAlgorithms.length > 0
             @pusher.update changedAlgorithms
-          if (addedAlgorithms?.length > 0)
+          if addedAlgorithms.length > 0
             @pusher.add addedAlgorithms
-          if (removedAlgorithms?.length > 0)
+          if removedAlgorithms.length > 0
             @pusher.delete removedAlgorithms
+        if changedAlgorithms.length is 0 and addedAlgorithms.length is 0 and removedAlgorithms.length is 0
+          logger.log 'info', 'no changes to apply', 'Poller'
         logger.log 'info', 'iteration status=succeeded', 'Poller'
         seconds = (parseInt nconf.get 'poller:interval') / 1000
         logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
@@ -117,13 +117,13 @@ poller = exports = module.exports = class Poller
                   if changes?.length > 0
                     logger.log 'info', "algorithm=#{algorithm.url} for host=#{algorithm.host} has changed", 'Poller'
                     async.each changes, (change, nextChange) ->
-                      logger.log 'info', "type=#{change.type}, attr=#{change.attr}, old=#{change.old}, new=#{change.new}", 'Poller'
+                      logger.log 'debug', "type=#{change.type}, attr=#{change.attr}, old=#{change.old}, new=#{change.new}", 'Poller'
                       nextChange()
                     , ->
                       changedAlgorithms.push algorithm
                       next()
                   else
-                    logger.log 'info', "no changes to apply for host=#{algorithm.host}, algorithm=#{algorithm.url}", 'Poller'
+                    logger.log 'debug', "no changes to apply for host=#{algorithm.host}, algorithm=#{algorithm.url}", 'Poller'
                     next()
             else
               alg = new @Algorithm algorithm
@@ -139,7 +139,7 @@ poller = exports = module.exports = class Poller
         @db.getAlgorithms (err, dbAlgorithms) =>
           if err?
             logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
-            callback null, changedAlgorithms, addedAlgorithms
+            callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
           else
             async.each dbAlgorithms, (dbAlgorithm, next) =>
               index = _.findIndex algorithms, 'url': dbAlgorithm.url
@@ -153,5 +153,5 @@ poller = exports = module.exports = class Poller
                 logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
               callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
     else
-      logger.log 'info', 'there are no new or updated algorithms to store', 'Poller'
+      logger.log 'info', 'there are no algorithms available', 'Poller'
       callback()
