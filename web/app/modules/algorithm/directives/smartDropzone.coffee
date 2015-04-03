@@ -35,6 +35,7 @@ angular.module('app.algorithm').directive 'smartDropzone', [
           maxFilesize: settings.maxFilesize
           maxFiles: settings.maxFiles
           uploadMultiple: false
+          acceptedFiles: 'image/*'
           dictDefaultMessage: '<span class="text-center"><span class="font-lg visible-xs-block visible-sm-block visible-lg-block"><span class="font-lg"><i class="fa fa-caret-right text-danger"></i> Drop files <span class="font-xs">to upload</span></span><span>&nbsp&nbsp<h4 class="display-inline"> (Or Click)</h4></span>'
           dictResponseError: 'Error uploading file!'
 
