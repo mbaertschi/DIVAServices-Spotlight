@@ -4,6 +4,16 @@ mongoose    = require 'mongoose'
 
 api = exports = module.exports = (router) ->
 
+  router.get '/api/settings', (req, res) ->
+    params = req.query
+
+    if params.type?
+      settings = nconf.get "web:#{params.type}"
+    else
+      settings = nconf.get 'web'
+
+    res.status(200).json settings
+
   router.get '/api/algorithms', (req, res) ->
     Algorithm = mongoose.model 'Algorithm'
 

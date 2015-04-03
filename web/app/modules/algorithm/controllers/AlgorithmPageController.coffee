@@ -6,8 +6,9 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   'mySocket'
   '$state'
   '$timeout'
+  'mySettings'
 
-  ($scope, $stateParams, algorithmService, notificationService, mySocket, $state, $timeout) ->
+  ($scope, $stateParams, algorithmService, notificationService, mySocket, $state, $timeout, mySettings) ->
     $scope.algorithm = null
 
     requestAlgorithm = ->
@@ -43,32 +44,34 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.goBack = ->
       $state.go 'algorithms'
 
-    $scope.$on 'socket:update algorithms', (ev, algorithms) ->
-      angular.forEach algorithms, (algorithm) ->
-        if $scope.algorithm?.url is algorithm.url
-          notificationService.add
-            title: 'Warning'
-            content: 'This algorithm has been updated. Going back to algorithms page in 5 seconds'
-            type: 'warning'
-            timeout: 5000
-          $timeout (-> $state.go 'algorithms'), 5000
+    mySettings.fetch('socket').then (socket) ->
+      if socket.run?
+        $scope.$on 'socket:update algorithms', (ev, algorithms) ->
+          angular.forEach algorithms, (algorithm) ->
+            if $scope.algorithm?.url is algorithm.url
+              notificationService.add
+                title: 'Warning'
+                content: 'This algorithm has been updated. Going back to algorithms page in 5 seconds'
+                type: 'warning'
+                timeout: 5000
+              $timeout (-> $state.go 'algorithms'), 5000
 
-    $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
-      angular.forEach algorithms, (algorithm) ->
-        if algorithm.url is $scope.algorithm.url
+        $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
+          angular.forEach algorithms, (algorithm) ->
+            if algorithm.url is $scope.algorithm.url
+              notificationService.add
+                title: 'Sorry'
+                content: 'This algorithm has been removed. Going back to algorithms page in 5 seconds'
+                type: 'danger'
+                timeout: 5000
+              $timeout (-> $state.go 'algorithms'), 5000
+
+        $scope.$on 'socket:error', (ev, data) ->
           notificationService.add
-            title: 'Sorry'
-            content: 'This algorithm has been removed. Going back to algorithms page in 5 seconds'
-            type: 'danger'
+            title: 'Error'
+            content: 'There was an error while fetching algorithms'
+            type: 'error'
             timeout: 5000
-          $timeout (-> $state.go 'algorithms'), 5000
-          
-    $scope.$on 'socket:error', (ev, data) ->
-      notificationService.add
-        title: 'Error'
-        content: 'There was an error while fetching algorithms'
-        type: 'error'
-        timeout: 5000
-      $state.go 'dashboard'
+          $state.go 'dashboard'
 
 ]

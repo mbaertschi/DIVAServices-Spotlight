@@ -6,14 +6,19 @@ nconf       = require 'nconf'
 nconf.file './conf/server.' + process.env.NODE_ENV + '.json'
 
 express     = require 'express'
+session     = require 'express-session'
 http        = require 'http'
 sysPath     = require 'path'
 slashes     = require 'connect-slashes'
 bodyParser  = require 'body-parser'
+multer      = require 'multer'
 router      = require './routes/router'
 Poller      = require './lib/poller'
 Pusher      = require './lib/pusher'
 Mongo       = require './lib/mongo'
+mongoose    = require 'mongoose'
+SessionStore= require './lib/sessionStore'
+Uploader    = require './lib/uploader'
 
 # start the web service
 exports.startServer = (port, path, callback) ->
@@ -23,12 +28,21 @@ exports.startServer = (port, path, callback) ->
 
   # setup express framework
   app = express()
+
+  # setup session
+  sessionStore = new SessionStore session
+  app.use(session sessionStore.getSession())
+
   # route all static files to http paths.
   app.use '', express.static(sysPath.resolve(path))
   # redirect requests that include a trailing slash.
   app.use slashes(false)
   # enable body parsing for json
   app.use bodyParser.json()
+
+  # enable multipart/form-data
+  uploader = new Uploader
+  app.use uploader.getMulter()
 
   # routing
   app.use router
@@ -39,6 +53,8 @@ exports.startServer = (port, path, callback) ->
   # wrap express with httpServer for socket.io
   app.server = http.createServer app
   app.server.timeout = 2000
+
+  # garbageCollector = new GarbageCollector @db
 
   # start the pusher if defined
   if nconf.get 'pusher:run'

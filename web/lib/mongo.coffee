@@ -11,6 +11,7 @@ mongo = exports = module.exports = class Mongo
     @db = mongoose.connection
     @Host = require './models/host'
     @Algorithm = require './models/algorithm'
+    @Image = require './models/image'
 
     @db.once 'open', ->
       logger.log 'info', 'mongoose db connection opened', 'Mongo'
