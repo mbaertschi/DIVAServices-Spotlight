@@ -1,3 +1,14 @@
+.dropzone.dz-clickable,
+.dropzone.dz-clickable .dz-message,
+.dropzone.dz-clickable .dz-message span {
+  cursor: pointer;
+}
+
+.dropzone.dz-started .dz-message {
+  display: none;
+  opacity: 0;
+}
+
 .dropzone {
   background-image: -webkit-gradient(linear,left top,right bottom,color-stop(0.25,rgba(0,0,0,.03)),color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5,rgba(0,0,0,.03)),color-stop(0.75,rgba(0,0,0,.03)),color-stop(0.75,transparent),to(transparent));
   background-image: -webkit-linear-gradient(135deg,rgba(0,0,0,.03)25%,transparent 25%,transparent 50%,rgba(0,0,0,.03)50%,rgba(0,0,0,.03)75%,transparent 75%,transparent);
@@ -8,7 +19,86 @@
   background-color: #FAFCFD;
   background-size: 16px 16px;
 
-  .dz-preview, .dropzone-previews .dz-preview {
+  position: relative;
+  min-height: 260px;
+  border: 1px solid rgba(0,0,0,.08);
+  padding: 1em;
+  box-sizing: border-box;
+  border-radius: 3px;
+
+  .dz-default.dz-message {
+    opacity: 1;
+    -ms-filter: none;
+    filter: none;
+    -webkit-transition: opacity .3s ease-in-out;
+    -moz-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    -ms-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    position: absolute;
+    width: 428px;
+    height: 123px;
+    margin-left: -214px;
+    margin-top: -61.5px;
+    top: 50%;
+    left: 50%;
+
+    h4 {
+      font-weight: 300;
+    }
+  }
+
+  .dz-preview.dz-error {
+    cursor: default;
+    .dz-error-mark {
+      opacity: 1;
+      -ms-filter: none;
+      filter: none;
+    }
+
+    .dz-progress .dz-upload {
+      background: #ee1e2d;
+    }
+  }
+
+  .dz-preview.dz-success {
+    cursor: pointer;
+    .dz-success-mark {
+      opacity: 1;
+      -ms-filter: none;
+      filter: none;
+    }
+
+    .dz-progress .dz-upload {
+      background: #ee1e2d;
+    }
+  }
+
+  .dz-preview:hover {
+    -webkit-box-shadow: 10px 10px 5px 2px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 2px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    border: 1px solid #eee;
+  }
+
+  .dz-preview:hover.dz-error {
+    .dz-error-message {
+      display: block;
+      opacity: 1;
+      -ms-filter: none;
+      filter: none;
+    }
+    .dz-filename {
+      display: block;
+      opacity: 1;
+      -ms-filter: none;
+      filter: none;
+    }
+  }
+
+  .dz-preview {
     background: rgba(255,255,255,.8);
     position: relative;
     display: inline-block;
@@ -16,68 +106,179 @@
     vertical-align: top;
     border: 1px solid #acacac;
     padding: 6px;
-    -webkit-box-shadow: 1px 1px 4px rgba(0,0,0,.16);
+    webkit-box-shadow: 1px 1px 4px rgba(0,0,0,.16);
     box-shadow: 1px 1px 4px rgba(0,0,0,.16);
     font-size: 14px;
+
+    .dz-details {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      background: #ebebeb;
+      padding: 5px;
+      margin-bottom: 22px;
+
+      .dz-filename {
+        overflow: hidden;
+        height: 100%;
+      }
+
+      .dz-size {
+        position: absolute;
+        bottom: -28px;
+        left: 3px;
+        height: 28px;
+        line-height: 28px;
+      }
+
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        height: 100px;
+      }
+
+      .dz-error-message {
+        display: none;
+        position: absolute;
+        top: -5px;
+        left: -20px;
+        background: rgba(245,245,245,.8);
+        padding: 8px 10px;
+        color: #800;
+        min-width: 140px;
+        max-width: 500px;
+        z-index: 500;
+      }
+    }
+
+    .dz-progress {
+      position: absolute;
+      top: 100px;
+      left: 6px;
+      right: 6px;
+      height: 6px;
+      background: #d7d7d7;
+      display: none;
+
+      .dz-upload {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        background-color: #8cc657;
+        -webkit-animation: loading .4s linear infinite;
+        -moz-animation: loading .4s linear infinite;
+        -o-animation: loading .4s linear infinite;
+        -ms-animation: loading .4s linear infinite;
+        animation: loading .4s linear infinite;
+        -webkit-transition: width .3s ease-in-out;
+        -moz-transition: width .3s ease-in-out;
+        -o-transition: width .3s ease-in-out;
+        -ms-transition: width .3s ease-in-out;
+        transition: width .3s ease-in-out;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        height: 100%;
+        background-repeat: repeat-x;
+        background-position: 0 -400px;
+      }
+    }
+
+    .dz-success-mark {
+      color: #8cc657;
+      background-position: -268px -163px;
+    }
+
+    .dz-error-mark {
+      color: #ee162d;
+      background-position: -268px -123px;
+    }
+
+    .dz-error-mark,
+    .dz-success-mark {
+      opacity: 0;
+      -ms-filter: "alpha(Opacity=0)";
+      filter: alpha(opacity=0);
+      -webkit-transition: opacity .4s ease-in-out;
+      -moz-transition: opacity .4s ease-in-out;
+      -o-transition: opacity .4s ease-in-out;
+      -ms-transition: opacity .4s ease-in-out;
+      transition: opacity .4s ease-in-out;
+      background-color: #eee;
+      background-repeat: no-repeat;
+      border-radius: 20px;
+      display: none;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      font-size: 30px;
+      text-align: center;
+      right: -10px;
+      top: -10px;
+    }
+
+    .dz-error-message {
+      display: none;
+      position: absolute;
+      top: -5px;
+      left: -20px;
+      background: rgba(245,245,245,.8);
+      padding: 8px 10px;
+      color: #800;
+      min-width: 140px;
+      max-width: 500px;
+      z-index: 500;
+      opacity: 0;
+      -ms-filter: "alpha(Opacity=0)";
+      filter: alpha(opacity=0);
+      -webkit-transition: opacity .3s ease-in-out;
+      -moz-transition: opacity .3s ease-in-out;
+      -o-transition: opacity .3s ease-in-out;
+      -ms-transition: opacity .3s ease-in-out;
+      transition: opacity .3s ease-in-out;
+    }
+
+    a.dz-remove {
+      background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#3883c5),color-stop(1,#4a90cc));
+      background-image: -webkit-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+      background-image: -moz-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+      background-image: -o-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+      background-image: -ms-linear-gradient(top,#3883c5 0,#4a90cc 100%);
+      background-image: linear-gradient(top,#3883c5 0,#4a90cc 100%);
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-transition-duration: 0.3s;
+      transition-duration: 0.3s;
+      -webkit-transition-property: box-shadow, transform;
+      transition-property: box-shadow, transform;
+      -webkit-border-radius: 2px;
+      border-radius: 2px;
+      border: 1px solid #3276b1;
+      text-decoration: none;
+      display: block;
+      padding: 4px 5px;
+      text-align: center;
+      color: #fff;
+      margin-top: 26px;
+    }
+
+    a.dz-remove:hover, a.dz-remove:focus, a.dz-remove:hover {
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+      -webkit-transform: scale(1.1);
+      transform: scale(1.1);
+    }
   }
 
-  .dz-preview.dz-processing .dz-progress, .dropzone-previews .dz-preview.dz-processing .dz-progress {
+  .dz-preview .dz-processing .dz-progress,
+  .dz-preview.dz-error .dz-error-mark,
+  .dz-preview.dz-success .dz-success-mark {
     display: block;
-  }
-
-  .dz-preview .dz-error-mark svg, .dz-preview .dz-success-mark svg, .dropzone-previews .dz-preview .dz-error-mark svg, .dropzone-previews .dz-preview .dz-success-mark svg {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    font-size: 30px;
-    text-align: center;
-    right: -70px;
-    top: 10px;
-  }
-
-  .dz-preview .dz-error-message, .dropzone-previews .dz-preview .dz-error-message {
-    display: none;
-    position: absolute;
-    top: -5px;
-    left: -20px;
-    background: rgba(245,245,245,.8);
-    padding: 8px 10px;
-    color: #800;
-    min-width: 140px;
-    max-width: 500px;
-    z-index: 500;
-  }
-
-  .dz-preview.dz-error .dz-error-mark, .dz-preview.dz-success .dz-success-mark, .dropzone-previews .dz-preview.dz-error .dz-error-mark, .dropzone-previews .dz-preview.dz-success .dz-success-mark {
-    display: block;
-  }
-
-  .dz-preview .dz-error-mark, .dz-preview .dz-success-mark, .dropzone-previews .dz-preview .dz-error-mark, .dropzone-previews .dz-preview .dz-success-mark {
-    display: none;
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    font-size: 30px;
-    text-align: center;
-    right: -10px;
-    top: -10px;
-  }
-
-  a.dz-remove, .dropzone-previews a.dz-remove {
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#3883c5),color-stop(1,#4a90cc));
-    background-image: -webkit-linear-gradient(top,#3883c5 0,#4a90cc 100%);
-    background-image: -moz-linear-gradient(top,#3883c5 0,#4a90cc 100%);
-    background-image: -o-linear-gradient(top,#3883c5 0,#4a90cc 100%);
-    background-image: -ms-linear-gradient(top,#3883c5 0,#4a90cc 100%);
-    background-image: linear-gradient(top,#3883c5 0,#4a90cc 100%);
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    border: 1px solid #3276b1;
-    text-decoration: none;
-    display: block;
-    padding: 4px 5px;
-    text-align: center;
-    color: #fff;
-    margin-top: 26px;
   }
 }

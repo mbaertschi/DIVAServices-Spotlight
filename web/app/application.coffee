@@ -5,6 +5,8 @@ DiaDistributed = angular.module 'app', [
   'ui.bootstrap'
   'lodash'
   'btford.socket-io'
+  'ngAnimate'
+  'toastr'
   'app.dashboard'
   'app.docs'
   'app.algorithms'
@@ -28,4 +30,14 @@ DiaDistributed.config [
     $stateProvider.state 'main',
       abstract: true
       templateUrl: 'layout/partials/main.html'
+]
+
+DiaDistributed.config [
+  'toastrConfig'
+
+  # configuration for toastr notifications
+  (toastrConfig) ->
+    angular.extend toastrConfig,
+      closeButton: true
+      progressBar: true
 ]

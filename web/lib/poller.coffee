@@ -5,13 +5,14 @@ loader      = require './loader'
 parser      = require './parser'
 _           = require 'lodash'
 mongoose    = require 'mongoose'
+moment      = require 'moment'
 
 poller = exports = module.exports = class Poller
 
   constructor: (db, pusher) ->
     logger.log 'info', 'initializing', 'Poller'
     @db = db
-    @Algorithm = mongoose.model('Algorithm')
+    @Algorithm = mongoose.model 'Algorithm'
     if (nconf.get 'pusher:run') then @pusher = pusher
 
   run: =>
@@ -30,9 +31,8 @@ poller = exports = module.exports = class Poller
     ], (err, changedAlgorithms, addedAlgorithms, removedAlgorithms) =>
       if err?
         logger.log 'error', "iteration status=failed with error=#{err}"
-        seconds = (parseInt nconf.get 'poller:interval') / 1000
-        logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
-        setTimeout (-> callback()), nconf.get 'poller:interval'
+        @_logPause (interval) ->
+          setTimeout (-> callback()), interval
       else
         if @pusher
           if changedAlgorithms.length > 0
@@ -44,9 +44,8 @@ poller = exports = module.exports = class Poller
         if changedAlgorithms.length is 0 and addedAlgorithms.length is 0 and removedAlgorithms.length is 0
           logger.log 'info', 'no changes to apply', 'Poller'
         logger.log 'info', 'iteration status=succeeded', 'Poller'
-        seconds = (parseInt nconf.get 'poller:interval') / 1000
-        logger.log 'info', "going to wait #{seconds} seconds", 'Poller'
-        setTimeout (-> callback()), nconf.get 'poller:interval'
+        @_logPause (interval) ->
+          setTimeout (-> callback()), interval
 
   _loadHosts: (callback) =>
     @db.getHosts (err, hosts) =>
@@ -154,4 +153,16 @@ poller = exports = module.exports = class Poller
               callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
     else
       logger.log 'info', 'there are no algorithms available', 'Poller'
-      callback()
+      callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
+
+  _logPause: (callback) =>
+    interval = parseInt nconf.get 'poller:interval'
+    switch
+      when moment.duration(interval).asYears() >= 1 then logger.log 'info', "going to wait #{moment.duration(interval).years()} years", 'Poller'
+      when moment.duration(interval).asMonths() >= 1 then logger.log 'info', "going to wait #{moment.duration(interval).months()} months", 'Poller'
+      when moment.duration(interval).asDays() >= 1 then logger.log 'info', "going to wait #{moment.duration(interval).days()} days", 'Poller'
+      when moment.duration(interval).asHours() >= 1 then logger.log 'info', "going to wait #{moment.duration(interval).hours()} hours", 'Poller'
+      when moment.duration(interval).asMinutes() >= 1 then logger.log 'info', "going to wait #{moment.duration(interval).minutes()} minutes", 'Poller'
+      else logger.log 'info', "going to wait #{moment.duration(interval).seconds()} seconds", 'Poller'
+
+    callback interval
