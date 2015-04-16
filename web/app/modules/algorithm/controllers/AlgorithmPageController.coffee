@@ -2,12 +2,14 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$scope'
   '$stateParams'
   'algorithmService'
-  'notificationService'
+  'toastr'
   'mySocket'
   '$state'
   '$timeout'
+  'mySettings'
+  '$window'
 
-  ($scope, $stateParams, algorithmService, notificationService, mySocket, $state, $timeout) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window) ->
     $scope.algorithm = null
 
     requestAlgorithm = ->
@@ -20,55 +22,33 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
           try
             $scope.algorithm = JSON.parse res.data
           catch e
-            notificationService.add
-              title: 'Error'
-              content: 'Could not parse algorithm information'
-              type: 'danger'
-              timeout: 5000
+            toastr.error 'Could not parse algorithm information', 'Error'
         , (err) ->
-          notificationService.add
-            title: 'Error'
-            content: 'Could not load algorithm'
-            type: 'danger'
-            timeout: 5000
+          toastr.error 'Could not load algorithm', 'Error'
       else
-        notificationService.add
-          title: 'Warning'
-          content: 'This algorithm does not have a correct url and can therefore not be loaded'
-          type: 'warning'
-          timeout: 5000
+        toastr.warning 'This algorithm does not have a correct url and can therefore not be loaded', 'Warning'
 
     requestAlgorithm()
 
     $scope.goBack = ->
       $state.go 'algorithms'
 
-    $scope.$on 'socket:update algorithms', (ev, algorithms) ->
-      angular.forEach algorithms, (algorithm) ->
-        if $scope.algorithm?.url is algorithm.url
-          notificationService.add
-            title: 'Warning'
-            content: 'This algorithm has been updated. Going back to algorithms page in 5 seconds'
-            type: 'warning'
-            timeout: 5000
-          $timeout (-> $state.go 'algorithms'), 5000
+    mySettings.fetch('socket').then (socket) ->
+      if socket.run?
+        $scope.$on 'socket:update algorithms', (ev, algorithms) ->
+          angular.forEach algorithms, (algorithm) ->
+            if $scope.algorithm?.url is algorithm.url
+              toastr.warning 'This algorithm has been updated. Reloading the page in 5 seconds', 'Warning'
+              $timeout (-> $window.location.reload()), 5000
 
-    $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
-      angular.forEach algorithms, (algorithm) ->
-        if algorithm.url is $scope.algorithm.url
-          notificationService.add
-            title: 'Sorry'
-            content: 'This algorithm has been removed. Going back to algorithms page in 5 seconds'
-            type: 'danger'
-            timeout: 5000
-          $timeout (-> $state.go 'algorithms'), 5000
-          
-    $scope.$on 'socket:error', (ev, data) ->
-      notificationService.add
-        title: 'Error'
-        content: 'There was an error while fetching algorithms'
-        type: 'error'
-        timeout: 5000
-      $state.go 'dashboard'
+        $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
+          angular.forEach algorithms, (algorithm) ->
+            if algorithm.url is $scope.algorithm.url
+              toastr.warning 'This algorithm has been removed. Going back to algorithms page in 5 seconds', 'Sorry'
+              $timeout (-> $state.go 'algorithms'), 5000
+
+        $scope.$on 'socket:error', (ev, data) ->
+          toastr.error 'There was an error while fetching algorithms', 'Error'
+          $state.go 'dashboard'
 
 ]

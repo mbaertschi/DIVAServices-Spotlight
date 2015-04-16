@@ -12,7 +12,7 @@
   ],
   "poller": {
     "run": true,
-    "interval": 60000,
+    "interval": 3600000,
     "rootUrl": "http://localhost:8081",
     "retries": 7
   },
@@ -24,5 +24,40 @@
   },
   "mongoDB": {
     "url": "localhost:27017/dia?auto_reconnect"
+  },
+  "session": {
+    "secret": "Psst don't tell others",
+    "resave": false,
+    "saveUninitialized": true,
+    "rolling": true,
+    "maxAge": 1800000
+  },
+  "mongoStore": {
+    "defaultOptions": {
+      "host": "127.0.0.1",
+      "port": 27017,
+      "autoReconnect": true,
+      "ssl": false,
+      "w": 1,
+      "collection": "sessions",
+      "stringify": true,
+      "hash": false,
+      "ttl": 60000,
+      "autoRemove": "interval",
+      "autoRemoveInterval": 600000
+    }
+  },
+  "web": {
+    "socket": {
+      "run": true
+    },
+    "uploader": {
+      "destination": "./public/uploads/"
+    },
+    "dropzone": {
+      "addRemoveLinks" : true,
+      "maxFilesize": 1,
+      "maxFiles": 10
+    }
   }
 }
