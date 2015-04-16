@@ -51,6 +51,7 @@ angular.module('app.algorithm').directive 'smartDropzone', [
               index: res.index
 
           removedfile: (file) ->
+            removeImage = null
 
             angular.forEach uploadedImages, (image) ->
               if image.name is file.name
