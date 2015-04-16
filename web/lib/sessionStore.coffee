@@ -6,7 +6,9 @@ sessionStore = exports = module.exports = class SessionStore
 
   constructor: (session) ->
     logger.log 'info', 'initializing', 'SessionStore'
-    MongoStore = require('connect-mongo')(session)
+
+    MongoStore = require('./connectMongo')(session)
+
     @session =
       secret: nconf.get 'session:secret'
       resave: nconf.get 'session:resave'
@@ -15,5 +17,5 @@ sessionStore = exports = module.exports = class SessionStore
       cookie: maxAge: nconf.get 'session:maxAge'
       store: new MongoStore mongooseConnection: mongoose.connection
 
-  getSession: =>
+  session: =>
     @session

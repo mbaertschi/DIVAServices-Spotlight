@@ -43,5 +43,7 @@ uploader = exports = module.exports = class Uploader
           logger.log 'warn', 'could not save image', 'Uploader' if err?
           return
 
-  getMulter: =>
+    @multer
+
+  multer: =>
     @multer

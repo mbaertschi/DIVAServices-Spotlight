@@ -31,7 +31,7 @@ exports.startServer = (port, path, callback) ->
 
   # setup session
   sessionStore = new SessionStore session
-  app.use(session sessionStore.getSession())
+  app.use session(sessionStore.session)
 
   # route all static files to http paths.
   app.use '', express.static(sysPath.resolve(path))
@@ -42,7 +42,7 @@ exports.startServer = (port, path, callback) ->
 
   # enable multipart/form-data
   uploader = new Uploader
-  app.use uploader.getMulter()
+  app.use uploader.multer
 
   # routing
   app.use router
@@ -53,8 +53,6 @@ exports.startServer = (port, path, callback) ->
   # wrap express with httpServer for socket.io
   app.server = http.createServer app
   app.server.timeout = 2000
-
-  # garbageCollector = new GarbageCollector @db
 
   # start the pusher if defined
   if nconf.get 'pusher:run'

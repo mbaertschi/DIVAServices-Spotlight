@@ -5,7 +5,7 @@ mongoose    = require 'mongoose'
 mongo = exports = module.exports = class Mongo
 
   constructor: ->
-    logger.log 'info', 'initializing db connection', 'Mongo'
+    logger.log 'info', 'initializing', 'Mongo'
     url = nconf.get 'mongoDB:url'
     mongoose.connect "mongodb://#{url}"
     @db = mongoose.connection

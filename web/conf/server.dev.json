@@ -30,7 +30,22 @@
     "resave": false,
     "saveUninitialized": true,
     "rolling": true,
-    "maxAge": 1800000
+    "maxAge": 20000
+  },
+  "mongoStore": {
+    "defaultOptions": {
+      "host": "127.0.0.1",
+      "port": 27017,
+      "autoReconnect": true,
+      "ssl": false,
+      "w": 1,
+      "collection": "sessions",
+      "stringify": true,
+      "hash": false,
+      "ttl": 60000,
+      "autoRemove": "interval",
+      "autoRemoveInterval": 19000
+    }
   },
   "web": {
     "socket": {
