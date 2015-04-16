@@ -8,14 +8,14 @@
     = ' '
     | to go back to algorithms page.
   .col-md-12(ng-if='algorithm')
-    panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()')
+    panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
       p {{algorithm.description}}
-    .panel.panel-plain.panel-body
+    panel(heading='Upload images', icon='cloud-upload', ng-show='state=="upload"')
+      .text-muted Upload your images here. Maximum amount of images is 10. To use an image, click on it. To delete it, click on remove.
+      br
       form.dropzone(action='/upload', data-smart-dropzone='dropzoneConfig')
-    .panel.panel-plain.panel-body(ng-disabled='true')
-      h1.text-center Here will come the image cropper
-    .panel.panel-plain.panel-body(ng-disabled='true')
-      h1.text-center Here will come the image filters
-    .panel.panel-plain.panel-body(ng-disabled='true')
-      h1.text-center Here will come the highlighting of regions of interest
+    panel(heading='Cropping', icon='crop', go-to='goToState("upload")', go-to-text='Back to Upload', ng-show='state=="cropping"')
+      .text-muted Crop your image here. Once your done, click on save to go to next state. Click on reset to undo cropping.
+      br
+      .col-md-10(dia-image-cropper='')
       

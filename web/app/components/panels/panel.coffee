@@ -7,6 +7,7 @@ angular.module('app').directive 'panel', ->
     heading: '@'
     icon: '@'
     goTo: '&'
+    goToText: '@'
 
   link: (scope, element, attrs)->
 
