@@ -1,9 +1,9 @@
 angular.module('app.algorithm').directive 'smartDropzone', [
   '$http'
   'mySettings'
-  'notificationService'
+  'toastr'
 
-  ($http, mySettings, notificationService) ->
+  ($http, mySettings, toastr) ->
     restrict: 'A'
     (scope, element, attrs) ->
 
@@ -68,11 +68,7 @@ angular.module('app.algorithm').directive 'smartDropzone', [
               $http.delete('/upload', params:
                 serverName: removeImage.serverName).then (res) ->
                   if res.status isnt 200
-                    notificationService.add
-                      title: 'Warning'
-                      content: 'There was an error while removing this image on the server. Please reload the page and try again.'
-                      type: 'danger'
-                      timeout: 5000
+                    toastr.warning 'There was an error while removing this image on the server. Please reload the page and try again', 'Warning'
                   else
                     dropzone.options.maxFiles += 1
 

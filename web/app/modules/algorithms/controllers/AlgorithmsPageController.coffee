@@ -1,12 +1,12 @@
 angular.module('app.algorithms').controller 'AlgorithmsPageController', [
   '$scope'
-  'notificationService'
+  'toastr'
   'algorithmsService'
   'mySocket'
   '$state'
   'mySettings'
 
-  ($scope, notificationService, algorithmsService, mySocket, $state, mySettings) ->
+  ($scope, toastr, algorithmsService, mySocket, $state, mySettings) ->
     $scope.algorithms = []
 
     retrieveLinks = ->
@@ -37,36 +37,20 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
             angular.forEach $scope.algorithms, (scopeAlgorithm, index) ->
               if algorithm.url is scopeAlgorithm.url
                 $scope.algorithms[index] = algorithm
-          notificationService.add
-            title: 'Updated'
-            content: 'Algorithms have changed'
-            type: 'info'
-            timeout: 5000
+          toastr.info 'Algorithms have changed', 'Updated'
 
         $scope.$on 'socket:add algorithms', (ev, algorithms) ->
           angular.forEach algorithms, (algorithm) ->
             $scope.algorithms.push algorithm
-          notificationService.add
-            title: 'Added'
-            content: 'Added new algorithms'
-            type: 'info'
-            timeout: 5000
+          toastr.info 'Added new algorithms', 'Added'
 
         $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
           angular.forEach algorithms, (algorithm) ->
             angular.forEach $scope.algorithms, (scopeAlgorithm, index) ->
               if algorithm.url is scopeAlgorithm.url
                 $scope.algorithms.splice index, 1
-          notificationService.add
-            title: 'Delete'
-            content: 'Deleted one or more algorithms'
-            type: 'info'
-            timeout: 5000
+          toastr.info 'Deleted one or more algorithms', 'Delete'
 
         $scope.$on 'socket:error', (ev, data) ->
-          notificationService.add
-            title: 'Error'
-            content: 'There was an error while fetching algorithms'
-            type: 'error'
-            timeout: 5000
+          toastr.error 'There was an error while fetching algorithms', 'Error'
 ]
