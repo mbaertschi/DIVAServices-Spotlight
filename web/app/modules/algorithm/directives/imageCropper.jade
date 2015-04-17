@@ -1,1 +1,91 @@
-img.image-container(ng-src='{{currentImage}}')
+.row
+  .col-md-9
+    .img-container
+      img(ng-src='{{currentImage}}', alt='Picture')
+  .col-md-3
+    .docs-preview.clearfix
+      .img-preview.preview-lg
+    .docs-data
+      .input-group
+        label.input-group-addon(for='dataX') X
+        input#dataX.form-control(type='text', placeholder='x', disabled)
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataY') Y
+        input#dataY.form-control(type='text', placeholder='y', disabled)
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataWidth') Width
+        input#dataWidth.form-control(type='text', placeholder='width', disabled)
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataHeight') Height
+        input#dataHeight.form-control(type='text', placeholder='height', disabled)
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataRotate') Rotate
+        input#dataRotate.form-control(type='text', placeholder='rotate', disabled)
+        span.input-group-addon deg
+    h5 Set aspect ratio for your cropper
+    .btn-group.btn-group-justified(data-toggle='buttons')
+      label.btn.btn-primary.active(data-method='setAspectRatio', data-option='1.7777777777777777')
+        input.sr-only(name='aspestRatio', value='1.7777777777777777', type='radio')
+        span
+          | 16:9
+      label.btn.btn-primary(data-method='setAspectRatio', data-option='1.3333333333333333')
+        input#aspestRatio2.sr-only(name='aspestRatio', value='1.3333333333333333', type='radio')
+        span
+          | 4:3
+      label.btn.btn-primary(data-method='setAspectRatio', data-option='1')
+        input#aspestRatio3.sr-only(name='aspestRatio', value='1', type='radio')
+        span
+          | 1:1
+      label.btn.btn-primary(data-method='setAspectRatio', data-option='0.6666666666666666')
+        input#aspestRatio4.sr-only(name='aspestRatio', value='0.6666666666666666', type='radio')
+        span
+          | 2:3
+      label.btn.btn-primary(data-method='setAspectRatio', data-option='NaN')
+        input#aspestRatio5.sr-only(name='aspestRatio', value='NaN', type='radio')
+        span
+          | Free
+.row
+  .col-md-2
+    .btn-group
+      button.btn.btn-primary(data-method='setDragMode', data-option='move', type='button')
+        span(tooltip-placement='top', tooltip='Move')
+          span.icon.fa.fa-arrows
+      button.btn.btn-primary(data-method='setDragMode', data-option='crop', type='button')
+        span(tooltip-placement='top', tooltip='Crop')
+          span.icon.fa.fa-crop
+      button.btn.btn-primary(data-method='zoom', data-option='0.1', type='button')
+        span(tooltip-placement='top', tooltip='Zoom In')
+          span.icon.fa.fa-search-plus
+      button.btn.btn-primary(data-method='zoom', data-option='-0.1', type='button')
+        span(tooltip-placement='top', tooltip='Zoom Out')
+          span.icon.fa.fa-search-minus
+      button.btn.btn-primary(data-method='rotate', data-option='-45', type='button')
+        span(tooltip-placement='top', tooltip='Rotate Left')
+          span.icon.fa.fa-rotate-left
+      button.btn.btn-primary(data-method='rotate', data-option='45', type='button')
+        span(tooltip-placement='top', tooltip='Rotate Right')
+          span.icon.fa.fa-rotate-right
+  .col-md-7#ratationInput
+    form.form-inline
+      .form-group
+        label(for='rotationInput') Set rotation angle
+        .input-group
+          span.input-group-addon
+            i.fa.fa-hand-o-right
+          input.form-control(type='text', id='rotationInput', ng-model='rotationAngle')
+          span.input-group-addon
+            button.btn.btn-xs.btn-primary
+              i.fa.fa-check(ng-click='setRotationAngle(rotationAngle)')
+      .pull-right
+        button.btn.btn-primary
+          i.fa.fa-refresh
+          = ' '
+          | Clear
+        button.btn.btn-primary
+          i.fa.fa-check
+          = ' '
+          | Save

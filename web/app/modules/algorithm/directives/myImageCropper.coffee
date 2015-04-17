@@ -3,10 +3,9 @@ angular.module('app.algorithm').directive 'diaImageCropper', [
   'diaStateManager'
 
   (toastr, diaStateManager) ->
-    restrict: 'A'
+    restrict: 'AC'
     templateUrl: 'modules/algorithm/directives/imageCropper.html'
-    scope: true
 
     link: (scope, element, attrs) ->
-
+      scope.rotationAngle = 45
 ]

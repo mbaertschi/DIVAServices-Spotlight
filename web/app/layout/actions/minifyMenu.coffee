@@ -5,10 +5,11 @@ angular.module('app').directive 'minifyMenu', [ ->
     $body = $('body')
 
     minifyMenu = ->
-      $body.toggleClass 'minified'
-      $body.removeClass 'hidden-menu'
-      $('html').removeClass 'hidden-menu-mobile-lock'
-      return
+      if !$body.hasClass('hidden-menu')
+        $body.toggleClass 'minified'
+        $body.removeClass 'hidden-menu'
+        $('html').removeClass 'hidden-menu-mobile-lock'
+        return
 
     element.on 'click', minifyMenu
     return
