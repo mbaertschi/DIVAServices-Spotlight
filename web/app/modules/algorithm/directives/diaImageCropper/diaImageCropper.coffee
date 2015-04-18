@@ -16,17 +16,23 @@ angular.module('app.algorithm').directive 'diaImageCropper', [
         aspectRatio: 16 / 9
         preview: '.img-preview'
         crop: (data) ->
-          scope.dataX = Math.round(data.x)
-          scope.dataY = Math.round(data.y)
-          scope.dataHeight = Math.round(data.height)
-          scope.dataWidth = Math.round(data.width)
-          scope.dataRotate = Math.round(data.rotate)
+          scope.safeApply ->
+            scope.dataX = Math.round(data.x)
+            scope.dataY = Math.round(data.y)
+            scope.dataHeight = Math.round(data.height)
+            scope.dataWidth = Math.round(data.width)
+            scope.dataRotate = Math.round(data.rotate)
 
       image.bind 'load', ->
         image.cropper options
 
       scope.apply = (params) ->
         if params.method is 'rotate' then params.option = scope.rotationAngle * params.option
+        if params.method is 'replace'
+          if diaStateManager.origin?
+            params.option = diaStateManager.origin
+          else
+            params.option = image.src
         result = image.cropper params.method, params.option
         if params.method is 'save'
           canvas = result.cropper('getCroppedCanvas')

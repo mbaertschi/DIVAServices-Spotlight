@@ -78,15 +78,23 @@
             i.fa.fa-hand-o-right
           input.form-control(type='text', id='rotationInput', ng-model='rotationAngle')
       .pull-right
+        button.btn.btn-primary(ng-click='apply({method: "replace", option: originImage} )')
+          span(tooltip-placement='top', tooltip='Reload origin image')
+            i.fa.fa-reply
+            = ' '
+            | Reload
         button.btn.btn-primary(ng-click='apply({method: "reset"})')
-          i.fa.fa-remove
-          = ' '
-          | Reset
+          span(tooltip-placement='top', tooltip='Reset your current changes')
+            i.fa.fa-remove
+            = ' '
+            | Reset
         button.btn.btn-primary(ng-click='apply({method: "clear"})')
-          i.fa.fa-refresh
-          = ' '
-          | Clear
+          span(tooltip-placement='top', tooltip='Remove cropper')
+            i.fa.fa-refresh
+            = ' '
+            | Clear
         button.btn.btn-primary(ng-click='apply({method: "save"})')
-          i.fa.fa-check
-          = ' '
-          | Save
+          span(tooltip-placement='top', tooltip='Save and go to next state')
+            i.fa.fa-check
+            = ' '
+            | Save

@@ -12,7 +12,6 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
   ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, diaStateManager) ->
     $scope.algorithm = null
-    $scope.currentImage = ''
     $scope.state = 'upload'
 
     requestAlgorithm = ->
@@ -39,9 +38,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         $scope.currentImage = diaStateManager.image
 
     $scope.goToState = (state) ->
-      switch state
-        when 'upload'
-          diaStateManager.switchState 'upload'
+      diaStateManager.switchState state
 
     $scope.goBack = ->
       $state.go 'algorithms'
