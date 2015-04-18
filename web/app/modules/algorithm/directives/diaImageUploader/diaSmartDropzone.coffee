@@ -1,4 +1,4 @@
-angular.module('app.algorithm').directive 'smartDropzone', [
+angular.module('app.algorithm').directive 'diaSmartDropzone', [
   '$http'
   'mySettings'
   'toastr'
