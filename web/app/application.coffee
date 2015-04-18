@@ -41,3 +41,25 @@ DiaDistributed.config [
       closeButton: true
       progressBar: true
 ]
+
+DiaDistributed.config [
+  '$provide'
+
+  # sometimes we need to use $apply (for third party plugins) in a function
+  # which is also applied within the angular framework. In this case we
+  # need to check whether the $digest phase is already running or not
+  ($provide) ->
+    $provide.decorator '$rootScope', [
+      '$delegate'
+      ($delegate) ->
+        $delegate.safeApply = (fn) ->
+          phase = $delegate.$$phase
+          if phase == '$apply' or phase == '$digest'
+            if fn and typeof fn == 'function'
+              fn()
+          else
+            $delegate.$apply fn
+          return
+        $delegate
+    ]
+]

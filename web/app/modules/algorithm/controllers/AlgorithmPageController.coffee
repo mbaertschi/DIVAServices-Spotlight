@@ -8,9 +8,12 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$timeout'
   'mySettings'
   '$window'
+  'diaStateManager'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, diaStateManager) ->
     $scope.algorithm = null
+    $scope.currentImage = ''
+    $scope.state = 'upload'
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -29,6 +32,16 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         toastr.warning 'This algorithm does not have a correct url and can therefore not be loaded', 'Warning'
 
     requestAlgorithm()
+
+    $scope.$on 'stateChange', ->
+      $scope.safeApply ->
+        $scope.state = diaStateManager.state
+        $scope.currentImage = diaStateManager.image
+
+    $scope.goToState = (state) ->
+      switch state
+        when 'upload'
+          diaStateManager.switchState 'upload'
 
     $scope.goBack = ->
       $state.go 'algorithms'
