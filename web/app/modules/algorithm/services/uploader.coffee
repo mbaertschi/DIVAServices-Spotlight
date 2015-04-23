@@ -3,9 +3,11 @@ angular.module('app.algorithm').factory 'uploader', [
 
   ($http) ->
 
-    post: (file) ->
+    post: (file, name) ->
+      if not name
+        name = 'undefined.png'
       formData = new FormData
-      formData.append('filename', 'croppedImage.png')
+      formData.append('filename', name)
       formData.append('file', file)
       formData.append('processType', 'crop')
       formData.append('index', 0)

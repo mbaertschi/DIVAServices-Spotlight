@@ -5,17 +5,24 @@ angular.module('app.algorithm').factory 'diaStateManager', [
 
     stateManager =
       state: 'upload'
-      image: ''
+      image: null
       origin: null
+      current: {}
 
-    stateManager.switchState = (state, image, origin) ->
+    stateManager.switchState = (state, image, current, origin) ->
       @state = state
-      if image? then @image = image else image = ''
-      if origin? then @origin = origin else origin = ''
+      if image? then @image = image
+      if current? then @current[current.state] = current.image
+      if origin? then @origin = origin
       @stateChange()
 
     stateManager.stateChange = ->
       $rootScope.$broadcast 'stateChange'
+
+    stateManager.reset = ->
+      @image = null
+      @origin = null
+      @current = {}
 
     stateManager
 ]

@@ -28,24 +28,26 @@ angular.module('app.algorithm').directive 'diaImageCropper', [
 
       scope.apply = (params) ->
         if params.method is 'rotate' then params.option = scope.rotationAngle * params.option
-        if params.method is 'replace'
-          if diaStateManager.origin?
-            params.option = diaStateManager.origin
+        if params.method is 'replace' then params.option = diaStateManager.origin
+        if params.method is 'reload'
+          params.method = 'replace'
+          if diaStateManager.current['cropping']
+            params.option = diaStateManager.current['cropping']
           else
-            params.option = image.src
+            params.option = diaStateManager.origin
         result = image.cropper params.method, params.option
         if params.method is 'save'
           canvas = result.cropper('getCroppedCanvas')
           if not $(canvas).is 'canvas'
             # pass on original image
-            diaStateManager.switchState 'filtering', image.src
+            diaStateManager.switchState 'filtering', image.src, image.src
           else
             # save the base64Image on the server and go to next state
             base64Image = canvas.toDataURL imageType
-            uploader.post(base64Image).then (res) ->
+            uploader.post(base64Image, 'croppedImage.png').then (res) ->
               #FIXME once base64Image storage is implemented correctly, use the
               #stored image in filter directive instead of the base64Image
               if res.status isnt 200
                 toastr.warning 'Image was not safed on server. Continue with cached image', 'Warning'
-              diaStateManager.switchState 'filtering', base64Image
+              diaStateManager.switchState 'filtering', base64Image, { state: 'cropping', image: base64Image }
 ]
