@@ -18,7 +18,7 @@ describe 'app.dashboard module', ->
 
     mockNotificationService = {}
     $provide.value 'notificationService', mockNotificationService
-    
+
     null
 
   # Inject the dashboard dependencies

@@ -12,8 +12,8 @@ describe 'Algorithms Page', ->
     it 'has the breadcrumb Home / Algorithms', ->
       expect(page.breadcrumbs).toEqual ['Home', 'Algorithms']
 
-    it 'has the title Algorithms> Get your work done', ->
-      expect(page.title).toEqual 'Algorithms> Get your work done'
+    it 'has the title Algorithms > Get your work done', ->
+      expect(page.title).toEqual 'Algorithms > Get your work done'
 
   describe 'Algorithms', ->
 
