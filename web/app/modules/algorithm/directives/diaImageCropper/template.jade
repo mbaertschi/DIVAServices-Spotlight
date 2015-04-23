@@ -1,7 +1,7 @@
 .row
   .col-md-9
     .img-container
-      img(ng-src='{{currentImage}}', alt='Picture')
+      img#cropper-img(ng-src='{{currentImage}}', alt='Picture')
   .col-md-3
     .docs-preview.clearfix
       .img-preview.preview-lg
@@ -78,15 +78,28 @@
             i.fa.fa-hand-o-right
           input.form-control(type='text', id='rotationInput', ng-model='rotationAngle')
       .pull-right
-        button.btn.btn-primary(ng-click='apply({method: "reset"})')
-          i.fa.fa-remove
-          = ' '
-          | Reset
         button.btn.btn-primary(ng-click='apply({method: "clear"})')
-          i.fa.fa-refresh
-          = ' '
-          | Clear
+          span(tooltip-placement='top', tooltip='Remove cropper')
+            i.fa.fa-refresh
+            = ' '
+            | Remove
+        button.btn.btn-primary(ng-click='apply({method: "replace"})')
+          span(tooltip-placement='top', tooltip='Reload origin image')
+            i.fa.fa-reply
+            = ' '
+            | Reload Origin
+        button.btn.btn-primary(ng-click='apply({method: "reset"})')
+          span(tooltip-placement='top', tooltip='Reset your current changes')
+            i.fa.fa-remove
+            = ' '
+            | Reset
+        button.btn.btn-primary(ng-click='apply({method: "reload"})')
+          span(tooltip-placement='top', tooltip='Reload the untouched image')
+            i.fa.fa-refresh
+            = ' '
+            | Reload Cropped
         button.btn.btn-primary(ng-click='apply({method: "save"})')
-          i.fa.fa-check
-          = ' '
-          | Save
+          span(tooltip-placement='top', tooltip='Save and go to next state')
+            i.fa.fa-check
+            = ' '
+            | Save

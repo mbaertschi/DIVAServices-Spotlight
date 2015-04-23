@@ -57,7 +57,8 @@ angular.module('app.algorithm').directive 'diaSmartDropzone', [
             else
               imageSrc = file.src
             $(file.previewElement).on 'click', (event) ->
-              diaStateManager.switchState 'cropping', imageSrc
+              diaStateManager.reset()
+              diaStateManager.switchState 'cropping', imageSrc, null, imageSrc
 
           removedfile: (file) ->
             removeImage = null

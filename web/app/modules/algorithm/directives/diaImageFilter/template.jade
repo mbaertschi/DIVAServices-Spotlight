@@ -1,4 +1,37 @@
 .row
-  .col-md-9
+  .col-md-8
     .img-container
-      img(ng-src='{{currentImage}}', alt='Picture')
+      img#caman-img(ng-src='{{currentImage}}', alt='Picture')
+  .col-md-4.dynamic-filters(ng-repeat='(filterName, settings) in filters')
+    .form-group.filter
+      label.filter-name.col-md-4(for='{{filterName}}') {{filterName}}
+      .col-md-7.filter-settings
+        input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='{{settings.min}}', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+        span.filter-value.text-muted {{value}}
+      .col-md-1
+        button.btn.btn-xs.btn-warning(ng-click='reset(filterName)')
+          span(tooltip-placement='top', tooltip='Reset Default')
+            span.icon.fa.fa-remove
+.row
+  .col-md-8
+    .pull-right
+      button.btn.btn-primary(ng-click='reload()')
+        span(tooltip-placement='top', tooltip='Reload origin image')
+          i.fa.fa-reply
+          = ' '
+          | Reload Origin
+      button.btn.btn-primary(ng-click='reset()')
+        span(tooltip-placement='top', tooltip='Reset your current changes')
+          i.fa.fa-remove
+          = ' '
+          | Reset
+      button.btn.btn-primary(ng-click='clear()')
+        span(tooltip-placement='top', tooltip='Reload the untouched image')
+          i.fa.fa-refresh
+          = ' '
+          | Reload Filtered
+      button.btn.btn-primary(ng-click='save()')
+        span(tooltip-placement='top', tooltip='Save and go to next state')
+          i.fa.fa-check
+          = ' '
+          | Save
