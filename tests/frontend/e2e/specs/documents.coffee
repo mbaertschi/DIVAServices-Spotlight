@@ -12,5 +12,5 @@ describe 'Document Page', ->
     it 'Documents page has the breadcrumb Home / Documents', ->
       expect(page.breadcrumbs).toEqual ['Home', 'Documents']
 
-    it 'Documents page has the title Documents> For your information', ->
-      expect(page.title).toEqual 'Documents> For your information'
+    it 'Documents page has the title Documents > For your information', ->
+      expect(page.title).toEqual 'Documents > For your information'
