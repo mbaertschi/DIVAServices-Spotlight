@@ -2,6 +2,7 @@ util = require('util')
 
 IGNORED_LOGS = [
   # add console outputs you want to ignore
+  /http:\/\/localhost:3000\/ 0:0 Failed to load resource: net::ERR_EMPTY_RESPONSE/
 ]
 
 isIgnored = (log)->

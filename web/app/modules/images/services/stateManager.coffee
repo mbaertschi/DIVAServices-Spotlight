@@ -1,4 +1,4 @@
-angular.module('app.algorithm').factory 'diaStateManager', [
+angular.module('app.images').factory 'diaStateManager', [
   '$rootScope'
 
   ($rootScope) ->

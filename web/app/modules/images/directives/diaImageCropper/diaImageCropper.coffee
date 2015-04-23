@@ -1,11 +1,11 @@
-angular.module('app.algorithm').directive 'diaImageCropper', [
+angular.module('app.images').directive 'diaImageCropper', [
   'toastr'
   'diaStateManager'
   'uploader'
 
   (toastr, diaStateManager, uploader) ->
     restrict: 'AC'
-    templateUrl: 'modules/algorithm/directives/diaImageCropper/template.html'
+    templateUrl: 'modules/images/directives/diaImageCropper/template.html'
 
     link: (scope, element, attrs) ->
       imageType = 'image/png'

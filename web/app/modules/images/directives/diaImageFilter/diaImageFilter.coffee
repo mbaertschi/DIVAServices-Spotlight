@@ -1,4 +1,4 @@
-angular.module('app.algorithm').directive 'diaImageFilter', [
+angular.module('app.images').directive 'diaImageFilter', [
   'diaStateManager'
   'uploader'
   'toastr'
@@ -6,7 +6,7 @@ angular.module('app.algorithm').directive 'diaImageFilter', [
 
   (diaStateManager, uploader, toastr, _) ->
     restrict: 'AC'
-    templateUrl: 'modules/algorithm/directives/diaImageFilter/template.html'
+    templateUrl: 'modules/images/directives/diaImageFilter/template.html'
 
     link: (scope, element, attrs) ->
       caman = null

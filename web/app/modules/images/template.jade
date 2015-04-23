@@ -1,17 +1,10 @@
 .row
-  big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
+  big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['My Images', 'Manage your images here']", icon='image')
 
-.row
-  #content.span(ng-if='!algorithm')
-    | This algorithm seems to be outdated. Click 
-    button.btn-primary.btn-xs(ui-sref='algorithms') here
-    = ' '
-    | to go back to algorithms page.
-  .col-md-12(ng-if='algorithm')
-    panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
-      p {{algorithm.description}}
+.row.images-page
+  .col-md-12
     panel(heading='Upload images', icon='cloud-upload', ng-if='state=="upload"')
-      .text-muted Upload your images here. Maximum amount of images is 10. To use an image, click on it. To delete it, click on remove.
+      .text-muted Upload your images here. Maximum amount of images is 10. To edit an image, click on it. To delete it, click on remove.
       br
       form.dropzone(action='/upload', data-dia-smart-dropzone='dropzoneConfig')
     panel(heading='Cropping', icon='crop', go-to='goToState("upload")', go-to-text='Back to Upload', ng-if='state=="cropping"')

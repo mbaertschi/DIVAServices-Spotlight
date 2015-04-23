@@ -1,4 +1,4 @@
-angular.module('app.algorithm').factory 'uploader', [
+angular.module('app.images').factory 'uploader', [
   '$http'
 
   ($http) ->
