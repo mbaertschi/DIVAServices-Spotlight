@@ -1,5 +1,6 @@
 module = angular.module 'app.algorithm', [
   'ui.router'
+  'underscore'
 ]
 
 module.config [

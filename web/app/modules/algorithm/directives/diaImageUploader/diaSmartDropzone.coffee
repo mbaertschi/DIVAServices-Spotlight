@@ -1,9 +1,10 @@
-angular.module('app.algorithm').directive 'smartDropzone', [
+angular.module('app.algorithm').directive 'diaSmartDropzone', [
   '$http'
   'mySettings'
   'toastr'
+  'diaStateManager'
 
-  ($http, mySettings, toastr) ->
+  ($http, mySettings, toastr, diaStateManager) ->
     restrict: 'A'
     (scope, element, attrs) ->
 
@@ -25,8 +26,10 @@ angular.module('app.algorithm').directive 'smartDropzone', [
                   size: image.size
                   type: image.type
                   index: image.index
-                self.options.addedfile.call self, mockFile
-                self.options.thumbnail.call self, mockFile, image.url
+                  src: image.url
+                self.emit 'addedfile', mockFile
+                self.emit 'thumbnail', mockFile, image.url
+                self.emit 'success', mockFile
                 index = availableIndexes.indexOf image.index
                 if index >= 0
                   availableIndexes.splice index, 1
@@ -45,10 +48,17 @@ angular.module('app.algorithm').directive 'smartDropzone', [
             formData.append 'index', availableIndexes.shift()
 
           success: (file, res) ->
-            uploadedImages.push
-              name: file.name
-              serverName: res.serverName
-              index: res.index
+            if res
+              uploadedImages.push
+                name: file.name
+                serverName: res.serverName
+                index: res.index
+              imageSrc = res.url
+            else
+              imageSrc = file.src
+            $(file.previewElement).on 'click', (event) ->
+              diaStateManager.reset()
+              diaStateManager.switchState 'cropping', imageSrc, null, imageSrc
 
           removedfile: (file) ->
             removeImage = null

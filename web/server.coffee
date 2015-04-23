@@ -37,8 +37,10 @@ exports.startServer = (port, path, callback) ->
   app.use '', express.static(sysPath.resolve(path))
   # redirect requests that include a trailing slash.
   app.use slashes(false)
-  # enable body parsing for json
-  app.use bodyParser.json()
+
+  app.use bodyParser.urlencoded
+    extended: true
+    limit: 1000000000000000
 
   # enable multipart/form-data
   uploader = new Uploader
