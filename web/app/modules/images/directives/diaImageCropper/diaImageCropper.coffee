@@ -1,9 +1,9 @@
 angular.module('app.images').directive 'diaImageCropper', [
   'toastr'
   'diaStateManager'
-  'uploader'
+  'imagesService'
 
-  (toastr, diaStateManager, uploader) ->
+  (toastr, diaStateManager, imagesService) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageCropper/template.html'
 
@@ -44,7 +44,7 @@ angular.module('app.images').directive 'diaImageCropper', [
           else
             # save the base64Image on the server and go to next state
             base64Image = canvas.toDataURL imageType
-            uploader.post(base64Image, 'croppedImage.png').then (res) ->
+            imagesService.post(base64Image, 'croppedImage.png').then (res) ->
               #FIXME once base64Image storage is implemented correctly, use the
               #stored image in filter directive instead of the base64Image
               if res.status isnt 200

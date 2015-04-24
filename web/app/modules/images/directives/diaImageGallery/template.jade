@@ -1,0 +1,14 @@
+.row
+  .col-md-12.mainimageshell
+    .viewwindow
+      ul#fullscroller.fullsizelist(ng-style='listposition')
+        li(ng-repeat='image in images')
+          img#fullsize.large(ng-src='{{image.src}}')
+.row
+  .col-md-12.thumbsshell
+    .thumbswrapper
+      ul
+        li(ng-repeat='image in images')
+          .thumbwrapper
+            a(ng-href='', ng-click='scrollTo(image, $index)')
+              img.thumbnail(ng-src='{{image.src}}')

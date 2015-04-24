@@ -3,7 +3,12 @@
 
 .row.images-page
   .col-md-12
-    panel(heading='Upload images', icon='cloud-upload', ng-if='state=="upload"')
+    panel(heading='Gallery', icon='list-alt', go-to='goToState("upload")', go-to-text='Upload', ng-if='state=="gallery"')
+      .text-muted(ng-if='!images') You currently have no images uploaded. Please
+        a.upload-link(ng-click='goToState("upload")') upload
+        | some images
+      .dia-image-gallery(ng-if='images')
+    panel(heading='Upload images', icon='cloud-upload', go-to='goToState("gallery")', go-to-text='Back to Gallery', ng-if='state=="upload"')
       .text-muted Upload your images here. Maximum amount of images is 10. To edit an image, click on it. To delete it, click on remove.
       br
       form.dropzone(action='/upload', data-dia-smart-dropzone='dropzoneConfig')

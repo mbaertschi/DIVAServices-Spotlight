@@ -1,7 +1,12 @@
-angular.module('app.images').factory 'uploader', [
+angular.module('app.images').factory 'imagesService', [
   '$http'
 
   ($http) ->
+
+    fetch: ->
+      url = '/upload'
+      $http.get(url).then (res) ->
+        res
 
     post: (file, name) ->
       if not name

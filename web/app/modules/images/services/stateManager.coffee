@@ -4,7 +4,7 @@ angular.module('app.images').factory 'diaStateManager', [
   ($rootScope) ->
 
     stateManager =
-      state: 'upload'
+      state: null
       image: null
       origin: null
       current: {}

@@ -1,10 +1,10 @@
 angular.module('app.images').directive 'diaImageFilter', [
   'diaStateManager'
-  'uploader'
+  'imagesService'
   'toastr'
   '_'
 
-  (diaStateManager, uploader, toastr, _) ->
+  (diaStateManager, imagesService, toastr, _) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageFilter/template.html'
 
@@ -69,7 +69,7 @@ angular.module('app.images').directive 'diaImageFilter', [
 
       scope.save = ->
         base64Image = caman.toBase64()
-        uploader.post(base64Image, 'filteredImage.png').then (res) ->
+        imagesService.post(base64Image, 'filteredImage.png').then (res) ->
           #FIXME once base64Image storage is implemented correctly, use the
           #stored image in filter directive instead of the base64Image
           if res.status isnt 200
