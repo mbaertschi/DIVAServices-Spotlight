@@ -1,8 +1,9 @@
 angular.module('app.images').directive 'diaImageGallery', [
   'imagesService'
   'toastr'
+  'diaStateManager'
 
-  (imagesService, toastr) ->
+  (imagesService, toastr, diaStateManager) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageGallery/template.html'
 
@@ -22,6 +23,9 @@ angular.module('app.images').directive 'diaImageGallery', [
             scope.images.push img
       , (err) ->
         toastr.err err.statusText, err.status
+
+      scope.edit = (image) ->
+        diaStateManager.switchState 'cropping', image.src, image.src
 
       scope.scrollTo = (image, ind) ->
         scope.listposition = left: IMAGE_WIDTH * ind * -1 + 'px'

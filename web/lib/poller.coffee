@@ -67,14 +67,14 @@ poller = exports = module.exports = class Poller
             uri: host.url
             timeout: 8000
             headers: {}
-          retries: nconf.get 'poller:retries'
+          retries: nconf.get 'loader:retries'
 
         loader.get settings, (err, res) ->
           if err?
             logger.log 'error', "loading status=failed for host=#{hostname}. #{err}", 'Poller'
             next()
           else
-            parser.parse res, (err, structure) ->
+            parser.parseRoot res, (err, structure) ->
               if err?
                 logger.log 'warn', "could not parse structure and no changes were applied for host #{hostname}. Error = #{err}", 'Poller'
                 next()

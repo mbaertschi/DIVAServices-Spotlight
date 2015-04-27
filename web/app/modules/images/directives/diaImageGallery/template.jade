@@ -3,7 +3,7 @@
     .viewwindow
       ul#fullscroller.fullsizelist(ng-style='listposition')
         li(ng-repeat='image in images')
-          img#fullsize.large(ng-src='{{image.src}}')
+          img#fullsize.large(ng-src='{{image.src}}', ng-click='edit(image)')
 .row
   .col-md-12.thumbsshell
     .thumbswrapper

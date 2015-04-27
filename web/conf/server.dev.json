@@ -13,11 +13,18 @@
   "poller": {
     "run": true,
     "interval": 3600000,
-    "rootUrl": "http://localhost:8081",
+    "rootUrl": "http://localhost:8081"
+  },
+  "loader": {
     "retries": 7
   },
   "parser": {
-    "mandatoryFields": ["name", "url"]
+    "root": {
+      "mandatoryFields": ["name", "description", "url"]
+    },
+    "details": {
+      "mandatoryFields": ["name", "description"]
+    }
   },
   "pusher": {
     "run": true

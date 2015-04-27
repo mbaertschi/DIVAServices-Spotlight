@@ -74,7 +74,7 @@ angular.module('app.images').directive 'diaImageFilter', [
           #stored image in filter directive instead of the base64Image
           if res.status isnt 200
             toastr.warning 'Image was not safed on server. Continue with cached image', 'Warning'
-          diaStateManager.switchState 'highlighting', base64Image, { state: 'filtering', image: image[0].src }
+          diaStateManager.switchState 'upload', base64Image, { state: 'filtering', image: image[0].src }
 
       scope.filters =
         'brightness':

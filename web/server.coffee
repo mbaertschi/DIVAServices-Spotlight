@@ -38,10 +38,6 @@ exports.startServer = (port, path, callback) ->
   # redirect requests that include a trailing slash.
   app.use slashes(false)
 
-  app.use bodyParser.urlencoded
-    extended: true
-    limit: 1000000000000000
-
   # enable multipart/form-data
   uploader = new Uploader
   app.use uploader.multer
