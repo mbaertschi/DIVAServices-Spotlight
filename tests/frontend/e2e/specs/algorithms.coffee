@@ -18,4 +18,4 @@ describe 'Algorithms Page', ->
   describe 'Algorithms', ->
 
     it 'shows all four dummy algorithms from the dummy backend', ->
-      expect(page.algorithms.count()).toEqual 4
+      expect(page.algorithms.count()).toEqual 5
