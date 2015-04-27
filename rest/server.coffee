@@ -70,6 +70,7 @@ app.get '/noise', (req, res) ->
 app.get '/otsubinazrization', (req, res) ->
   records =
     name: 'otsubinazrization'
+    description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
 
   res.send records
@@ -77,6 +78,7 @@ app.get '/otsubinazrization', (req, res) ->
 app.get '/sauvalabinarization', (req, res) ->
   records =
     name: 'sauvalabinarization'
+    description: 'this will apply the sauvalabinarization algorithm on your image'
     url: 'http://localhost:8081/sauvalabinarization'
 
   res.send records

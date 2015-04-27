@@ -28,6 +28,9 @@ poller = exports = module.exports = class Poller
         @_loadAlgorithms hosts, next
       , (algorithms, next) =>
         @_compareAndStoreAlgorithms algorithms, next
+      , (algorithms, changedAlgorithms, addedAlgorithms, next) =>
+        @_removeInvalidAlgorithms algorithms, (err, removedAlgorithms) =>
+          next err, changedAlgorithms, addedAlgorithms, removedAlgorithms
     ], (err, changedAlgorithms, addedAlgorithms, removedAlgorithms) =>
       if err?
         logger.log 'error', "iteration status=failed with error=#{err}"
@@ -134,26 +137,29 @@ poller = exports = module.exports = class Poller
                   addedAlgorithms.push algorithm
                 next()
       , (err) =>
-        return err if err?
-        @db.getAlgorithms (err, dbAlgorithms) =>
-          if err?
-            logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
-            callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
-          else
-            async.each dbAlgorithms, (dbAlgorithm, next) =>
-              index = _.findIndex algorithms, 'url': dbAlgorithm.url
-              if index < 0
-                logger.log 'info', "removed algorithm host=#{dbAlgorithm.host}, algorithm=#{dbAlgorithm.url}", 'Poller'
-                removedAlgorithms.push dbAlgorithm
-                @Algorithm.find(url: dbAlgorithm.url).remove().exec()
-              next()
-            , (err) =>
-              if err?
-                logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
-              callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
+        callback err, algorithms, changedAlgorithms, addedAlgorithms
     else
       logger.log 'info', 'there are no algorithms available', 'Poller'
-      callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
+      callback null, algorithms, changedAlgorithms, addedAlgorithms
+
+  _removeInvalidAlgorithms: (algorithms, callback) =>
+    removedAlgorithms = []
+    @db.getAlgorithms (err, dbAlgorithms) =>
+      if err?
+        logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
+        callback null, removedAlgorithms
+      else
+        async.each dbAlgorithms, (dbAlgorithm, next) =>
+          index = _.findIndex algorithms, 'url': dbAlgorithm.url
+          if index < 0
+            logger.log 'info', "removed algorithm host=#{dbAlgorithm.host}, algorithm=#{dbAlgorithm.url}", 'Poller'
+            removedAlgorithms.push dbAlgorithm
+            @Algorithm.find(url: dbAlgorithm.url).remove().exec()
+          next()
+        , (err) ->
+          if err?
+            logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
+          callback null, removedAlgorithms
 
   _logPause: (callback) =>
     interval = parseInt nconf.get 'poller:interval'
