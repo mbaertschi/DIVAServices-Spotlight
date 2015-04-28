@@ -9,7 +9,7 @@ app.get '/', (req, res) ->
   records = [
     {
       name: 'histogramenhancement'
-      description: 'this will apply the histogramenhancement algorithm on your image'
+      description: 'this will apply the histogramenhancement algorithm on your image. lets make a damn long description to test bootstrap behaviour'
       url: 'http://localhost:8081/histogramenhancement'
     }
     {
@@ -41,6 +41,7 @@ app.get '/histogramenhancement', (req, res) ->
     name: 'histogramenhancement'
     description: 'this will apply the histogramenhancement algorithm on your image'
     url: 'http://localhost:8081/histogramenhancement'
+    input: {}
 
   res.send records
 
@@ -64,6 +65,7 @@ app.get '/noise', (req, res) ->
     name: 'noise'
     description: 'this will apply the noise algorithm on your image'
     url: 'http://localhost:8081/noise'
+    input: {}
 
   res.send records
 
@@ -72,6 +74,7 @@ app.get '/otsubinazrization', (req, res) ->
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
+    input: {}
 
   res.send records
 
@@ -80,6 +83,7 @@ app.get '/sauvalabinarization', (req, res) ->
     name: 'sauvalabinarization'
     description: 'this will apply the sauvalabinarization algorithm on your image'
     url: 'http://localhost:8081/sauvalabinarization'
+    input: {}
 
   res.send records
 

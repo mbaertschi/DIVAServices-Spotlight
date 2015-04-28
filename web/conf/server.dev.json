@@ -23,7 +23,7 @@
       "mandatoryFields": ["name", "description", "url"]
     },
     "details": {
-      "mandatoryFields": ["name", "description"]
+      "mandatoryFields": ["name", "description", "url", "input"]
     }
   },
   "pusher": {
