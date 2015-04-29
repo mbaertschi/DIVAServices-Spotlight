@@ -1,13 +1,21 @@
-.row
-  big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
+.algorithm-view
+  .row
+    big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
 
-.row
-  #content.span(ng-if='!algorithm')
-    | This algorithm seems to be outdated. Click
-    button.btn-primary.btn-xs(ui-sref='algorithms') here
-    = ' '
-    | to go back to algorithms page.
-  .col-md-12(ng-if='algorithm')
-    panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
-      p {{algorithm.description}}
-      p {{algorithm.input}}
+  .row
+    #content.span(ng-if='!algorithm')
+      .text-muted This algorithm seems to be outdated. Click
+        a#link(ui-sref='algorithms') here
+        | to go back to algorithms page.
+    .col-md-12(ng-if='algorithm')
+      panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
+        .text-muted Description:
+          = ' '
+          span.text-normal {{algorithm.description}}
+      panel(heading='Image Gallery', icon='image')
+        dia-algorithm-images-gallery
+      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
+        .col-xs-12.col-lg-6
+          dia-algorithm-image
+        .col-xs-12.col-lg-6
+          dia-algorithm-inputs

@@ -4,10 +4,12 @@
 .row.algorithms-page
   .col-xs-12.col-sm-6.col-md-6.col-lg-4(ng-repeat='algorithm in algorithms')
     panel.algorithms-overview(heading='{{algorithm.name}}', icon='info', height='400')
-      .col-xs-3.col-sm-4.col-md-4.col-lg-4.text-muted Hosted by:
-      .col-xs-9.col-sm-8.col-md-8.col-lg-8.text-normal {{algorithm.host}}
-      .col-xs-3.col-sm-4.col-md-4.col-lg-4.text-muted Description:
-      .col-xs-9.col-sm-8.col-md-8.col-lg-8.text-normal.algorithms-description {{algorithm.description}}
+      .col-md-12.entry
+        .col-xs-3.col-sm-4.col-md-4.col-lg-4.text-muted Hosted by:
+        .col-xs-9.col-sm-8.col-md-8.col-lg-8.text-normal {{algorithm.host}}
+      .col-md-12.entry.sub-item.algorithms-description
+        .col-xs-3.col-sm-4.col-md-4.col-lg-4.text-muted Description:
+        .col-xs-9.col-sm-8.col-md-8.col-lg-8.text-normal {{algorithm.description}}
       .pull-right
         button.btn.btn-primary.btn-xs.hvr-grow-shadow(ng-click='thisAlgorithm(algorithm)') 
           i.fa.fa-arrow-right

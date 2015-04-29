@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+echo 'Generating server documentation ...'
+./web/node_modules/codo/bin/codo -o ./documentation/server --closure --private ./web/lib

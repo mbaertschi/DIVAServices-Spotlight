@@ -22,7 +22,6 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
     retrieveLinks()
 
     $scope.thisAlgorithm = (algorithm) ->
-      console.log algorithm
       url = new URL algorithm.url
       host = url.host
       algorithm = url.pathname

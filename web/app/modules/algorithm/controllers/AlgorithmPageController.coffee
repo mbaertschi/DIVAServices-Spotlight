@@ -8,9 +8,17 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$timeout'
   'mySettings'
   '$window'
+  'imagesService'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window) ->
+  # Speed calculation for animal.
+  #
+  # @mixin
+  # @author Rockstar Ninja
+  #
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService) ->
     $scope.algorithm = null
+    $scope.images = []
+    $scope.selectedImage = null
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -19,10 +27,14 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
       if host? and algorithm?
         algorithmService.fetch(host, algorithm).then (res) ->
+          algorithm = null
           try
-            $scope.algorithm = JSON.parse res.data
+            algorithm = JSON.parse res.data
           catch e
             toastr.error 'Could not parse algorithm information', 'Error'
+          finally
+            if algorithm
+              $scope.algorithm = algorithm
         , (err) ->
           toastr.error 'Could not load algorithm', 'Error'
       else
@@ -30,8 +42,19 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
     requestAlgorithm()
 
+    $scope.setSelectedImage = (image) ->
+      $scope.selectedImage = image
+
     $scope.goBack = ->
       $state.go 'algorithms'
+
+    requestImages = ->
+      imagesService.fetch().then (res) ->
+        $scope.images = res.data
+      , (err) ->
+        toastr.err err.statusText, err.status
+
+    requestImages()
 
     mySettings.fetch('socket').then (socket) ->
       if socket.run?
