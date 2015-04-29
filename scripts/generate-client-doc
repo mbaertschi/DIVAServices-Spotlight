@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+echo 'parsing ...'
+./web/node_modules/codo/bin/codo -o ./web/app/assets/documentation/client --closure --private ./web/app
