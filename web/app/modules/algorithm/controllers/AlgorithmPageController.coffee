@@ -10,15 +10,13 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$window'
   'imagesService'
 
-  # Speed calculation for animal.
-  #
-  # @mixin
-  # @author Rockstar Ninja
-  #
   ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService) ->
     $scope.algorithm = null
     $scope.images = []
     $scope.selectedImage = null
+    $scope.highlighter = null
+    $scope.inputs = []
+    $scope.model = {}
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -35,12 +33,28 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
           finally
             if algorithm
               $scope.algorithm = algorithm
+              angular.forEach algorithm.input, (entry) ->
+                key = Object.keys(entry)[0]
+                if key is 'highlighter'
+                  $scope.highlighter = entry.highlighter
+                else
+                  $scope.inputs.push entry
+                  if key is 'select'
+                    $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
+                  else
+                    $scope.model[entry[key].name] = entry[key].options.default or null
         , (err) ->
           toastr.error 'Could not load algorithm', 'Error'
       else
         toastr.warning 'This algorithm does not have a correct url and can therefore not be loaded', 'Warning'
 
     requestAlgorithm()
+
+    $scope.toggleCheckbox = (name) ->
+      if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
+
+    $scope.submit = ->
+      console.log $scope.model
 
     $scope.setSelectedImage = (image) ->
       $scope.selectedImage = image

@@ -41,7 +41,7 @@ app.get '/histogramenhancement', (req, res) ->
     name: 'histogramenhancement'
     description: 'this will apply the histogramenhancement algorithm on your image'
     url: 'http://localhost:8081/histogramenhancement'
-    input: {}
+    input: []
 
   res.send records
 
@@ -50,44 +50,77 @@ app.get '/multiscaleipd', (req, res) ->
     name: 'multiscaleipd'
     description: 'this will apply the multiscaleipd algorithm on your image'
     url: 'http://localhost:8081/multiscaleipd'
-    input:
-      highlighter: 'polygon'
-      select:
-        name: 'detector'
-        options:
-          values: [
-            'Harris'
-          ]
-      number:
-        name: 'blurSigma'
-        options:
-          min: 0
-          max: 5
-          steps: 1
-      number:
-        name: 'numScales'
-        options: {}
-      number:
-        name: 'numOctaves'
-        options: {}
-      number:
-        name: 'threshold'
-        options:
-          steps: 0.000001
-      number:
-        name: 'maxFeaturesPerScale'
-        options: {}
-      text:
-        name: 'textInputTest'
-        options: {}
-      checkbox:
-        name: 'testCheckbox'
-        options:
-          values: [
-            'Option 1'
-            'Option 2'
-          ]
-          selected: 0
+    input: [
+      {
+        highlighter: 'polygon'
+      }
+      {
+        select:
+          name: 'detector'
+          options:
+            required: true
+            values: [
+              'Harris'
+              'Narris'
+            ]
+            default: 0
+      }
+      {
+        number:
+          name: 'blurSigma'
+          options:
+            required: true
+            min: 0
+            max: 5
+            steps: 1
+            default: 2
+      }
+      {
+        number:
+          name: 'numScales'
+          options:
+            required: true
+            default: 1
+      }
+      {
+        number:
+          name: 'numOctaves'
+          options:
+            required: true
+            default: 2
+      }
+      {
+        number:
+          name: 'threshold'
+          options:
+            required: false
+            steps: 0.000001
+            default: 0.000001
+      }
+      {
+        number:
+          name: 'maxFeaturesPerScale'
+          options:
+            required: true
+            default: 3
+      }
+      {
+        text:
+          name: 'textInputTest'
+          options:
+            required: true
+            min: 3
+            max: 10
+            default: 'test text'
+      }
+      {
+        checkbox:
+          name: 'testCheckbox'
+          options:
+            required: true
+            default: 1
+      }
+    ]
 
   res.send records
 
@@ -96,7 +129,7 @@ app.get '/noise', (req, res) ->
     name: 'noise'
     description: 'this will apply the noise algorithm on your image'
     url: 'http://localhost:8081/noise'
-    input: {}
+    input: []
 
   res.send records
 
@@ -105,7 +138,7 @@ app.get '/otsubinazrization', (req, res) ->
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
-    input: {}
+    input: []
 
   res.send records
 
@@ -114,7 +147,7 @@ app.get '/sauvalabinarization', (req, res) ->
     name: 'sauvalabinarization'
     description: 'this will apply the sauvalabinarization algorithm on your image'
     url: 'http://localhost:8081/sauvalabinarization'
-    input: {}
+    input: []
 
   res.send records
 

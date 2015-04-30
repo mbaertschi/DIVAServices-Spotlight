@@ -1,2 +1,36 @@
 .algorithm-inputs
-  p {{algorithm.input}}
+  form.form-horizontal(name='inputForm', novalidate)
+    .repeat(ng-repeat='entry in inputs')
+      .repeat(ng-repeat='(type, settings) in entry')
+        .form-group(ng-switch='', on='type')
+          label.col-md-4.control-label(for='{{settings.name}}') {{settings.name}}
+          .col-md-8(ng-switch-when='text')
+            input.form-control(type='text', name='{{settings.name}}', id='{{settings.name}}', ng-model='model[settings.name]', ng-minlength='{{settings.options.min}}', ng-maxlength='{{settings.options.max}}', ng-required='{{settings.options.required}}')
+            .error(ng-show='inputForm.{{settings.name}}.$dirty && inputForm.{{settings.name}}.$invalid')
+              small.error(ng-show='inputForm.{{settings.name}}.$error.required')
+                | {{settings.name}} is required
+              small.error(ng-show='inputForm.{{settings.name}}.$error.minlength')
+                | {{settings.name}} must be at least {{settings.options.min}} characters long
+              small.error(ng-show='inputForm.{{settings.name}}.$error.maxlength')
+                | {{settings.name}} must not contain more than {{settings.options.max}} characters
+          .col-md-8(ng-switch-when='number')
+            input.form-control(type='number', name='{{settings.name}}', id='{{settings.name}}', min='{{settings.options.min}}', max='{{settings.options.max}}', step='{{settings.options.steps}}', ng-model='model[settings.name]', ng-required='{{settings.options.required}}')
+            .error(ng-show='inputForm.{{settings.name}}.$dirty && inputForm.{{settings.name}}.$invalid')
+              small.error(ng-show='inputForm.{{settings.name}}.$error.required')
+                | {{settings.name}} is required
+              small.error(ng-show='inputForm.{{settings.name}}.$error.min')
+                | {{settings.name}} must not be smaller than {{settings.options.min}}
+              small.error(ng-show='inputForm.{{settings.name}}.$error.max')
+                | {{settings.name}} must not be bigger than {{settings.options.max}}
+              small.error(ng-show='inputForm.{{settings.name}}.$error.number')
+                | {{settings.name}} must be a number
+          .col-md-8(ng-switch-when='checkbox')
+            .checkbox
+              label(for='{{settings.name}}')
+                input(type='checkbox', name='{{settings.name}}', id='{{settings.name}}', ng-checked='{{settings.options.default}}', ng-click='toggleCheckbox(settings.name)')
+          .col-md-8(ng-switch-when='select')
+            select.form-control(name='{{settings.name}}', id='{{settings.name}}', ng-model='model[settings.name]', ng-required='{{settings.options.required}}', ng-options='option for option in settings.options.values')
+    .form-group
+      .col-md-offset-4.col-md-8
+        .pull-right
+          button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid') Submit

@@ -16,6 +16,8 @@
         dia-algorithm-images-gallery
       panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
         .col-xs-12.col-lg-6
-          dia-algorithm-image
+          dia-algorithm-image(ng-if='highlighter')
+          .selected-image(ng-if='!highlighter')
+            img#image(ng-src='{{selectedImage.url}}')
         .col-xs-12.col-lg-6
           dia-algorithm-inputs
