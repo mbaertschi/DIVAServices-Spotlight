@@ -51,12 +51,43 @@ app.get '/multiscaleipd', (req, res) ->
     description: 'this will apply the multiscaleipd algorithm on your image'
     url: 'http://localhost:8081/multiscaleipd'
     input:
-      detector: 'Harris'
-      blurSigma: '1'
-      numScales: '5'
-      numOctaves: '3'
-      threshold: '0.000001f'
-      maxFeaturesPerScale: '1'
+      highlighter: 'polygon'
+      select:
+        name: 'detector'
+        options:
+          values: [
+            'Harris'
+          ]
+      number:
+        name: 'blurSigma'
+        options:
+          min: 0
+          max: 5
+          steps: 1
+      number:
+        name: 'numScales'
+        options: {}
+      number:
+        name: 'numOctaves'
+        options: {}
+      number:
+        name: 'threshold'
+        options:
+          steps: 0.000001
+      number:
+        name: 'maxFeaturesPerScale'
+        options: {}
+      text:
+        name: 'textInputTest'
+        options: {}
+      checkbox:
+        name: 'testCheckbox'
+        options:
+          values: [
+            'Option 1'
+            'Option 2'
+          ]
+          selected: 0
 
   res.send records
 

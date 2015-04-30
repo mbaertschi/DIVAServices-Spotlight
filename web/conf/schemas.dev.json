@@ -1,0 +1,197 @@
+{
+  "parser": {
+    "root": {
+      "hostSchema": {
+        "id": "hostSchema",
+        "$schema": "http://json-schema.org/schema#",
+        "description": "schema for host entry",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "algorithmSchema": {
+        "id": "algorithmSchema",
+        "$schema": "http://json-schema.org/schema#",
+        "description": "schema for an algorithm overview entry",
+        "type": "object",
+        "required": ["name", "description", "url"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5
+          },
+          "url": {
+            "format": "uri"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "details": {
+      "algorithmSchema": {
+        "id": "algorithmSchema",
+        "$schema": "http://json-schema.org/schema#",
+        "description": "schema for an algorithm details view entry",
+        "definitions": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 25
+          },
+          "highlighter": {
+            "enum": ["polygon", "rectangle"]
+          },
+          "number": {
+            "type": "object",
+            "required": ["name", "options"],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  },
+                  "steps": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "text": {
+            "type": "object",
+            "required": ["name", "options"],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/name"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "select": {
+            "type": "object",
+            "required": ["name", "options"],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/name"
+              },
+              "options": {
+                "type": "object",
+                "required": ["values"],
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string"
+                    },
+                    "additionalItems": false
+                  },
+                  "selected": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "checkbox": {
+            "type": "object",
+            "required": ["name", "options"],
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/name"
+              },
+              "options": {
+                "type": "object",
+                "required": ["values"],
+                "properties": {
+                  "values": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string"
+                    },
+                    "additionalItems": false
+                  },
+                  "selected": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "type": "object",
+        "required": ["name", "description", "url", "input"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5
+          },
+          "url": {
+            "format": "uri"
+          },
+          "input": {
+            "type": "object",
+            "properties": {
+              "highlighter": {
+                "$ref": "#/definitions/highlighter"
+              },
+              "number": {
+                "$ref": "#/definitions/number"
+              },
+              "text": {
+                "$ref": "#/definitions/text"
+              },
+              "select": {
+                "$ref": "#/definitions/select"
+              },
+              "checkbox": {
+                "$ref": "#/definitions/checkbox"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
