@@ -56,6 +56,7 @@ poller = exports = module.exports = class Poller
         logger.log 'error', 'mongoose error could not load hosts from mongoDB', 'Poller'
         return callback err
       else
+        if not hosts.length then logger.log 'info', 'there are no hosts available', 'Poller'
         callback null, hosts
 
   _loadAlgorithms: (hosts, callback) =>

@@ -1,5 +1,7 @@
 module = angular.module 'app.images', [
   'ui.router'
+  'ngAnimate'
+  'ngTouch'
 ]
 
 module.config [
@@ -8,9 +10,24 @@ module.config [
   ($stateProvider) ->
     $stateProvider.state 'images',
       parent: 'main'
+      abstract: true
       url: '/images'
-      templateUrl: '/modules/images/template.html'
-      controller: 'ImagesPageController'
       data:
-        title: 'MyImages'
+        title: 'Images'
+
+    $stateProvider.state 'images.gallery',
+      parent: 'main'
+      url: '/images/gallery'
+      templateUrl: '/modules/images/views/gallery/template.html'
+      controller: 'GalleryPageController'
+      data:
+        title: 'Gallery'
+
+    $stateProvider.state 'images.upload',
+      parent: 'main'
+      url: '/images/upload'
+      templateUrl: '/modules/images/views/upload/template.html'
+      controller: 'UploadPageController'
+      data:
+        title: 'Upload'
 ]
