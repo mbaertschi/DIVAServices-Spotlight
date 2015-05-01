@@ -56,6 +56,7 @@ poller = exports = module.exports = class Poller
         logger.log 'error', 'mongoose error could not load hosts from mongoDB', 'Poller'
         return callback err
       else
+        if not hosts.length then logger.log 'info', 'there are no hosts available', 'Poller'
         callback null, hosts
 
   _loadAlgorithms: (hosts, callback) =>
@@ -74,12 +75,12 @@ poller = exports = module.exports = class Poller
 
         loader.get settings, (err, res) ->
           if err?
-            logger.log 'error', "loading status=failed for host=#{hostname}. #{err}", 'Poller'
+            logger.log 'error', "loading status=failed for host=#{hostname} error=#{err}", 'Poller'
             next()
           else
             parser.parseRoot res, (err, structure) ->
               if err?
-                logger.log 'warn', "could not parse structure and no changes were applied for host #{hostname}. Error = #{err}", 'Poller'
+                logger.log 'warn', "could not parse structure and no changes were applied for host=#{hostname} error=#{err}", 'Poller'
                 next()
               else
                 if (structure?.records?.length > 0)
@@ -148,7 +149,7 @@ poller = exports = module.exports = class Poller
       if err?
         logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
         callback null, removedAlgorithms
-      else
+      else if dbAlgorithms?
         async.each dbAlgorithms, (dbAlgorithm, next) =>
           index = _.findIndex algorithms, 'url': dbAlgorithm.url
           if index < 0
@@ -160,6 +161,8 @@ poller = exports = module.exports = class Poller
           if err?
             logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
           callback null, removedAlgorithms
+      else
+        callback null, removedAlgorithms
 
   _logPause: (callback) =>
     interval = parseInt nconf.get 'poller:interval'

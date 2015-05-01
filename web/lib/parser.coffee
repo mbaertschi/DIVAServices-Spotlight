@@ -3,6 +3,8 @@ nconf       = require 'nconf'
 async       = require 'async'
 _           = require 'lodash'
 loader      = require './loader'
+Validator   = require('jsonschema').Validator
+validator   = new Validator
 
 parser = exports = module.exports = {}
 
@@ -14,14 +16,16 @@ parser.parseRoot = (structure, callback) ->
     valid = false
   finally
     if valid
-      _structure =
-        records: []
-      async.each structure, (algorithm, next) ->
-        async.each nconf.get('parser:root:mandatoryFields'), (field, subNext) ->
-          if not (field in _.keys algorithm) then subNext field else subNext()
-        , (err) ->
-          if err?
-            logger.log 'info', "skipping algorithm=#{algorithm.name} because field=#{err} is missing in root view", 'Parser'
+      hostErrors = validator.validate(structure, nconf.get('parser:root:hostSchema')).errors
+      if hostErrors.length
+        callback hostErrors[0].message
+      else
+        _structure =
+          records: []
+        async.each structure, (algorithm, next) ->
+          algorithmErrors = validator.validate(algorithm, nconf.get('parser:root:algorithmSchema')).errors
+          if algorithmErrors.length
+            logger.log 'info', "skipping algorithm=#{algorithm.name} error=#{algorithmErrors[0].message} view=root view", 'Parser'
             next()
           else
             parser.parseDetails algorithm, (err) ->
@@ -31,12 +35,12 @@ parser.parseRoot = (structure, callback) ->
               else
                 _structure.records.push algorithm
                 next()
-      , (err) ->
-        if err?
-          logger.log 'info', "could not parse algorithm error=#{err}", 'Parser'
-        callback null, _structure
+        , (err) ->
+          if err?
+            logger.log 'info', "could not parse algorithm error=#{err}", 'Parser'
+          callback null, _structure
     else
-      callback "not a valid JSON format for root=#{structure.name}"
+      callback "not a valid JSON format"
 
 parser.parseDetails = (algorithm, callback) ->
 
@@ -48,19 +52,22 @@ parser.parseDetails = (algorithm, callback) ->
     retries: nconf.get 'loader:retries'
 
   loader.get settings, (err, details) ->
-    try
-      details = JSON.parse details
-      valid = true
-    catch e
-      valid = false
-    finally
-      if valid
-        async.each nconf.get('parser:details:mandatoryFields'), (field, next) ->
-          if not (field in _.keys details) then next field else next()
-        , (err) ->
-          if err?
-            callback "skipping algorithm=#{algorithm.name} because field=#{err} is missing in details view"
+    if err?
+      callback "skipping algorithm=#{algorithm.name} error=#{err}"
+    else
+      try
+        details = JSON.parse details
+        valid = true
+      catch e
+        valid = false
+      finally
+        if valid
+          algorithmErrors = validator.validate(details, nconf.get('parser:details:algorithmSchema')).errors
+          if algorithmErrors.length
+            values = algorithmErrors[0].stack.split('.')
+            errorMessage = values[values.length-1]
+            callback "skipping algorithm=#{algorithm.name} error=#{errorMessage} view=details view"
           else
             callback()
-      else
-        callback "skipping algorithm=#{algorithm.name}, error=not a valid JSON format"
+        else
+          callback "skipping algorithm=#{algorithm.name}, error=not a valid JSON format"

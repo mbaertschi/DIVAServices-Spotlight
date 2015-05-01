@@ -3,13 +3,21 @@ angular.module('app').directive 'navGroup', [ ->
   controller: 'NavGroupController'
   transclude: true
   replace: true
-  link: (scope, element, attrs) ->
-    $(element[0]).jarvismenu
-      accordion: true
-      speed: 350
-      closedSign: '<em class="fa fa-plus-square-o"></em>'
-      openedSign: '<em class="fa fa-minus-square-o"></em>'
-    scope.getElement = -> element
+  scope:
+    icon: "@"
+    title: "@"
+    iconCaption: "@"
+    active: "=?"
 
-  template: '<nav><ul ng-transclude></ul></nav>'
+  template: """
+    <li ui-sref-active='open'>
+      <a href=''>
+        <i ng-if='hasIcon' class='fa fa-lg fa-fw fa-{{ icon }}'>
+          <em data-ng-if='hasIconCaption'>{{ iconCaption }}</em>
+        </i>
+        <span class='menu-item-parent'>{{ title }}</span>
+      </a>
+      <ul ng-transclude></ul>
+    </li>
+  """
 ]

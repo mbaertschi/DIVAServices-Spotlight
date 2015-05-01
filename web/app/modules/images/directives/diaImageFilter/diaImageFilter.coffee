@@ -1,10 +1,10 @@
 angular.module('app.images').directive 'diaImageFilter', [
+  '$state'
   'diaStateManager'
   'imagesService'
   'toastr'
   '_'
-
-  (diaStateManager, imagesService, toastr, _) ->
+  ($state, diaStateManager, imagesService, toastr, _) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageFilter/template.html'
 
@@ -73,8 +73,9 @@ angular.module('app.images').directive 'diaImageFilter', [
           #FIXME once base64Image storage is implemented correctly, use the
           #stored image in filter directive instead of the base64Image
           if res.status isnt 200
-            toastr.warning 'Image was not safed on server. Continue with cached image', 'Warning'
-          diaStateManager.switchState 'upload', base64Image, { state: 'filtering', image: image[0].src }
+            toastr.warning 'Image was not safed on server', 'Warning'
+          diaStateManager.state = null
+          $state.go 'images.gallery'
 
       scope.filters =
         'brightness':
