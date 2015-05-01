@@ -13,26 +13,19 @@ module.config [
       data:
         title: 'Documents'
 
-    $stateProvider.state 'docs.server',
+    $stateProvider.state 'docs.architecture',
       parent: 'main'
-      url: '/docs/server'
-      templateUrl: 'modules/docs/views/server.html'
-      controller: 'ServerPageController'
+      url: '/docs/architecture'
+      templateUrl: 'modules/docs/views/architecture.html'
+      controller: 'ArchitecturePageController'
       data:
-        title: 'Server Documentation'
-
-    $stateProvider.state 'docs.client',
-      parent: 'main'
-      url: '/docs/client'
-      templateUrl: 'modules/docs/views/client.html'
-      controller: 'ClientPageController'
-      data:
-        title: 'Client Documentation'
+        title: 'Architecture'
 
     $stateProvider.state 'docs.api',
       parent: 'main'
       url: '/docs/api'
       templateUrl: 'modules/docs/views/api.html'
+      controller: 'ApiPageController'
       data:
         title: 'API Documentation'
 ]

@@ -3,4 +3,4 @@
 set -e # exit on errors
 
 echo 'parsing ...'
-./web/node_modules/codo/bin/codo -o ./web/app/assets/documentation/server --closure --private ./web/lib
+./web/node_modules/codo/bin/codo -o ./data/documentation/server --closure --private ./web/lib
