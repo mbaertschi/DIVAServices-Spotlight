@@ -1,5 +1,6 @@
 .algorithm-inputs
   form.form-horizontal(name='inputForm', novalidate)
+    h5.text-muted(ng-if='!inputs.length') No inputs
     .repeat(ng-repeat='entry in inputs')
       .repeat(ng-repeat='(type, settings) in entry')
         .form-group(ng-switch='', on='type')
@@ -30,7 +31,3 @@
                 input(type='checkbox', name='{{settings.name}}', id='{{settings.name}}', ng-checked='{{settings.options.default}}', ng-click='toggleCheckbox(settings.name)')
           .col-md-8(ng-switch-when='select')
             select.form-control(name='{{settings.name}}', id='{{settings.name}}', ng-model='model[settings.name]', ng-required='{{settings.options.required}}', ng-options='option for option in settings.options.values')
-    .form-group
-      .col-md-offset-4.col-md-8
-        .pull-right
-          button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid') Submit

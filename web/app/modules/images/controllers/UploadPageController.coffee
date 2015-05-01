@@ -8,6 +8,10 @@ angular.module('app.images').controller 'UploadPageController', [
 
     $scope.state = 'upload'
 
+    if diaStateManager.state
+      $scope.state = diaStateManager.state
+      $scope.currentImage = diaStateManager.image
+
     $scope.$on 'stateChange', ->
       $scope.safeApply ->
         $scope.state = diaStateManager.state

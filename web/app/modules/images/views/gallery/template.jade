@@ -7,11 +7,11 @@
       .text-muted(ng-if='!images.length') You currently have no images uploaded. Please
         a.upload-link(ui-sref='images.upload') upload
         | some images
-      .vcenter
-        .slider(ng-if='images.length')
-          img.slide.img-responsive(ng-repeat='image in images', ng-swipe-right='showPrev()', ng-swipe-left='showNext()', ng-show='isActive($index)', ng-src='{{image.src}}')
-          a.arrow.prev(ng-click='showPrev()')
-          a.arrow.next(ng-click='showNext()')
-          ul.nav
-            li(ng-repeat='image in images', ng-class="{'active':isActive($index)}")
-              img(ng-src='{{image.src}}', ng-click='showImage($index);')
+      .slider(ng-if='images.length')
+        img.slide.img-responsive(ng-repeat='image in images', ng-swipe-right='showPrev()', ng-swipe-left='showNext()', ng-show='isActive($index)', ng-src='{{image.url}}')
+        a.arrow.prev(ng-click='showPrev()')
+        a.arrow.next(ng-click='showNext()')
+        ul.nav
+          li(ng-repeat='image in images', ng-class="{'active':isActive($index)}")
+            img(ng-src='{{image.url}}', ng-click='showImage($index);')
+        button.edit-button.btn-primary.btn-sm(ng-click='edit()') Edit

@@ -21,3 +21,7 @@
             img#image(ng-src='{{selectedImage.url}}')
         .col-xs-12.col-lg-6
           dia-algorithm-inputs
+
+        .col-md-offset-4.col-md-8
+          .pull-right
+            button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid') Submit

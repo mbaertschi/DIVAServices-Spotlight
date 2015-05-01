@@ -1,10 +1,11 @@
 angular.module('app.images').controller 'GalleryPageController', [
   '$scope'
+  '$state'
   'diaStateManager'
   'imagesService'
   'toastr'
 
-  ($scope, diaStateManager, imagesService, toastr) ->
+  ($scope, $state, diaStateManager, imagesService, toastr) ->
 
     $scope.images = []
     $scope.selected = null
@@ -13,9 +14,8 @@ angular.module('app.images').controller 'GalleryPageController', [
     requestImages = ->
       imagesService.fetch().then (res) ->
         angular.forEach res.data, (image) ->
-          img =
-            src: image.url
-          $scope.images.push img
+          @.push image
+        , $scope.images
       , (err) ->
         toastr.err err.statusText, err.status
 
@@ -32,5 +32,10 @@ angular.module('app.images').controller 'GalleryPageController', [
 
     $scope.showImage = (index) ->
       $scope._Index = index
+
+    $scope.edit = ->
+      image = $scope.images[$scope._Index]
+      diaStateManager.switchState 'cropping', image.url, image.url, image.url
+      $state.go 'images.upload'
 
 ]
