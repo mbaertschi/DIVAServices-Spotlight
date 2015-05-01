@@ -44,7 +44,6 @@ angular.module('app.images').directive 'diaSmartDropzone', [
 
         eventHandlers =
           sending: (file, xhr, formData) ->
-            formData.append 'processType', 'upload'
             formData.append 'index', availableIndexes.shift()
 
           success: (file, res) ->
