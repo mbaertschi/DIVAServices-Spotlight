@@ -6,23 +6,24 @@ angular.module('app.images').factory 'diaStateManager', [
     stateManager =
       state: null
       image: null
-      origin: null
-      current: {}
 
-    stateManager.switchState = (state, image, current, origin) ->
+    stateManager.switchState = (state, image) ->
       @state = state
-      if image? then @image = image
-      if current? then @current[current.state] = current.image
-      if origin? then @origin = origin
+      if image?
+        $rootScope.safeApply =>
+          image.src = image.src + '?' + new Date().getTime()
+          @image = image
+      else
+        $rootScope.safeApply =>
+          @image.src = @image.src + '?' + new Date().getTime()
       @stateChange()
 
     stateManager.stateChange = ->
       $rootScope.$broadcast 'stateChange'
 
     stateManager.reset = ->
+      @state = null
       @image = null
-      @origin = null
-      @current = {}
 
     stateManager
 ]

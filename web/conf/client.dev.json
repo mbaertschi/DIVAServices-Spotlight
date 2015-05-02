@@ -8,7 +8,7 @@
     },
     "dropzone": {
       "addRemoveLinks" : true,
-      "maxFilesize": 1,
+      "maxFilesize": 2,
       "maxFiles": 10
     }
   }

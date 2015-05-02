@@ -11,11 +11,15 @@ angular.module('app.images').factory 'imagesService', [
     post: (file, name) ->
       if not name
         name = 'undefined.png'
+        index = 0
+      else
+        values = name.split('_')
+        index = values[values.length-1].split('.')[0]
       formData = new FormData
       formData.append('filename', name)
       formData.append('file', file)
       formData.append('processType', 'crop')
-      formData.append('index', 0)
+      formData.append('index', index)
       $http.post('/upload', formData,
         transformRequest: angular.identity
         headers:
