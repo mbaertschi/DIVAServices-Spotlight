@@ -83,21 +83,16 @@
             i.fa.fa-refresh
             = ' '
             | Remove
-        button.btn.btn-primary(ng-click='apply({method: "replace"})')
-          span(tooltip-placement='top', tooltip='Reload origin image')
-            i.fa.fa-reply
-            = ' '
-            | Reload Origin
         button.btn.btn-primary(ng-click='apply({method: "reset"})')
           span(tooltip-placement='top', tooltip='Reset your current changes')
             i.fa.fa-remove
             = ' '
             | Reset
-        button.btn.btn-primary(ng-click='apply({method: "reload"})')
-          span(tooltip-placement='top', tooltip='Reload the untouched image')
-            i.fa.fa-refresh
+        button.btn.btn-primary(ng-click='apply({method: "skip"})')
+          span(tooltip-placement='top', tooltip='Go to filtering')
+            i.fa.fa-arrow-right
             = ' '
-            | Reload Cropped
+            | Skip
         button.btn.btn-primary(ng-click='apply({method: "save"})')
           span(tooltip-placement='top', tooltip='Save and go to next state')
             i.fa.fa-check

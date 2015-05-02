@@ -9,7 +9,8 @@ angular.module('app.images').directive 'diaSmartDropzone', [
     (scope, element, attrs) ->
 
       uploadedImages = []
-      dropzone = undefined
+      scope.safeApply ->
+        dropzone = undefined
 
       mySettings.fetch('dropzone').then (settings) ->
         max = (settings.maxFiles-1)
@@ -20,20 +21,21 @@ angular.module('app.images').directive 'diaSmartDropzone', [
             self = @
             $http.get('/upload').then (res) ->
               images = res.data
-              angular.forEach images, (image) ->
-                mockFile =
-                  name: image.serverName
-                  size: image.size
-                  type: image.type
-                  index: image.index
-                  src: image.url
-                self.emit 'addedfile', mockFile
-                self.emit 'thumbnail', mockFile, image.url
-                self.emit 'success', mockFile
-                index = availableIndexes.indexOf image.index
-                if index >= 0
-                  availableIndexes.splice index, 1
-                self.options.maxFiles -= 1
+              scope.safeApply ->
+                angular.forEach images, (image) ->
+                  mockFile =
+                    name: image.serverName
+                    size: image.size
+                    type: image.type
+                    index: image.index
+                    src: image.url
+                  self.emit 'addedfile', mockFile
+                  self.emit 'thumbnail', mockFile, image.url + '?' + new Date().getTime()
+                  self.emit 'success', mockFile
+                  index = availableIndexes.indexOf image.index
+                  if index >= 0
+                    availableIndexes.splice index, 1
+                  self.options.maxFiles -= 1
           addRemoveLinks : settings.addRemoveLinks
           maxFilesize: settings.maxFilesize
           maxFiles: settings.maxFiles
@@ -44,8 +46,8 @@ angular.module('app.images').directive 'diaSmartDropzone', [
 
         eventHandlers =
           sending: (file, xhr, formData) ->
-            formData.append 'processType', 'upload'
-            formData.append 'index', availableIndexes.shift()
+            scope.safeApply ->
+              formData.append 'index', availableIndexes.shift()
 
           success: (file, res) ->
             if res
@@ -53,12 +55,16 @@ angular.module('app.images').directive 'diaSmartDropzone', [
                 name: file.name
                 serverName: res.serverName
                 index: res.index
-              imageSrc = res.url
+              image =
+                src: res.url
+                name: res.serverName
             else
-              imageSrc = file.src
+              image =
+                src: file.src
+                name: file.name
             $(file.previewElement).on 'click', (event) ->
               diaStateManager.reset()
-              diaStateManager.switchState 'cropping', imageSrc, null, imageSrc
+              diaStateManager.switchState 'cropping', image
 
           removedfile: (file) ->
             removeImage = null

@@ -3,6 +3,7 @@ util        = require 'util'
 nconf       = require 'nconf'
 logger      = require './logger'
 fs          = require 'fs-extra'
+mongoose    = require 'mongoose'
 
 stringifySerializationOptions =
   serialize: JSON.stringify
@@ -34,6 +35,13 @@ module.exports = (connect) ->
               logger.log 'debug', "removed directory #{dir}", 'ConnectMongo'
               fs.rmdir dir
 
+    removeImagesFromDb = (sessionId) ->
+      Image = mongoose.model 'Image'
+      query =
+        sessionId: sessionId
+      Image.remove query, (err) ->
+        if err? then logger.log 'warn', "images for session=#{sessionId} were not removed error=#{err}", 'ConnectMongo'
+
     connectionReady = (err) ->
       if err
         logger.log 'debug', 'not able to connect to the database', 'ConnectMongo'
@@ -47,6 +55,7 @@ module.exports = (connect) ->
             throw err
           for session in sessions
             removeImageFolder session._id
+            removeImagesFromDb session._id
           self.collection.remove { expires: { $lt: new Date } }, w: 0
           return
         return

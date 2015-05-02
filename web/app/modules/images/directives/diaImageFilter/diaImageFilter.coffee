@@ -4,6 +4,7 @@ angular.module('app.images').directive 'diaImageFilter', [
   'imagesService'
   'toastr'
   '_'
+
   ($state, diaStateManager, imagesService, toastr, _) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageFilter/template.html'
@@ -37,45 +38,23 @@ angular.module('app.images').directive 'diaImageFilter', [
       image.on 'load', ->
         caman = Caman '#caman-img'
 
-      createCanvasFromImage = (source, callback) ->
-        _image = new Image()
-        _image.src = source
-        scope.safeApply ->
-          $(_image).on 'load', ->
-            canvas = document.createElement('canvas')
-            canvas.width = _image.width
-            canvas.height = _image.height
-            canvas.getContext('2d').drawImage _image, 0, 0
-            callback canvas
-
       scope.filter = (filter, value) ->
         if scope.filters[filter]
           scope.filters[filter].value = value
           render()
 
-      scope.reload = ->
-        createCanvasFromImage diaStateManager.origin, (canvas) ->
-          caman.replaceCanvas canvas
-
       scope.reset = ->
         caman.reset()
 
-      scope.clear = ->
-        if not diaStateManager.current['filtering']
-          caman.reset()
-        else
-          createCanvasFromImage diaStateManager.current['filtering'], (canvas) ->
-            caman.replaceCanvas canvas
-
       scope.save = ->
         base64Image = caman.toBase64()
-        imagesService.post(base64Image, 'filteredImage.png').then (res) ->
-          #FIXME once base64Image storage is implemented correctly, use the
-          #stored image in filter directive instead of the base64Image
+        imagesService.post(base64Image, diaStateManager.image.name).then (res) ->
           if res.status isnt 200
             toastr.warning 'Image was not safed on server', 'Warning'
-          diaStateManager.state = null
-          $state.go 'images.gallery'
+          else
+            scope.safeApply ->
+              diaStateManager.reset()
+              $state.go 'images.gallery'
 
       scope.filters =
         'brightness':
@@ -105,7 +84,7 @@ angular.module('app.images').directive 'diaImageFilter', [
         'gamma':
           default: 0
           value: 0
-          min: 0
+          min: -100
         'sharpen':
           default: 0
           value: 0
