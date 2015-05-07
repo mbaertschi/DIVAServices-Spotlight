@@ -182,26 +182,31 @@
           "input": {
             "type": "array",
             "items": {
-              "highlighter": {
-                "$ref": "#/definitions/highlighter"
+              "description": "Input types",
+              "type": "object",
+              "properties": {
+                "highlighter": {
+                  "$ref": "#/definitions/highlighter"
+                },
+                "number": {
+                  "$ref": "#/definitions/number"
+                },
+                "text": {
+                  "$ref": "#/definitions/text"
+                },
+                "select": {
+                  "$ref": "#/definitions/select"
+                },
+                "checkbox": {
+                  "$ref": "#/definitions/checkbox"
+                }
               },
-              "number": {
-                "$ref": "#/definitions/number"
-              },
-              "text": {
-                "$ref": "#/definitions/text"
-              },
-              "select": {
-                "$ref": "#/definitions/select"
-              },
-              "checkbox": {
-                "$ref": "#/definitions/checkbox"
-              }
+              "additionalProperties": false
             },
             "additionalItems": false
           }
         },
-        "additionalItems": false
+        "additionalProperties": false
       }
     }
   }
