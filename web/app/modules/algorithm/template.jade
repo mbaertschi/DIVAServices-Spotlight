@@ -16,7 +16,9 @@
         dia-algorithm-images-gallery
       panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
         .col-xs-12.col-lg-6
-          dia-algorithm-image(ng-if='highlighter')
+          .canvas-wrapper(ng-if='highlighter')
+            canvas#rectangle(ng-if='highlighter=="rectangle"', dia-algorithm-rectangle)
+            canvas#polygon(ng-if='highlighter=="polygon"', dia-algorithm-polygon)
           .selected-image(ng-if='!highlighter')
             img#image(ng-src='{{selectedImage.url}}')
         .col-xs-12.col-lg-6

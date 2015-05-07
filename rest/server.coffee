@@ -129,7 +129,11 @@ app.get '/noise', (req, res) ->
     name: 'noise'
     description: 'this will apply the noise algorithm on your image'
     url: 'http://localhost:8081/noise'
-    input: []
+    input: [
+      {
+        highlighter: 'rectangle'
+      }
+    ]
 
   res.send records
 
