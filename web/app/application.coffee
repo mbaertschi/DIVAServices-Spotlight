@@ -55,8 +55,8 @@ DiaDistributed.config [
       ($delegate) ->
         $delegate.safeApply = (fn) ->
           phase = $delegate.$$phase
-          if phase == '$apply' or phase == '$digest'
-            if fn and typeof fn == 'function'
+          if phase is '$apply' or phase is '$digest'
+            if fn and typeof fn is 'function'
               fn()
           else
             $delegate.$apply fn

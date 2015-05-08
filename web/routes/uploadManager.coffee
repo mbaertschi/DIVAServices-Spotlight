@@ -2,6 +2,8 @@ nconf     = require 'nconf'
 mongoose  = require 'mongoose'
 fs        = require 'fs-extra'
 logger    = require '../lib/logger'
+ExifImage = require('exif').ExifImage
+lwip      = require 'lwip'
 
 uploader = exports = module.exports = (router) ->
 
@@ -20,9 +22,50 @@ uploader = exports = module.exports = (router) ->
         res.status(200).json images
 
   router.post '/upload', (req, res) ->
+
+    getRotation = (image, callback) ->
+      try
+        new ExifImage image: image.path, (err, exifData) ->
+          if err
+            callback "could not extract exif meta-data from image=#{image.serverName} error=#{err}"
+          else
+            if exifData.image
+              rotate = 0
+              switch exifData.image.Orientation
+                when 3, 4 then rotate = 180
+                when 5, 6 then rotate = 90
+                when 7, 8 then rotate = 270
+                else rotate = 0
+              callback null, rotate
+            else callback null, 0
+      catch err
+        callback "could not load ExifImage on image=#{image.serverName} error=#{err}"
+
+    orientateJpegImage = (image, callback) ->
+      if image.type is 'image/jpeg'
+        path = image.path
+        getRotation image, (err, rotate) ->
+          if err
+            logger.log 'info', err, 'UploadManager'
+            callback()
+          else
+            if rotate
+              lwip.open path, (err, img) ->
+                if err
+                  logger.log 'info', "lwip could not load image=#{image.serverName} error=#{err}"
+                  callback()
+                else
+                  img.batch().rotate(rotate).writeFile path, (err) ->
+                    if err then logger.log 'info', "lwip could not rotate image=#{image.serverName} error=#{err}"
+                    callback()
+            else
+              callback()
+      else callback()
+
     if res.imageData?
       # file was handled by multer
-      res.status(200).json res.imageData
+      orientateJpegImage res.imageData, ->
+        res.status(200).json res.imageData
     else
 
       getFilesizeInBytes = (filename) ->
