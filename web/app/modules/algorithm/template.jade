@@ -17,13 +17,21 @@
       panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
         .col-xs-12.col-lg-6
           .canvas-wrapper(ng-if='highlighter')
+            span(ng-if='highlighter=="rectangle"')
+              i.help.fa.fa-question-circle(tooltip-placement="right", tooltip-html-unsafe='{{rectangleDescription}}')
+              = ' '
+              | Rectangle Selection
             canvas#rectangle(ng-if='highlighter=="rectangle"', dia-algorithm-rectangle)
+            span(ng-if='highlighter=="polygon"')
+              i.help.fa.fa-question-circle(ng-if='highlighter=="polygon"', tooltip-placement="right", tooltip-html-unsafe='{{polygonDescription}}')
+              = ' '
+              | Polygon Selection
             canvas#polygon(ng-if='highlighter=="polygon"', dia-algorithm-polygon)
           .selected-image(ng-if='!highlighter')
             img#image(ng-src='{{selectedImage.url}}')
         .col-xs-12.col-lg-6
           dia-algorithm-inputs
-
         .col-md-offset-4.col-md-8
           .pull-right
-            button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid') Submit
+            span.error(ng-if='invalidHighlighter') Please select a {{highlighter}}
+            button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid || invalidHighlighter') Submit

@@ -7,11 +7,15 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
       initialized = false
       strokeColor = 'red'
       strokeWidth = 5
-      fillColor = new paper.Color 0, 0, 0, 0
+      fillColor = new paper.Color 1, 0, 0, 0.1
 
       scope.$watch 'selectedImage', ->
+        scope.setHighlighterStatus true
         image = scope.selectedImage
         canvas = element[0]
+        if path
+          path.remove()
+          path = null
         initializeCanvas ->
           if initialized
             view.viewSize = new Size canvas.width, canvas.height
@@ -51,9 +55,9 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
         toolRectangle.activate()
         initialized = true
 
-      mouseDown = (toolEvent) ->
+      mouseDown = (event) ->
         handle = null
-        point = toolEvent.point
+        point = event.point
         if path
           hitResult = path.hitTest point,
             bounds: true
@@ -76,12 +80,13 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
           path.strokeWidth = strokeWidth
           path.fillColor = fillColor
 
-      mouseUp = (toolEvent) ->
+      mouseUp = (event) ->
         path.fullySelected = true
+        scope.setHighlighterStatus false
 
-      mouseDrag = (toolEvent) ->
-        x = toolEvent.delta.x
-        y = toolEvent.delta.y
+      mouseDrag = (event) ->
+        x = event.delta.x
+        y = event.delta.y
         switch handle
           when 'top-left'
             path.segments[0].point.x += x
@@ -104,6 +109,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
             path.segments[3].point.x += x
             path.segments[3].point.y += y
           when 'fill'
+            # move rectangle
             path.segments[0].point.x += x
             path.segments[0].point.y += y
             path.segments[1].point.x += x
@@ -113,8 +119,9 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
             path.segments[3].point.x += x
             path.segments[3].point.y += y
           else
-            path.segments[1].point.y += toolEvent.delta.y
-            path.segments[2].point.x += toolEvent.delta.x
-            path.segments[2].point.y += toolEvent.delta.y
-            path.segments[3].point.x += toolEvent.delta.x
+            # span rectangle
+            path.segments[1].point.y += event.delta.y
+            path.segments[2].point.x += event.delta.x
+            path.segments[2].point.y += event.delta.y
+            path.segments[3].point.x += event.delta.x
   ]
