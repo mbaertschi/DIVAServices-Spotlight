@@ -18,6 +18,8 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.selectedImage = null
     $scope.highlighter = null
     $scope.invalidHighlighter = false
+    $scope.invalideCaptcha = true
+    $scope.invalidForm = true
     $scope.inputs = []
     $scope.model = {}
     $scope.state = 'select'
@@ -54,51 +56,6 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
     requestAlgorithm()
 
-    $scope.toggleCheckbox = (name) ->
-      if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
-
-    $scope.submit = ->
-      $scope.state = 'select'
-      model = $scope.model
-      highlighter = diaHighlighterManager.get()
-      console.log model, highlighter
-      # $scope.safeApply ->
-      #   canvas = $('#test')[0]
-      #   img = new Image()
-      #   img.src = $scope.selectedImage.url
-      #   $(img).bind 'load', ->
-      #     canvas.width = img.width
-      #     canvas.height = img.height
-      #     paper.project.remove()
-      #     paper.setup canvas
-      #     raster = new Raster
-      #       source: img.src
-      #       position: view.center
-      #     raster.on 'load', ->
-      #       diaHighlighterManager.path.copyTo paper.project
-      #       path = paper.project.activeLayer.children[1]
-      #       inverse = diaHighlighterManager.scale
-      #       offsetX = path.position.x * inverse
-      #       deltaX = path.position.x - offsetX
-      #       offsetY = path.position.y * inverse
-      #       deltaY = path .position.x - offsetY
-      #       path.position.x += 2*deltaX
-      #       path.position.y += deltaY
-      #       view.zoom = 1
-      #       view.update()
-
-    $scope.setHighlighterStatus = (status) ->
-      $scope.safeApply ->
-        $scope.invalidHighlighter = status
-
-    $scope.setSelectedImage = (image) ->
-      $scope.state = 'highlight'
-      $scope.selectedImage = image
-      $scope.submitted = false
-
-    $scope.goBack = ->
-      $state.go 'algorithms'
-
     requestImages = ->
       imagesService.fetch().then (res) ->
         $scope.images = res.data
@@ -106,6 +63,46 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         toastr.err err.statusText, err.status
 
     requestImages()
+
+    $scope.toggleCheckbox = (name) ->
+      if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
+
+    $scope.submit = ->
+      if not $scope.captcha.getCaptchaData().valid
+        toastr.warning 'Please fill in captcha', 'Captcha Warning'
+      else
+        algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
+          toastr.info 'Valid captcha', res.status
+        , (err) ->
+          $scope.captcha.refresh()
+          if err.status is 403
+            toastr.warning 'Invalid Captcha', err.status
+          else
+            toastr.error 'Captcha validation failed. Please try again', err.status
+
+    $scope.setHighlighterStatus = (status) ->
+      $scope.safeApply ->
+        $scope.invalidHighlighter = status
+
+    $scope.setFormValidity = (status) ->
+      $scope.invalidForm = status
+
+    $scope.setSelectedImage = (image) ->
+      $scope.state = 'highlight'
+      $scope.selectedImage = image
+      $scope.submitted = false
+      if $scope.captcha then $scope.captcha.refresh()
+
+    $scope.goBack = ->
+      $state.go 'algorithms'
+
+    $scope.captchaOptions =
+      imgPath: 'images/'
+      captcha:
+        numberOfImages: 5
+        url: '/captcha'
+      init: (captcha) ->
+        $scope.captcha = captcha
 
     $scope.polygonDescription = $sce.trustAsHtml(
       """

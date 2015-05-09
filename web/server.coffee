@@ -44,6 +44,9 @@ exports.startServer = (port, path, callback) ->
   uploader = new Uploader
   app.use uploader.multer
 
+  # enable body parser for json
+  app.use bodyParser.json()
+
   # routing
   app.use router
   # route all non-existent files to `index.html`
