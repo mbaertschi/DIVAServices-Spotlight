@@ -14,7 +14,7 @@
           span.text-normal {{algorithm.description}}
       panel(heading='Image Gallery', icon='image')
         dia-algorithm-images-gallery
-      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
+      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage && state=="highlight"')
         .col-xs-12.col-lg-6
           .canvas-wrapper(ng-if='highlighter')
             span(ng-if='highlighter=="rectangle"')

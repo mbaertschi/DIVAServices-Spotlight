@@ -1,5 +1,7 @@
 angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
-  ->
+  'diaHighlighterManager'
+
+  (diaHighlighterManager) ->
     restrict: 'AE'
 
     link: (scope, element, attrs) ->
@@ -13,12 +15,15 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
         scope.setHighlighterStatus true
         image = scope.selectedImage
         canvas = element[0]
+        diaHighlighterManager.reset()
+        diaHighlighterManager.type = scope.highlighter
         if path
           path.remove()
           path = null
         initializeCanvas ->
           if initialized
             view.viewSize = new Size(canvas.width, canvas.height)
+            view.zoom = 1
             view.update()
           else
             initPaper()
@@ -42,7 +47,9 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
           position: view.center
         raster.on 'load', ->
           scale = view.size.width / @.bounds.width
-          raster.scale scale
+          inverseScale = @.bounds.width / view.size.width
+          strokeWidth = 5 * inverseScale
+          view.zoom = scale
           view.update()
 
       initPaper = ->
@@ -85,6 +92,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
           else if path.closed
             path.remove()
             path = null
+            diaHighlighterManager.path = null
             scope.setHighlighterStatus true
 
       mouseUp = (event) ->
@@ -94,12 +102,10 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
           path.strokeColor = strokeColor
           path.strokeWidth = strokeWidth
           path.fullySelected = true
-
         if not path.closed and handle isnt 'segment'
           path.add point
-
         segmentIndex = null
-
+        diaHighlighterManager.path = path
 
       mouseDrag = (event) ->
         x = event.delta.x

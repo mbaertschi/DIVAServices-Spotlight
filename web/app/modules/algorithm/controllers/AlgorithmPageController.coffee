@@ -10,8 +10,9 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$window'
   'imagesService'
   '$sce'
+  'diaHighlighterManager'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService, $sce) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService, $sce, diaHighlighterManager) ->
     $scope.algorithm = null
     $scope.images = []
     $scope.selectedImage = null
@@ -19,6 +20,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.invalidHighlighter = false
     $scope.inputs = []
     $scope.model = {}
+    $scope.state = 'select'
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -56,14 +58,43 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
 
     $scope.submit = ->
-      console.log $scope.model
+      $scope.state = 'select'
+      model = $scope.model
+      highlighter = diaHighlighterManager.get()
+      console.log model, highlighter
+      # $scope.safeApply ->
+      #   canvas = $('#test')[0]
+      #   img = new Image()
+      #   img.src = $scope.selectedImage.url
+      #   $(img).bind 'load', ->
+      #     canvas.width = img.width
+      #     canvas.height = img.height
+      #     paper.project.remove()
+      #     paper.setup canvas
+      #     raster = new Raster
+      #       source: img.src
+      #       position: view.center
+      #     raster.on 'load', ->
+      #       diaHighlighterManager.path.copyTo paper.project
+      #       path = paper.project.activeLayer.children[1]
+      #       inverse = diaHighlighterManager.scale
+      #       offsetX = path.position.x * inverse
+      #       deltaX = path.position.x - offsetX
+      #       offsetY = path.position.y * inverse
+      #       deltaY = path .position.x - offsetY
+      #       path.position.x += 2*deltaX
+      #       path.position.y += deltaY
+      #       view.zoom = 1
+      #       view.update()
 
     $scope.setHighlighterStatus = (status) ->
       $scope.safeApply ->
         $scope.invalidHighlighter = status
 
     $scope.setSelectedImage = (image) ->
+      $scope.state = 'highlight'
       $scope.selectedImage = image
+      $scope.submitted = false
 
     $scope.goBack = ->
       $state.go 'algorithms'

@@ -52,11 +52,11 @@ uploader = exports = module.exports = (router) ->
             if rotate
               lwip.open path, (err, img) ->
                 if err
-                  logger.log 'info', "lwip could not load image=#{image.serverName} error=#{err}"
+                  logger.log 'info', "lwip could not load image=#{image.serverName} error=#{err}", 'UploadManager'
                   callback()
                 else
                   img.batch().rotate(rotate).writeFile path, (err) ->
-                    if err then logger.log 'info', "lwip could not rotate image=#{image.serverName} error=#{err}"
+                    if err then logger.log 'info', "lwip could not rotate image=#{image.serverName} error=#{err}", 'UploadManager'
                     callback()
             else
               callback()
