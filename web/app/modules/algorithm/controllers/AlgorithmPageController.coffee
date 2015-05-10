@@ -19,7 +19,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.highlighter = null
     $scope.invalidHighlighter = false
     $scope.invalideCaptcha = true
-    $scope.invalidForm = true
+    $scope.invalidForm = false
     $scope.inputs = []
     $scope.model = {}
     $scope.state = 'select'
