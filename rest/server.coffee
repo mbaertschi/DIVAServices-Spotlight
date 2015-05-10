@@ -57,6 +57,7 @@ app.get '/multiscaleipd', (req, res) ->
       {
         select:
           name: 'detector'
+          description: 'this is just a test description for a select'
           options:
             required: true
             values: [
@@ -68,6 +69,7 @@ app.get '/multiscaleipd', (req, res) ->
       {
         number:
           name: 'blurSigma'
+          description: 'this is just a test description for blugSigma'
           options:
             required: true
             min: 0
@@ -107,6 +109,7 @@ app.get '/multiscaleipd', (req, res) ->
       {
         text:
           name: 'textInputTest'
+          description: 'this is just a test description for a text input'
           options:
             required: true
             min: 3
@@ -116,6 +119,7 @@ app.get '/multiscaleipd', (req, res) ->
       {
         checkbox:
           name: 'testCheckbox'
+          description: 'this is just a test description for a checkbox'
           options:
             required: true
             default: 1

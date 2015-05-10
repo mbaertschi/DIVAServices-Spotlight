@@ -47,12 +47,20 @@
           "highlighter": {
             "enum": ["polygon", "rectangle"]
           },
+          "description": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
           "number": {
             "type": "object",
             "required": ["name", "options"],
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
@@ -86,6 +94,9 @@
               "name": {
                 "$ref": "#/definitions/name"
               },
+              "description": {
+                "$ref": "#/definitions/description"
+              },
               "options": {
                 "type": "object",
                 "required": ["required", "default"],
@@ -114,6 +125,9 @@
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
@@ -146,6 +160,9 @@
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
