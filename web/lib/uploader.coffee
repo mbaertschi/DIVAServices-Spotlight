@@ -10,6 +10,8 @@ uploader = exports = module.exports = class Uploader
   constructor: ->
     @multer = multer
       dest: nconf.get 'web:uploader:destination'
+      limits:
+        fieldSize: 10240000
       rename: (fieldname, filename, req, res) ->
         name = 'upload_' + req.body.index
         name
@@ -34,7 +36,6 @@ uploader = exports = module.exports = class Uploader
           extension: file.extension
           url: url
           path: file.path
-          processType: req.body.processType
           index: req.body.index
 
         res.imageData = image
@@ -42,8 +43,6 @@ uploader = exports = module.exports = class Uploader
         Image.update query, image, upsert: true, (err) ->
           logger.log 'warn', 'could not save image', 'Uploader' if err?
           return
-
-    @multer
 
   multer: =>
     @multer

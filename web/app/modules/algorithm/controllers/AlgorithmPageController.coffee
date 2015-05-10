@@ -8,11 +8,21 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$timeout'
   'mySettings'
   '$window'
-  'diaStateManager'
+  'imagesService'
+  '$sce'
+  'diaHighlighterManager'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, diaStateManager) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService, $sce, diaHighlighterManager) ->
     $scope.algorithm = null
-    $scope.state = 'upload'
+    $scope.images = []
+    $scope.selectedImage = null
+    $scope.highlighter = null
+    $scope.invalidHighlighter = false
+    $scope.invalideCaptcha = true
+    $scope.invalidForm = false
+    $scope.inputs = []
+    $scope.model = {}
+    $scope.state = 'select'
 
     requestAlgorithm = ->
       host = $stateParams.host
@@ -21,10 +31,24 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
       if host? and algorithm?
         algorithmService.fetch(host, algorithm).then (res) ->
+          algorithm = null
           try
-            $scope.algorithm = JSON.parse res.data
+            algorithm = JSON.parse res.data
           catch e
             toastr.error 'Could not parse algorithm information', 'Error'
+          finally
+            if algorithm
+              $scope.algorithm = algorithm
+              angular.forEach algorithm.input, (entry) ->
+                key = Object.keys(entry)[0]
+                if key is 'highlighter'
+                  $scope.highlighter = entry.highlighter
+                else
+                  $scope.inputs.push entry
+                  if key is 'select'
+                    $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
+                  else
+                    $scope.model[entry[key].name] = entry[key].options.default or null
         , (err) ->
           toastr.error 'Could not load algorithm', 'Error'
       else
@@ -32,16 +56,75 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
     requestAlgorithm()
 
-    $scope.$on 'stateChange', ->
-      $scope.safeApply ->
-        $scope.state = diaStateManager.state
-        $scope.currentImage = diaStateManager.image
+    requestImages = ->
+      imagesService.fetch().then (res) ->
+        $scope.images = res.data
+      , (err) ->
+        toastr.err err.statusText, err.status
 
-    $scope.goToState = (state) ->
-      diaStateManager.switchState state
+    requestImages()
+
+    $scope.toggleCheckbox = (name) ->
+      if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
+
+    $scope.submit = ->
+      if not $scope.captcha.getCaptchaData().valid
+        toastr.warning 'Please fill in captcha', 'Captcha Warning'
+      else
+        algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
+          toastr.info 'Valid captcha', res.status
+        , (err) ->
+          $scope.captcha.refresh()
+          if err.status is 403
+            toastr.warning 'Invalid Captcha', err.status
+          else
+            toastr.error 'Captcha validation failed. Please try again', err.status
+
+    $scope.setHighlighterStatus = (status) ->
+      $scope.safeApply ->
+        $scope.invalidHighlighter = status
+
+    $scope.setFormValidity = (status) ->
+      $scope.invalidForm = status
+
+    $scope.setSelectedImage = (image) ->
+      $scope.state = 'highlight'
+      $scope.selectedImage = image
+      $scope.submitted = false
+      if $scope.captcha then $scope.captcha.refresh()
 
     $scope.goBack = ->
       $state.go 'algorithms'
+
+    $scope.captchaOptions =
+      imgPath: 'images/'
+      captcha:
+        numberOfImages: 5
+        url: '/captcha'
+      init: (captcha) ->
+        $scope.captcha = captcha
+
+    $scope.polygonDescription = $sce.trustAsHtml(
+      """
+      <p>Usage:</p>
+      <p>- Click on image to add new points</p>
+      <p>- Click and drag a point to move it</p>
+      <p>- Click on the first point to close the polygon</p>
+      <p>- Once the polygon is closed, you can move it by clicking and dragging on the inner part of it</p>
+      <p>- Once the polygon is closed, you can add more points by clicking on itds edges</p>
+      <p>- Once the polygon is closed, you can remove it and draw a new one by clicking outside of the polygon</p>
+      """
+    )
+
+    $scope.rectangleDescription = $sce.trustAsHtml(
+      """
+      <p>Usage:</p>
+      <p>- Click and drag mouse from top left to bottom right to span a new rectangle</p>
+      <p>- Move the rectangle by clicking and dragging on its inner part</p>
+      <p>- Resize the rectangle by clicking and dragging on of its corner points</p>
+      <p>- Remove the rectangle and draw a new one by clicking outside of the rectangle</p>
+      """
+    )
 
     mySettings.fetch('socket').then (socket) ->
       if socket.run?

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+function header {
+  echo ""
+  echo "$(tput setaf 6)$1$(tput sgr0)"
+  echo ""
+}
+
+header 'Generating server documentation ...'
+source ./scripts/generate-server-doc
+
+header 'Generating client documentation ...'
+source ./scripts/generate-client-doc

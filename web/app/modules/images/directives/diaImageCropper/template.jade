@@ -1,0 +1,100 @@
+.row
+  .col-xs-12.col-md-12.col-lg-9
+    .img-container
+      img#cropper-img(ng-src='{{currentImage}}', alt='Picture')
+  .col-xs-12.cold-md-12.col-lg-3#right
+    .col-xs-12.docs-preview.clearfix
+      .img-preview.preview-lg
+    .col-xs-12.docs-data
+      .input-group
+        label.input-group-addon(for='dataX') X
+        input#dataX.fix-height.form-control(type='text', placeholder='x', disabled, ng-model='dataX')
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataY') Y
+        input#dataY.fix-height.form-control(type='text', placeholder='y', disabled, ng-model='dataY')
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataWidth') Width
+        input#dataWidth.fix-height.form-control(type='text', placeholder='width', disabled, ng-model='dataWidth')
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataHeight') Height
+        input#dataHeight.fix-height.form-control(type='text', placeholder='height', disabled, ng-model='dataHeight')
+        span.input-group-addon px
+      .input-group
+        label.input-group-addon(for='dataRotate') Rotate
+        input#dataRotate.fix-height.form-control(type='text', placeholder='rotate', disabled, ng-model='dataRotate')
+        span.input-group-addon deg
+  .col-xs-12.col-md-12.col-lg-9
+    .col-xs-12.col-sm-6.col-lg-5.fix-bottom
+      .btn-group
+        button.btn.btn-primary(data-method='setDragMode', data-option='move', type='button', ng-click='apply({method: "setDragMode", option: "move"})')
+          span(tooltip-placement='top', tooltip='Move')
+            span.icon.fa.fa-arrows
+        button.btn.btn-primary(data-method='setDragMode', data-option='crop', type='button', ng-click='apply({method: "setDragMode", option: "crop"})')
+          span(tooltip-placement='top', tooltip='Crop')
+            span.icon.fa.fa-crop
+        button.btn.btn-primary(data-method='zoom', data-option='0.1', type='button', ng-click='apply({method: "zoom", option: "0.1"})')
+          span(tooltip-placement='top', tooltip='Zoom In')
+            span.icon.fa.fa-search-plus
+        button.btn.btn-primary(data-method='zoom', data-option='-0.1', type='button', ng-click='apply({method: "zoom", option: "-0.1"})')
+          span(tooltip-placement='top', tooltip='Zoom Out')
+            span.icon.fa.fa-search-minus
+        button.btn.btn-primary(data-method='rotate', data-option='-45', type='button', ng-click='apply({method: "rotate", option: "-1"})')
+          span(tooltip-placement='top', tooltip='Rotate Left')
+            span.icon.fa.fa-rotate-left
+        button.btn.btn-primary(data-method='rotate', data-option='45', type='button', ng-click='apply({method: "rotate", option: "1"})')
+          span(tooltip-placement='top', tooltip='Rotate Right')
+            span.icon.fa.fa-rotate-right
+    .col-xs-12.col-sm-6.col-lg-2#ratationInput
+      form.form-inline
+        .form-group
+          .input-group
+            span.input-group-addon(tooltip-placement='top', tooltip='Rotation Angle')
+              i.fa.fa-angle-right
+            input.form-control(type='text', id='rotationInput', ng-model='rotationAngle')
+    .col-xs-12.col-lg-5
+      .btn-group.btn-group-justified(data-toggle='buttons')
+        label.btn.btn-primary.active(ng-click='apply({method: "setAspectRatio", option: "1.7777777777777777"})')
+          input.sr-only(name='aspestRatio', value='1.7777777777777777', type='radio')
+          span
+            | 16:9
+        label.btn.btn-primary(ng-click='apply({method: "setAspectRatio", option: "1.3333333333333333"})')
+          input#aspestRatio2.sr-only(name='aspestRatio', value='1.3333333333333333', type='radio')
+          span
+            | 4:3
+        label.btn.btn-primary(ng-click='apply({method: "setAspectRatio", option: "1"})')
+          input#aspestRatio3.sr-only(name='aspestRatio', value='1', type='radio')
+          span
+            | 1:1
+        label.btn.btn-primary(ng-click='apply({method: "setAspectRatio", option: "0.6666666666666666"})')
+          input#aspestRatio4.sr-only(name='aspestRatio', value='0.6666666666666666', type='radio')
+          span
+            | 2:3
+        label.btn.btn-primary(ng-click='apply({method: "setAspectRatio", option: "NaN"})')
+          input#aspestRatio5.sr-only(name='aspestRatio', value='NaN', type='radio')
+          span
+            | Free
+  .col-lg-offset-6.col-lg-6
+    .pull-right.option-buttons
+      button.btn.btn-primary(ng-click='apply({method: "clear"})')
+        span(tooltip-placement='top', tooltip='Remove cropper')
+          i.fa.fa-refresh
+          = ' '
+          | Remove
+      button.btn.btn-primary(ng-click='apply({method: "reset"})')
+        span(tooltip-placement='top', tooltip='Reset your current changes')
+          i.fa.fa-remove
+          = ' '
+          | Reset
+      button.btn.btn-primary(ng-click='apply({method: "skip"})')
+        span(tooltip-placement='top', tooltip='Go to filtering')
+          i.fa.fa-arrow-right
+          = ' '
+          | Skip
+      button.btn.btn-primary(ng-click='apply({method: "save"})')
+        span(tooltip-placement='top', tooltip='Save and go to next state')
+          i.fa.fa-check
+          = ' '
+          | Save

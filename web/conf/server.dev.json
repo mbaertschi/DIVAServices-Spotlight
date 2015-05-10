@@ -13,11 +13,10 @@
   "poller": {
     "run": true,
     "interval": 3600000,
-    "rootUrl": "http://localhost:8081",
-    "retries": 7
+    "rootUrl": "http://localhost:8081"
   },
-  "parser": {
-    "mandatoryFields": ["name", "url"]
+  "loader": {
+    "retries": 7
   },
   "pusher": {
     "run": true
@@ -45,19 +44,6 @@
       "ttl": 60000,
       "autoRemove": "interval",
       "autoRemoveInterval": 600000
-    }
-  },
-  "web": {
-    "socket": {
-      "run": true
-    },
-    "uploader": {
-      "destination": "./public/uploads/"
-    },
-    "dropzone": {
-      "addRemoveLinks" : true,
-      "maxFilesize": 1,
-      "maxFiles": 10
     }
   }
 }

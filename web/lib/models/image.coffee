@@ -10,7 +10,6 @@ ImageSchema = mongoose.Schema
   extension: String
   url: String
   path: String
-  processType: String
 
 ImageSchema.index sessionId: 1
 

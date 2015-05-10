@@ -28,6 +28,9 @@ poller = exports = module.exports = class Poller
         @_loadAlgorithms hosts, next
       , (algorithms, next) =>
         @_compareAndStoreAlgorithms algorithms, next
+      , (algorithms, changedAlgorithms, addedAlgorithms, next) =>
+        @_removeInvalidAlgorithms algorithms, (err, removedAlgorithms) =>
+          next err, changedAlgorithms, addedAlgorithms, removedAlgorithms
     ], (err, changedAlgorithms, addedAlgorithms, removedAlgorithms) =>
       if err?
         logger.log 'error', "iteration status=failed with error=#{err}"
@@ -53,6 +56,7 @@ poller = exports = module.exports = class Poller
         logger.log 'error', 'mongoose error could not load hosts from mongoDB', 'Poller'
         return callback err
       else
+        if not hosts.length then logger.log 'info', 'there are no hosts available', 'Poller'
         callback null, hosts
 
   _loadAlgorithms: (hosts, callback) =>
@@ -67,16 +71,16 @@ poller = exports = module.exports = class Poller
             uri: host.url
             timeout: 8000
             headers: {}
-          retries: nconf.get 'poller:retries'
+          retries: nconf.get 'loader:retries'
 
         loader.get settings, (err, res) ->
           if err?
-            logger.log 'error', "loading status=failed for host=#{hostname}. #{err}", 'Poller'
+            logger.log 'error', "loading status=failed for host=#{hostname} error=#{err}", 'Poller'
             next()
           else
-            parser.parse res, (err, structure) ->
+            parser.parseRoot res, (err, structure) ->
               if err?
-                logger.log 'warn', "could not parse structure and no changes were applied for host #{hostname}. Error = #{err}", 'Poller'
+                logger.log 'warn', "could not parse structure and no changes were applied for host=#{hostname} error=#{err}", 'Poller'
                 next()
               else
                 if (structure?.records?.length > 0)
@@ -134,26 +138,31 @@ poller = exports = module.exports = class Poller
                   addedAlgorithms.push algorithm
                 next()
       , (err) =>
-        return err if err?
-        @db.getAlgorithms (err, dbAlgorithms) =>
-          if err?
-            logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
-            callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
-          else
-            async.each dbAlgorithms, (dbAlgorithm, next) =>
-              index = _.findIndex algorithms, 'url': dbAlgorithm.url
-              if index < 0
-                logger.log 'info', "removed algorithm host=#{dbAlgorithm.host}, algorithm=#{dbAlgorithm.url}", 'Poller'
-                removedAlgorithms.push dbAlgorithm
-                @Algorithm.find(url: dbAlgorithm.url).remove().exec()
-              next()
-            , (err) =>
-              if err?
-                logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
-              callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
+        callback err, algorithms, changedAlgorithms, addedAlgorithms
     else
       logger.log 'info', 'there are no algorithms available', 'Poller'
-      callback null, changedAlgorithms, addedAlgorithms, removedAlgorithms
+      callback null, algorithms, changedAlgorithms, addedAlgorithms
+
+  _removeInvalidAlgorithms: (algorithms, callback) =>
+    removedAlgorithms = []
+    @db.getAlgorithms (err, dbAlgorithms) =>
+      if err?
+        logger.log 'warn', 'there was an error while loading the algorithms form the mongoDB. Check the mongoose log', 'Poller'
+        callback null, removedAlgorithms
+      else if dbAlgorithms?
+        async.each dbAlgorithms, (dbAlgorithm, next) =>
+          index = _.findIndex algorithms, 'url': dbAlgorithm.url
+          if index < 0
+            logger.log 'info', "removed algorithm host=#{dbAlgorithm.host}, algorithm=#{dbAlgorithm.url}", 'Poller'
+            removedAlgorithms.push dbAlgorithm
+            @Algorithm.find(url: dbAlgorithm.url).remove().exec()
+          next()
+        , (err) ->
+          if err?
+            logger.log 'warn', 'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log', 'Poller'
+          callback null, removedAlgorithms
+      else
+        callback null, removedAlgorithms
 
   _logPause: (callback) =>
     interval = parseInt nconf.get 'poller:interval'

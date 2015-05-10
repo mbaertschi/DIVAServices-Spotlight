@@ -3,7 +3,9 @@ if not process.env.NODE_ENV? or process.env.NODE_ENV not in ['dev', 'prod']
   process.exit(0)
 
 nconf       = require 'nconf'
-nconf.file './conf/server.' + process.env.NODE_ENV + '.json'
+nconf.add 'server', type: 'file', file: './conf/server.' + process.env.NODE_ENV + '.json'
+nconf.add 'client', type: 'file', file: './conf/client.' + process.env.NODE_ENV + '.json'
+nconf.add 'schemas', type: 'file', file: './conf/schemas.' + process.env.NODE_ENV + '.json'
 
 express     = require 'express'
 session     = require 'express-session'
@@ -38,13 +40,12 @@ exports.startServer = (port, path, callback) ->
   # redirect requests that include a trailing slash.
   app.use slashes(false)
 
-  app.use bodyParser.urlencoded
-    extended: true
-    limit: 1000000000000000
-
   # enable multipart/form-data
   uploader = new Uploader
   app.use uploader.multer
+
+  # enable body parser for json
+  app.use bodyParser.json()
 
   # routing
   app.use router

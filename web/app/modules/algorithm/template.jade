@@ -1,28 +1,40 @@
-.row
-  big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
+.algorithm-view
+  .row
+    big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
 
-.row
-  #content.span(ng-if='!algorithm')
-    | This algorithm seems to be outdated. Click 
-    button.btn-primary.btn-xs(ui-sref='algorithms') here
-    = ' '
-    | to go back to algorithms page.
-  .col-md-12(ng-if='algorithm')
-    panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
-      p {{algorithm.description}}
-    panel(heading='Upload images', icon='cloud-upload', ng-if='state=="upload"')
-      .text-muted Upload your images here. Maximum amount of images is 10. To use an image, click on it. To delete it, click on remove.
-      br
-      form.dropzone(action='/upload', data-dia-smart-dropzone='dropzoneConfig')
-    panel(heading='Cropping', icon='crop', go-to='goToState("upload")', go-to-text='Back to Upload', ng-if='state=="cropping"')
-      .text-muted Crop and rotate your image here. Once you are done, click on save to go to next state. Click on reset to undo all changes or click on clear to remove cropper.
-      br
-      .dia-image-cropper
-    panel(heading='Filtering', icon='adjust', go-to='goToState("cropping")', go-to-text='Back to Cropping', ng-if='state=="filtering"')
-      .text-muted Apply your image filters here. Once you are done, click on save to go to next state. Click on clear to undo all changes.
-      br
-      .dia-image-filter
-    panel(heading='Highlighting', icon='paint-brush', go-to='goToState("filtering")', go-to-text='Back to Filtering', ng-if='state=="highlighting"')
-      .text-muted Apply your image highlighting here. Once you are done, click on save to go to next state.
-      br
-      .dia-image-highlighter
+  .row
+    #content.span(ng-if='!algorithm')
+      .text-muted This algorithm seems to be outdated. Click
+        a#link(ui-sref='algorithms') here
+        | to go back to algorithms page.
+    .col-md-12(ng-if='algorithm')
+      panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
+        .text-muted Description:
+          = ' '
+          span.text-normal {{algorithm.description}}
+      panel(heading='Image Gallery', icon='image')
+        dia-algorithm-images-gallery
+      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage && state=="highlight"')
+        .col-xs-12.col-lg-6
+          .canvas-wrapper(ng-if='highlighter')
+            span(ng-if='highlighter=="rectangle"')
+              i.help.fa.fa-question-circle(tooltip-placement="right", tooltip-html-unsafe='{{rectangleDescription}}')
+              = ' '
+              | Rectangle Selection
+            canvas#rectangle(ng-if='highlighter=="rectangle"', dia-algorithm-rectangle)
+            span(ng-if='highlighter=="polygon"')
+              i.help.fa.fa-question-circle(ng-if='highlighter=="polygon"', tooltip-placement="right", tooltip-html-unsafe='{{polygonDescription}}')
+              = ' '
+              | Polygon Selection
+            canvas#polygon(ng-if='highlighter=="polygon"', dia-algorithm-polygon)
+          .selected-image(ng-if='!highlighter')
+            img#image(ng-src='{{selectedImage.url}}')
+        .col-xs-12.col-lg-6(ng-if='inputs.length')
+          dia-algorithm-inputs
+        .col-xs-12.col-sm-12.col-md-12.col-lg-6
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+            div(captcha='', options='captchaOptions')
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+            .pull-right
+              span.error(ng-if='invalidHighlighter') Please select a {{highlighter}}
+              button.btn.btn-primary(ng-click='submit()', ng-disabled='invalidForm || invalidHighlighter') Submit

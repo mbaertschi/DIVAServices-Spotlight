@@ -1,0 +1,28 @@
+.row
+  .col-xs-12.col-lg-7
+    .img-container
+      img#caman-img(ng-src='{{currentImage}}', alt='Picture')
+  .col-xs-12.col-lg-5#right
+    .col-xs-12.dynamic-filters(ng-repeat='(filterName, settings) in filters')
+      .form-group.filter
+        label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+        .col-xs-7.col-lg-8.filter-settings
+          input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='{{settings.min}}', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+          span.filter-value.text-muted {{value}}
+        .col-xs-1
+          button.btn.btn-xs.btn-warning(ng-click='reset(filterName)')
+            span(tooltip-placement='top', tooltip='Reset Default')
+              span.icon.fa.fa-remove
+.row
+  .col-xs-12
+    .pull-right
+      button.btn.btn-primary(ng-click='reset()')
+        span(tooltip-placement='top', tooltip='Reset your current changes')
+          i.fa.fa-remove
+          = ' '
+          | Reset
+      button.btn.btn-primary(ng-click='save()')
+        span(tooltip-placement='top', tooltip='Save and go to gallery')
+          i.fa.fa-check
+          = ' '
+          | Save

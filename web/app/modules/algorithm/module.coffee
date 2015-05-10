@@ -1,6 +1,6 @@
 module = angular.module 'app.algorithm', [
   'ui.router'
-  'underscore'
+  'visualCaptcha'
 ]
 
 module.config [
