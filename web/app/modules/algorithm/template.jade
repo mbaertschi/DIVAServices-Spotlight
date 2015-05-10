@@ -14,14 +14,27 @@
           span.text-normal {{algorithm.description}}
       panel(heading='Image Gallery', icon='image')
         dia-algorithm-images-gallery
-      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage')
+      panel(heading='Apply Algorithm on Image', icon='image', ng-if='selectedImage && state=="highlight"')
         .col-xs-12.col-lg-6
-          dia-algorithm-image(ng-if='highlighter')
+          .canvas-wrapper(ng-if='highlighter')
+            span(ng-if='highlighter=="rectangle"')
+              i.help.fa.fa-question-circle(tooltip-placement="right", tooltip-html-unsafe='{{rectangleDescription}}')
+              = ' '
+              | Rectangle Selection
+            canvas#rectangle(ng-if='highlighter=="rectangle"', dia-algorithm-rectangle)
+            span(ng-if='highlighter=="polygon"')
+              i.help.fa.fa-question-circle(ng-if='highlighter=="polygon"', tooltip-placement="right", tooltip-html-unsafe='{{polygonDescription}}')
+              = ' '
+              | Polygon Selection
+            canvas#polygon(ng-if='highlighter=="polygon"', dia-algorithm-polygon)
           .selected-image(ng-if='!highlighter')
             img#image(ng-src='{{selectedImage.url}}')
-        .col-xs-12.col-lg-6
+        .col-xs-12.col-lg-6(ng-if='inputs.length')
           dia-algorithm-inputs
-
-        .col-md-offset-4.col-md-8
-          .pull-right
-            button.btn.btn-primary(ng-click='submit()', ng-disabled='inputForm.$invalid') Submit
+        .col-xs-12.col-sm-12.col-md-12.col-lg-6
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+            div(captcha='', options='captchaOptions')
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+            .pull-right
+              span.error(ng-if='invalidHighlighter') Please select a {{highlighter}}
+              button.btn.btn-primary(ng-click='submit()', ng-disabled='invalidForm || invalidHighlighter') Submit

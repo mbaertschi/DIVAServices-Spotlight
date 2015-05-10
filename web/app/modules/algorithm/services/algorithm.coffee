@@ -8,4 +8,11 @@ angular.module('app.algorithm').factory 'algorithmService', [
         algorithm: algorithm
         host: host).then (res) ->
           res
+
+    checkCaptcha: (params) ->
+      data = {}
+      data[params.name] = params.value
+      name: data.value
+      $http.post('/captcha/try/', data).then (res) ->
+        res
 ]

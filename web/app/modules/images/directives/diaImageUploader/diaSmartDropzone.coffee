@@ -58,6 +58,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
               image =
                 src: res.url
                 name: res.serverName
+              @.emit 'thumbnail', file, image.src + '?' + new Date().getTime()
             else
               image =
                 src: file.src
