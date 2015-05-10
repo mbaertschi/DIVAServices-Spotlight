@@ -4,22 +4,44 @@ fs        = require 'fs-extra'
 logger    = require '../lib/logger'
 ExifImage = require('exif').ExifImage
 lwip      = require 'lwip'
+async     = require 'async'
 
 uploader = exports = module.exports = (router) ->
 
   router.get '/upload', (req, res) ->
     Image = mongoose.model 'Image'
+    validImages =[]
+    invalidImages = []
+
+    removeInvalidImages = ->
+      async.each invalidImages, (image, next) ->
+        query =
+          path: image.path
+        Image.remove query, (err) ->
+          next err
+      , (err) ->
+        if err then logger.log 'warning', "could not remove invalid images error=#{err}", 'UploadManager'
 
     params =
       sessionId: req.sessionID
-      # processType: 'upload'
 
     Image.find params, (err, images) ->
       if err?
         logger.log 'warn', 'could not load images', 'UploadManager'
         res.status(404).json 'Error': 'Could not load images'
       else
-        res.status(200).json images
+        async.each images, (image, next) ->
+          fs.stat image.path, (err, stats) ->
+            if err
+              logger.log 'debug', "skipping image=#{image.path} reason=missing", 'UploadManager'
+              invalidImages.push image
+            else
+              validImages.push image
+            next()
+        , (err) ->
+          if err then logger.log 'warning', "could not ensure that images exists error=#{err}", 'UploadManager'
+          res.status(200).json validImages
+          removeInvalidImages()
 
   router.post '/upload', (req, res) ->
 
