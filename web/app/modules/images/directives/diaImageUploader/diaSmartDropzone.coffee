@@ -30,7 +30,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
                     index: image.index
                     src: image.url
                   self.emit 'addedfile', mockFile
-                  self.emit 'thumbnail', mockFile, image.url + '?' + new Date().getTime()
+                  self.emit 'thumbnail', mockFile, image.thumbUrl + '?' + new Date().getTime()
                   self.emit 'success', mockFile
                   index = availableIndexes.indexOf image.index
                   if index >= 0
@@ -58,7 +58,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
               image =
                 src: res.url
                 name: res.serverName
-              @.emit 'thumbnail', file, image.src + '?' + new Date().getTime()
+              @.emit 'thumbnail', file, res.thumbUrl + '?' + new Date().getTime()
             else
               image =
                 src: file.src

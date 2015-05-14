@@ -2,7 +2,7 @@ multer      = require 'multer'
 fs          = require 'fs-extra'
 nconf       = require 'nconf'
 mongoose    = require 'mongoose'
-logger      = require './logger'
+logger      = require '../lib/logger'
 util        = require 'util'
 
 uploader = exports = module.exports = class Uploader

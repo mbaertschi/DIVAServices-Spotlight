@@ -48,5 +48,8 @@
       "autoRemove": "interval",
       "autoRemoveInterval": 600000
     }
+  },
+  "server": {
+    "timeout": 120000
   }
 }

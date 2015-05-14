@@ -4,4 +4,4 @@
     | to go to upload manager.
 .image-gallery(ng-if='images.length', ng-repeat='image in images')
   .col-xs-6.col-sm-6.col-md-4.col-lg-2(ng-click='selectImage($index)')
-    img.image(ng-src='{{image.url}}')
+    img.image(ng-src='{{image.thumbUrl}}')

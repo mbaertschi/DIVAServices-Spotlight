@@ -13,14 +13,13 @@ http        = require 'http'
 sysPath     = require 'path'
 slashes     = require 'connect-slashes'
 bodyParser  = require 'body-parser'
-multer      = require 'multer'
 router      = require './routes/router'
 Poller      = require './lib/poller'
 Pusher      = require './lib/pusher'
 Mongo       = require './lib/mongo'
 mongoose    = require 'mongoose'
 SessionStore= require './lib/sessionStore'
-Uploader    = require './lib/uploader'
+Uploader    = require './routes/uploader'
 
 # start the web service
 exports.startServer = (port, path, callback) ->
@@ -55,7 +54,7 @@ exports.startServer = (port, path, callback) ->
 
   # wrap express with httpServer for socket.io
   app.server = http.createServer app
-  app.server.timeout = 2000
+  app.server.timeout = nconf.get 'server:timeout'
 
   # start the pusher if defined
   if nconf.get 'pusher:run'
