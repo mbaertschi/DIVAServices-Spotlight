@@ -14,6 +14,7 @@ angular.module('app.images').directive 'diaImageFilter', [
       busy = false
       changed = false
       image = $(element).find '.img-container > img'
+      scope.rendering = false
 
       render = _.throttle ->
         if busy
@@ -33,6 +34,7 @@ angular.module('app.images').directive 'diaImageFilter', [
         caman.render ->
           busy = false
           render() if changed
+          scope.safeApply -> scope.rendering = false
         , 300
 
       image.on 'load', ->
@@ -40,6 +42,7 @@ angular.module('app.images').directive 'diaImageFilter', [
 
       scope.filter = (filter, value) ->
         if scope.filters[filter]
+          scope.safeApply -> scope.rendering = true
           scope.filters[filter].value = value
           render()
 
@@ -47,8 +50,10 @@ angular.module('app.images').directive 'diaImageFilter', [
         caman.reset()
 
       scope.save = ->
+        scope.safeApply -> scope.rendering = true
         base64Image = caman.toBase64()
         imagesService.post(base64Image, diaStateManager.image.name).then (res) ->
+          scope.safeApply -> scope.rendering = false
           if res.status isnt 200
             toastr.warning 'Image was not safed on server', 'Warning'
           else
@@ -60,33 +65,25 @@ angular.module('app.images').directive 'diaImageFilter', [
         'brightness':
           default: 0
           value: 0
-          min: -100
         'vibrance':
           default: 0
           value: 0
-          min: -100
         'saturation':
           default: 0
           value: 0
-          min: -100
         'exposure':
           default: 0
           value: 0
-          min: -100
         'contrast':
           default: 0
           value: 0
-          min: -100
         'hue':
           default: 0
           value: 0
-          min: 0
         'gamma':
-          default: 0
-          value: 0
-          min: -100
+          default: 1
+          value: 1
         'sharpen':
           default: 0
           value: 0
-          min: 0
 ]
