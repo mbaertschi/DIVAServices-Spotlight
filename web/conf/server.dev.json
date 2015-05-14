@@ -1,15 +1,18 @@
 {
-  "logger": [
-    {
-      "type": "file",
-      "filename": "logs/server.log",
-      "maxLogSize": 10485760,
-      "backups": 5
-    },
-    {
-      "type": "console"
-    }
-  ],
+  "logger": {
+    "appenders": [
+      {
+        "type": "file",
+        "filename": "logs/server.log",
+        "maxLogSize": 2048,
+        "backups": 5
+      },
+      {
+        "type": "console"
+      }
+    ],
+    "level": "DEBUG"
+  },
   "poller": {
     "run": true,
     "interval": 3600000,
