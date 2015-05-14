@@ -2,6 +2,7 @@ module = angular.module 'app.images', [
   'ui.router'
   'ngAnimate'
   'ngTouch'
+  'superbox'
 ]
 
 module.config [
