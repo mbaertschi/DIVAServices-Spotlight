@@ -12,6 +12,7 @@ DiaDistributed = angular.module 'app', [
   'app.algorithms'
   'app.algorithm'
   'app.images'
+  'app.results'
 ]
 
 DiaDistributed.config [

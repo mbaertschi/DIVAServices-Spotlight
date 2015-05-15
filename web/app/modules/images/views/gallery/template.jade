@@ -7,4 +7,4 @@
       .text-muted(ng-if='!images.length') You currently have no images uploaded. Please
         a.upload-link(ui-sref='images.upload') upload
         | some images
-      superbox(superbox-model='images', superbox-actions='actions')
+      superbox.as-superbox(superbox-model='images', superbox-actions='actions')

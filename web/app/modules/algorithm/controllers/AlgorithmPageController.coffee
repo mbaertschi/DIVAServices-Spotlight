@@ -23,42 +23,42 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.inputs = []
     $scope.model = {}
     $scope.state = 'select'
+    $scope.id = null
 
     requestAlgorithm = ->
-      host = $stateParams.host
-      algorithm = $stateParams.algorithm
-      url = 'http://' + host + '/' + algorithm
+      $scope.id = $stateParams.id
 
-      if host? and algorithm?
-        algorithmService.fetch(host, algorithm).then (res) ->
-          algorithm = null
-          try
-            algorithm = JSON.parse res.data
-          catch e
-            toastr.error 'Could not parse algorithm information', 'Error'
-          finally
-            if algorithm
-              $scope.algorithm = algorithm
-              angular.forEach algorithm.input, (entry) ->
-                key = Object.keys(entry)[0]
-                if key is 'highlighter'
-                  $scope.highlighter = entry.highlighter
+      algorithmService.fetch($scope.id).then (res) ->
+        algorithm = null
+        try
+          algorithm = JSON.parse res.data
+        catch e
+          toastr.error 'Could not parse algorithm information', 'Error'
+        finally
+          if algorithm
+            $scope.algorithm = algorithm
+            angular.forEach algorithm.input, (entry) ->
+              key = Object.keys(entry)[0]
+              if key is 'highlighter'
+                $scope.highlighter = entry.highlighter
+              else
+                $scope.inputs.push entry
+                if key is 'select'
+                  $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
                 else
-                  $scope.inputs.push entry
-                  if key is 'select'
-                    $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
-                  else
-                    $scope.model[entry[key].name] = entry[key].options.default or null
-        , (err) ->
-          toastr.error 'Could not load algorithm', 'Error'
-      else
-        toastr.warning 'This algorithm does not have a correct url and can therefore not be loaded', 'Warning'
+                  $scope.model[entry[key].name] = entry[key].options.default or null
+      , (err) ->
+        toastr.error 'Could not load algorithm', 'Error'
 
     requestAlgorithm()
 
     requestImages = ->
       imagesService.fetch().then (res) ->
-        $scope.images = res.data
+        angular.forEach res.data, (image) ->
+          image.thumbPath = image.thumbPath + '?' + new Date().getTime()
+          image.url = image.url + '?' + new Date().getTime()
+          @.push image
+        , $scope.images
       , (err) ->
         toastr.err err.statusText, err.status
 
@@ -72,7 +72,11 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         toastr.warning 'Please fill in captcha', 'Captcha Warning'
       else
         algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
-          toastr.info 'Valid captcha', res.status
+          params =
+            algorithm: $scope.id
+            inputs: $scope.model
+            highlighter: diaHighlighterManager.get()
+          toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
         , (err) ->
           $scope.captcha.refresh()
           if err.status is 403

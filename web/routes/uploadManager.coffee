@@ -44,6 +44,7 @@ uploader = exports = module.exports = (router) ->
   router.post '/upload', (req, res) ->
 
     if res.imageData?
+      # image comes from multer / dropzone
       query =
         sessionId: res.imageData.sessionId
         serverName: res.imageData.serverName

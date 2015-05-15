@@ -33,16 +33,22 @@ api = exports = module.exports = (router) ->
 
   router.get '/api/algorithm', (req, res) ->
     params = req.query
-    return res.status(404).json 'error': 'Not found' if not params.host and not params.algorithm
-    url = 'http://' + params.host + '/' + params.algorithm
+    return res.status(404).json 'error': 'Not found' if not params.id
 
-    settings =
-      options:
-        uri: url
-        timeout: 8000
-        headers: {}
-      retries: nconf.get 'poller:retries'
+    Algorithm = mongoose.model 'Algorithm'
+    Algorithm.findById params.id, (err, algorithm) ->
+      if err
+        res.status(404).json error: 'Not found'
+      else
+        url = algorithm.url
 
-    loader.get settings, (err, resp) ->
-      return res.status(404).json 'error': 'Algorithm could not be loaded' if err?
-      res.status(200).json resp
+        settings =
+          options:
+            uri: url
+            timeout: 8000
+            headers: {}
+          retries: nconf.get 'poller:retries'
+
+        loader.get settings, (err, resp) ->
+          return res.status(404).json 'error': 'Algorithm could not be loaded' if err?
+          res.status(200).json resp
