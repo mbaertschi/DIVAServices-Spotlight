@@ -13,7 +13,7 @@ angular.module('app').factory 'diaProcessingQueue', [
     execNext = ->
       task = queue[0]
       url = '/api/algorithm'
-      data = task.algorithm
+      data = task.item
 
       $http.post(url, data).then (res) ->
         queue.shift()
@@ -29,10 +29,22 @@ angular.module('app').factory 'diaProcessingQueue', [
     results: ->
       return results
 
-    push: (algorithm) ->
+    queue: ->
+      return queue
+
+    abort: (entry) ->
+      angular.forEach queue, (queueEntry, index) ->
+        if entry.item.index is queueEntry.item.index
+          queue.splice index, 1
+          entry.defer.reject 'Canceled by user'
+          if index is 0 and queue.length > 0
+            execNext()
+
+    push: (item) ->
       defer = $q.defer()
+      item.index = queue.length
       queue.push
-        algorithm: algorithm
+        item: item
         defer: defer
       if queue.length is 1
         execNext()
@@ -44,5 +56,5 @@ angular.module('app').factory 'diaProcessingQueue', [
         results.push res.data
       , (err) ->
         $rootScope.tasks--
-        toastr.error "Post request for #{err.config.data.algorithm.name} failed", err.data.code
+        if err.config? then toastr.error "Post request for #{err.config.data.algorithm.name} failed", err.data.code
 ]

@@ -74,13 +74,15 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
         toastr.warning 'Please fill in captcha', 'Captcha Warning'
       else
         algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
-          params =
+          item =
             algorithm: $scope.algorithm
+            image: $scope.selectedImage
             inputs: $scope.model
             highlighter: diaHighlighterManager.get()
-          params.algorithm.id = $scope.id
+          item.algorithm.id = $scope.id
           toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
-          diaProcessingQueue.push params
+          diaProcessingQueue.push item
+          $scope.captcha.refresh()
         , (err) ->
           $scope.captcha.refresh()
           if err.status is 403
