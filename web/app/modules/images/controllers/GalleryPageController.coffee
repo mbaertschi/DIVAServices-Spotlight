@@ -16,10 +16,21 @@ angular.module('app.images').controller 'GalleryPageController', [
       diaStateManager.switchState 'cropping', image
       $state.go 'images.upload'
 
+    deleteEntry = (entry) ->
+      imagesService.delete(entry.serverName).then (res) ->
+        toastr.info "Deleted image #{entry.clientName}", res.data
+        requestImages()
+      , (err) ->
+        toastr.error "Could not delete image #{entry.clientName}", 'err.status'
+
     $scope.actions = [
       {
         label: 'Edit'
         action: editEntry
+      }
+      {
+        label: 'Delete'
+        action: deleteEntry
       }
     ]
 
@@ -27,6 +38,7 @@ angular.module('app.images').controller 'GalleryPageController', [
 
     requestImages = ->
       imagesService.fetch().then (res) ->
+        $scope.images = []
         angular.forEach res.data, (image) ->
           img =
             title: image.clientName.replace('.png', '')
@@ -35,6 +47,7 @@ angular.module('app.images').controller 'GalleryPageController', [
             img_thumb: image.thumbUrl + '?' + new Date().getTime()
             img_full: image.url + '?' + new Date().getTime()
             serverName: image.serverName
+            clientName: image.clientName
           @.push img
         , $scope.images
       , (err) ->
