@@ -4,9 +4,9 @@
   .row
     .col-xs-12
       panel(heading='Finished tasks', icon='info')
-        .text-muted(ng-if='!results') You currently have no results. Click
+        .text-muted(ng-if='!results.length') You currently have no results. Click
           a#link(ui-sref='algorithms') here
           | to go to algorithms page.
-        .text-muted(ng-if='results') Description:
-          = ' '
-          span.text-normal blub
+        .text-muted(ng-if='results.length')
+          ul(ng-repeat='result in results')
+            li {{result.algorithm.name}}

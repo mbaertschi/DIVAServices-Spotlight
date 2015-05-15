@@ -1,6 +1,7 @@
 nconf       = require 'nconf'
 loader      = require '../lib/loader'
 mongoose    = require 'mongoose'
+_           = require 'lodash'
 
 api = exports = module.exports = (router) ->
 
@@ -45,10 +46,38 @@ api = exports = module.exports = (router) ->
         settings =
           options:
             uri: url
-            timeout: 8000
+            timeout: nconf.get 'server:timeout'
             headers: {}
           retries: nconf.get 'poller:retries'
 
         loader.get settings, (err, resp) ->
           return res.status(404).json 'error': 'Algorithm could not be loaded' if err?
           res.status(200).json resp
+
+  router.post '/api/algorithm', (req, res) ->
+    return res.status(404).send() if not req.body.algorithm
+    Algorithm = mongoose.model 'Algorithm'
+    Algorithm.findById req.body.algorithm.id, (err, algorithm) ->
+      if err or not algorithm?
+        res.status(404).send()
+      else
+        body =
+          algorithm: algorithm.toObject()
+          inputs: req.body.inputs
+          highlighter: req.body.highlighter
+
+        settings =
+          options:
+            uri: algorithm.url
+            timeout: nconf.get 'server:timeout'
+            headers: {}
+            method: 'POST'
+            json: true
+
+        loader.post settings, body, (err, result) ->
+          if err?
+            if _.isNumber err
+              return res.status(err).send()
+            else
+              return res.status(500).json err
+          res.status(200).json result

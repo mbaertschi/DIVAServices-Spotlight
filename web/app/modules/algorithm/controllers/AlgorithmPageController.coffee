@@ -5,14 +5,14 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   'toastr'
   'mySocket'
   '$state'
-  '$timeout'
   'mySettings'
   '$window'
   'imagesService'
   '$sce'
   'diaHighlighterManager'
+  'diaProcessingQueue'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService, $sce, diaHighlighterManager) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, mySettings, $window, imagesService, $sce, diaHighlighterManager, diaProcessingQueue) ->
     $scope.algorithm = null
     $scope.images = []
     $scope.selectedImage = null
@@ -68,15 +68,19 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
 
     $scope.submit = ->
-      if not $scope.captcha.getCaptchaData().valid
+      if $scope.tasks >= 3
+        toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
+      else if not $scope.captcha.getCaptchaData().valid
         toastr.warning 'Please fill in captcha', 'Captcha Warning'
       else
         algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
           params =
-            algorithm: $scope.id
+            algorithm: $scope.algorithm
             inputs: $scope.model
             highlighter: diaHighlighterManager.get()
+          params.algorithm.id = $scope.id
           toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+          diaProcessingQueue.push params
         , (err) ->
           $scope.captcha.refresh()
           if err.status is 403

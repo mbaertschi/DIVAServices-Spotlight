@@ -1,6 +1,7 @@
 angular.module('app.results').controller 'ResultsPageController', [
   '$scope'
+  'diaProcessingQueue'
 
-  ($scope) ->
-    
+  ($scope, diaProcessingQueue) ->
+    $scope.results = diaProcessingQueue.results()
 ]

@@ -36,6 +36,7 @@ exports.startServer = (port, path, callback) ->
 
   # route all static files to http paths.
   app.use '', express.static(sysPath.resolve(path))
+
   # redirect requests that include a trailing slash.
   app.use slashes(false)
 
@@ -48,9 +49,10 @@ exports.startServer = (port, path, callback) ->
 
   # routing
   app.use router
+
   # route all non-existent files to `index.html`
   app.all '*', (req, res) ->
-    res.sendfile sysPath.join(path, 'index.html')
+    res.sendFile __dirname + '/' + sysPath.join(path, 'index.html')
 
   # wrap express with httpServer for socket.io
   app.server = http.createServer app
