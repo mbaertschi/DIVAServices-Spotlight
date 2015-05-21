@@ -1,0 +1,11 @@
+h1 Input
+img(ng-src='{{inputData.image.path}}')
+.table-responsive.input-values
+  table.table.table-bordered
+    thead
+      th Selector
+      th Value
+    tbody
+      tr(ng-repeat='(key, value) in inputData.input.inputs')
+        td {{key}}
+        td {{value}}

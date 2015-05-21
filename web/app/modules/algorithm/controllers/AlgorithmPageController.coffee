@@ -18,6 +18,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.selectedImage = null
     $scope.highlighter = null
     $scope.invalidHighlighter = false
+    $scope.captchaEnabled = false
     $scope.invalideCaptcha = true
     $scope.invalidForm = false
     $scope.inputs = []
@@ -70,25 +71,35 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.submit = ->
       if $scope.tasks >= 3
         toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
-      else if not $scope.captcha.getCaptchaData().valid
-        toastr.warning 'Please fill in captcha', 'Captcha Warning'
+      else if $scope.captchaEnabled
+        if not $scope.captcha.getCaptchaData().valid
+          toastr.warning 'Please fill in captcha', 'Captcha Warning'
+        else
+          algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
+            item =
+              algorithm: $scope.algorithm
+              image: $scope.selectedImage
+              inputs: $scope.model
+              highlighter: diaHighlighterManager.get()
+            item.algorithm.id = $scope.id
+            toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+            diaProcessingQueue.push item
+            $scope.captcha.refresh()
+          , (err) ->
+            $scope.captcha.refresh()
+            if err.status is 403
+              toastr.warning 'Invalid Captcha', err.status
+            else
+              toastr.error 'Captcha validation failed. Please try again', err.status
       else
-        algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
-          item =
-            algorithm: $scope.algorithm
-            image: $scope.selectedImage
-            inputs: $scope.model
-            highlighter: diaHighlighterManager.get()
-          item.algorithm.id = $scope.id
-          toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
-          diaProcessingQueue.push item
-          $scope.captcha.refresh()
-        , (err) ->
-          $scope.captcha.refresh()
-          if err.status is 403
-            toastr.warning 'Invalid Captcha', err.status
-          else
-            toastr.error 'Captcha validation failed. Please try again', err.status
+        item =
+          algorithm: $scope.algorithm
+          image: $scope.selectedImage
+          inputs: $scope.model
+          highlighter: diaHighlighterManager.get()
+        item.algorithm.id = $scope.id
+        toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+        diaProcessingQueue.push item
 
     $scope.setHighlighterStatus = (status) ->
       $scope.safeApply ->

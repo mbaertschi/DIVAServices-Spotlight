@@ -3,6 +3,8 @@ http        = require 'http'
 sysPath     = require 'path'
 bodyParser  = require 'body-parser'
 
+SERVER_TIMEOUT = 1
+
 app = express()
 
 # enable body parser for json
@@ -43,7 +45,7 @@ app.get '/', (req, res) ->
 app.get '/histogramenhancement', (req, res) ->
   records =
     name: 'histogramenhancement'
-    description: 'this will apply the histogramenhancement algorithm on your image'
+    description: 'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'
     url: 'http://localhost:8081/histogramenhancement'
     input: []
 
@@ -52,8 +54,8 @@ app.get '/histogramenhancement', (req, res) ->
 app.post '/histogramenhancement', (req, res) ->
   # set a random timeout before sendin response
   # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * 11 + 1
-  setTimeout (-> res.send req.body), random * 1000
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 
 app.get '/multiscaleipd', (req, res) ->
@@ -142,8 +144,8 @@ app.get '/multiscaleipd', (req, res) ->
 app.post '/multiscaleipd', (req, res) ->
   # set a random timeout before sendin response
   # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * 11 + 1
-  setTimeout (-> res.send req.body), random * 1000
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 app.get '/noise', (req, res) ->
   records =
@@ -161,8 +163,8 @@ app.get '/noise', (req, res) ->
 app.post '/noise', (req, res) ->
   # set a random timeout before sendin response
   # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * 11 + 1
-  setTimeout (-> res.send req.body), random * 1000
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 app.get '/otsubinazrization', (req, res) ->
   records =
@@ -176,8 +178,8 @@ app.get '/otsubinazrization', (req, res) ->
 app.post '/otsubinazrization', (req, res) ->
   # set a random timeout before sendin response
   # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * 11 + 1
-  setTimeout (-> res.send req.body), random * 1000
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 app.get '/sauvalabinarization', (req, res) ->
   records =
@@ -191,8 +193,8 @@ app.get '/sauvalabinarization', (req, res) ->
 app.post '/sauvalabinarization', (req, res) ->
   # set a random timeout before sendin response
   # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * 11 + 1
-  setTimeout (-> res.send req.body), random * 1000
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 app.use (err, req, res, next) ->
   res.status err.status or 500

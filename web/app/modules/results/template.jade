@@ -7,6 +7,19 @@
         .text-muted(ng-if='!results.length') You currently have no results. Click
           a#link(ui-sref='algorithms') here
           | to go to algorithms page.
-        .text-muted(ng-if='results.length')
-          ul(ng-repeat='result in results')
-            li {{result.algorithm.name}}
+        table.display.projects-table.table.table-striped.table-bordered.table-hover(ng-if='results.length', dia-datatable='', data-table-options='tableOptions', cellspacing='0', width='100%')
+          thead
+            tr
+              th
+              th Algorithm
+              th Description
+              th Image
+              th Started
+              th Ended
+              th Duration
+          caption.smart-datatable-child-format(data-child-control='td.details-control')
+            .wrapper
+              .col-xs-12.col-lg-6
+                .table-inputs(dia-table-inputs='', data-input-data='d')
+              .col-xs-12.col-lg-6
+                .table-outputs(dia-table-outputs='', data-output-data='d.output')

@@ -26,6 +26,25 @@ angular.module('app').factory 'diaProcessingQueue', [
         if queue.length > 0
           execNext()
 
+    createResult = (input, output) ->
+      result =
+        algorithm:
+          name: '<span class="text-capitalize">' + input.algorithm.name + '</span>'
+          description: input.algorithm.description
+        image:
+          path: input.image.url
+          thumbPath: '<div class="project-members"><img src=\"' + input.image.thumbUrl + '\"></div>'
+        submit:
+          start: input.start
+          end: input.end
+          duration: input.duration
+        input:
+          inputs: input.inputs
+          highlighter: input.highlighter
+        output: output
+      # console.log JSON.stringify(result)
+      return result
+
     results: ->
       return results
 
@@ -40,9 +59,11 @@ angular.module('app').factory 'diaProcessingQueue', [
           if index is 0 and queue.length > 0
             execNext()
 
+
     push: (item) ->
       defer = $q.defer()
       item.index = queue.length
+      item.start = new Date
       queue.push
         item: item
         defer: defer
@@ -50,10 +71,15 @@ angular.module('app').factory 'diaProcessingQueue', [
         execNext()
       $rootScope.tasks++
       defer.promise.then (res) ->
+        end = new Date
+        duration = end / 1000 - item.start / 1000
+        item.start = moment(item.start).format 'HH:mm:ss'
+        item.end = moment(end).format 'HH:mm:ss'
+        item.duration = duration.toFixed(2)
         $rootScope.tasks--
         $rootScope.finished++
-        toastr.info "Algorithm #{res.data.algorithm.name} is done", 'Info'
-        results.push res.data
+        toastr.info "Algorithm #{item.algorithm.name} is done", 'Info'
+        results.push createResult(item, res.data)
       , (err) ->
         $rootScope.tasks--
         if err.config? then toastr.error "Post request for #{err.config.data.algorithm.name} failed", err.data.code
