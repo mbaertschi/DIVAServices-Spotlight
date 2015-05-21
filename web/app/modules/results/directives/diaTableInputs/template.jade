@@ -1,6 +1,7 @@
 h1 Input
-img(ng-src='{{inputData.image.path}}')
-.table-responsive.input-values
+canvas#input-canvas(ng-if='highlighter')
+img(ng-if='!highlighter', ng-src='{{image.path}}')
+.table-responsive.input-values(ng-if='inputData.input.inputs')
   table.table.table-bordered
     thead
       th Selector

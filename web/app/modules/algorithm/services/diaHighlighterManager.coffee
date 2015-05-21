@@ -17,7 +17,10 @@ angular.module('app.algorithm').factory 'diaHighlighterManager', [
           scaling: @path.view.zoom
           closed: @path.closed
           pivot: @path.pivot
-          segments: @path.segments
+          segments: []
+        angular.forEach @path.segments, (segment) ->
+          @.push [segment.point.x, segment.point.y]
+        , highlighter.segments
         highlighter
       else
         {}

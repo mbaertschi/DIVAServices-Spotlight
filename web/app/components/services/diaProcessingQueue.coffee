@@ -42,7 +42,10 @@ angular.module('app').factory 'diaProcessingQueue', [
           inputs: input.inputs
           highlighter: input.highlighter
         output: output
-      # console.log JSON.stringify(result)
+
+      if angular.equals {}, result.input.inputs then result.input.inputs = null
+      if angular.equals {}, result.input.highlighter then result.input.highlighter = null
+
       return result
 
     results: ->

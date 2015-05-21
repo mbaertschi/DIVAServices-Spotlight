@@ -171,7 +171,11 @@ app.get '/otsubinazrization', (req, res) ->
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
-    input: []
+    input: [
+      {
+        highlighter: 'rectangle'
+      }
+    ]
 
   res.send records
 
