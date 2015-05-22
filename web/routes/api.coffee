@@ -2,6 +2,8 @@ nconf       = require 'nconf'
 loader      = require '../lib/loader'
 mongoose    = require 'mongoose'
 fs          = require 'fs-extra'
+Validator   = require('jsonschema').Validator
+validator   = new Validator
 _           = require 'lodash'
 
 api = exports = module.exports = (router) ->
@@ -66,13 +68,16 @@ api = exports = module.exports = (router) ->
           callback null, image.toString('base64')
 
     processResponse = (result, callback) ->
-      if result.image
+      responseErrors = validator.validate(result, nconf.get('parser:details:responseSchema')).errors
+      if responseErrors.length
+        callback { status: 400, error: responseErrors[0].stack }
+      else if result.image
         image = new Buffer result.image, 'base64'
         path = req.body.image.path.replace '.png', '_output.png'
         url = path.replace 'public', ''
         fs.writeFile path, image, (err) ->
           if err
-            callback 500
+            callback { status: 500, error: err }
           else
             result.image = url
             callback null, result
@@ -113,6 +118,6 @@ api = exports = module.exports = (router) ->
                   return res.status(500).json err
               processResponse result, (err, resultProcessed) ->
                 if err
-                  res.status(err).send()
+                  res.status(err.status).json err.error
                 else
                   res.status(200).json resultProcessed
