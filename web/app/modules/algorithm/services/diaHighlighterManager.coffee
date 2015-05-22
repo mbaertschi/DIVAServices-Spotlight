@@ -19,7 +19,6 @@ angular.module('app.algorithm').factory 'diaHighlighterManager', [
           pivot: @path.pivot
           segments: []
         inverse = 1 / highlighter.scaling
-        console.log inverse
         angular.forEach @path.segments, (segment) ->
           x = segment.point.x * inverse
           y = segment.point.y * inverse

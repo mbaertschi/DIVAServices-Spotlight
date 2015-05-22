@@ -3,6 +3,8 @@ logger    = require '../lib/logger'
 ExifImage = require('exif').ExifImage
 lwip      = require 'lwip'
 
+MAX_SIZE = 1024
+
 utils = exports = module.exports = {}
 
 utils.getFilesizeInBytes = (filename) ->
@@ -49,26 +51,40 @@ utils.getRotation = (path, callback) ->
     callback "could not load ExifImage on image=#{path} error=#{err}"
 
 utils.orientateJpegImage = (image, callback) ->
+  path = image.path
+
+  resizeAndRotate = (image, rotate) ->
+    lwip.open path, (err, img) ->
+      if err?
+        logger.log 'info', "lwip could not load image=#{path} error=#{err}", 'Utils'
+        callback()
+      else
+        width = img.width()
+        height = img.height()
+        if width > height
+          if width > MAX_SIZE
+            width = MAX_SIZE
+            height = height * (width/img.width())
+        else
+          if height > MAX_SIZE
+            height = MAX_SIZE
+            width = width * (height/img.height())
+        img.batch().resize(width, height).rotate(rotate).writeFile path, (err) ->
+          if err then logger.log 'info', "lwip could not rotate image=#{path} error=#{err}", 'Utils'
+          callback()
+
   if image.type is 'image/jpeg'
-    path = image.path
     utils.getRotation path, (err, rotate) ->
       if err?
         logger.log 'info', err, 'Utils'
         callback()
       else
         if rotate
-          lwip.open path, (err, img) ->
-            if err?
-              logger.log 'info', "lwip could not load image=#{path} error=#{err}", 'Utils'
-              callback()
-            else
-              img.batch().rotate(rotate).writeFile path, (err) ->
-                if err then logger.log 'info', "lwip could not rotate image=#{path} error=#{err}", 'Utils'
-                callback()
+          resizeAndRotate image, rotate, callback
         else
-          callback()
+          resizeAndRotate image, 0, callback
   else
-    callback()
+    resizeAndRotate image, 0, callback
 
 utils.convertToPng = (image, callback) ->
   if image.type isnt 'image/png'

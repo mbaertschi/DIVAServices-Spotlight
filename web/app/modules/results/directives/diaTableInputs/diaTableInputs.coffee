@@ -42,6 +42,9 @@ angular.module('app.results').directive 'diaTableInputs', [
       asyncLoadCanvas = ->
         canvas = element.find('#input-canvas')
         if canvas.length
+          if path
+            path.remove()
+            path = null
           paper.clear()
           canvas = canvas[0]
           initializeCanvas ->
