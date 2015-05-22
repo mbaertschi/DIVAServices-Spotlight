@@ -8,7 +8,7 @@ angular.module('app.results').directive 'diaTableInputs', [
     templateUrl: 'modules/results/directives/diaTableInputs/template.html'
 
     link: (scope, element, attrs) ->
-      canvas = path = null
+      paperInput = canvas = path = null
       strokeColor = 'red'
       strokeWidth = null
       scope.highlighter = scope.inputData?.input.highlighter
@@ -21,14 +21,12 @@ angular.module('app.results').directive 'diaTableInputs', [
         $(img).bind 'load', ->
           width = $('.table-inputs')[0].clientWidth
           height = img.height * (width/img.width)
-          # width = img.width
-          # height = img.height
           canvas.width = width
           canvas.height = height
           callback()
 
       drawPath = (callback) ->
-        path = new Path
+        path = new paperInput.Path
         path.strokeColor = strokeColor
         path.strokeWidth = scope.highlighter.strokeWidth
         angular.forEach scope.highlighter.segments, (segment) ->
@@ -45,21 +43,23 @@ angular.module('app.results').directive 'diaTableInputs', [
           if path
             path.remove()
             path = null
-          paper.clear()
+          if paperInput
+            paperInput.paper.clear()
           canvas = canvas[0]
           initializeCanvas ->
             paper.install window
-            paper.setup canvas
-            if project.layers[0]?
-              project.layers[0].removeChildren()
+            paperInput = new paper.PaperScope
+            paperInput.setup canvas
+            if paperInput.project.layers[0]?
+              paperInput.project.layers[0].removeChildren()
             raster = new Raster
               source: scope.image.path
-              position: view.center
+              position: paperInput.view.center
             raster.on 'load', ->
-              scale = view.size.width / @.bounds.width
+              scale = paperInput.view.size.width / @.bounds.width
               drawPath ->
-                view.zoom = scale
-                view.update()
+                paperInput.view.zoom = scale
+                paperInput.view.update()
 
 
       # wait for elements to be loaded in dom

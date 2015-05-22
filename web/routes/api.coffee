@@ -56,7 +56,7 @@ api = exports = module.exports = (router) ->
           res.status(200).json resp
 
   router.post '/api/algorithm', (req, res) ->
-    return res.status(404).send() if not req.body.algorithm
+    return res.status(400).send() if not req.body.algorithm
 
     getImageAsBase64 = (path, callback) ->
       fs.readFile path, (err, image) ->
@@ -64,6 +64,23 @@ api = exports = module.exports = (router) ->
           callback "could not base64 encode image"
         else
           callback null, image.toString('base64')
+
+    processResponse = (result, callback) ->
+      if result.image
+        image = new Buffer result.image, 'base64'
+        path = req.body.image.path.replace '.png', '_output.png'
+        url = path.replace 'public', ''
+        fs.writeFile path, image, (err) ->
+          if err
+            callback 500
+          else
+            result.image = url
+            callback null, result
+      else if result.highlighters
+        result.image = req.body.image.url
+        callback null, result
+      else
+        callback null, result
 
     Algorithm = mongoose.model 'Algorithm'
     Algorithm.findById req.body.algorithm.id, (err, algorithm) ->
@@ -94,4 +111,8 @@ api = exports = module.exports = (router) ->
                   return res.status(err).send()
                 else
                   return res.status(500).json err
-              res.status(200).json result
+              processResponse result, (err, resultProcessed) ->
+                if err
+                  res.status(err).send()
+                else
+                  res.status(200).json resultProcessed

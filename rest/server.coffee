@@ -51,7 +51,11 @@ app.get '/histogramenhancement', (req, res) ->
     name: 'histogramenhancement'
     description: 'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'
     url: 'http://localhost:8081/histogramenhancement'
-    input: []
+    input: [
+      {
+        highlighter: 'rectangle'
+      }
+    ]
 
   res.send records
 
@@ -62,10 +66,22 @@ app.post '/histogramenhancement', (req, res) ->
   fs.writeFile './images/histogramenhancement.png', decodedImage, (err) ->
     # we don't handle error
     console.log err if err?
-    # set a random timeout before sendin response
-    # timeout should be between 1 and server.timeout
-    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-    setTimeout (-> res.send {}), random * 1000
+
+    # dummy output information
+    result =
+      output:
+        field1: 'information field1'
+        field2: 'information field2'
+        field3: 4
+
+    # lets send another image for testing purposes
+    fs.readFile './test.png', (err, img) ->
+      if not err?
+        result.image = img.toString('base64')
+      # set a random timeout before sendin response
+      # timeout should be between 1 and server.timeout
+      random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+      setTimeout (-> res.send result), random * 1000
 
 
 app.get '/multiscaleipd', (req, res) ->
@@ -158,10 +174,36 @@ app.post '/multiscaleipd', (req, res) ->
   fs.writeFile './images/multiscaleipd.png', decodedImage, (err) ->
     # we don't handle error
     console.log err if err?
+
+    # dummy output information
+    result =
+      output:
+        field1: 'information field1'
+        field2: 'information field2'
+        field3: 4
+      highlighters: [
+        {
+          segments: [
+            [100, 100]
+            [150, 100]
+            [150, 150]
+            [100, 150]
+          ]
+        }
+        {
+          segments: [
+            [200, 200]
+            [250, 200]
+            [250, 250]
+            [200, 250]
+          ]
+        }
+      ]
+
     # set a random timeout before sendin response
     # timeout should be between 1 and server.timeout
     random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-    setTimeout (-> res.send {}), random * 1000
+    setTimeout (-> res.send result), random * 1000
 
 app.get '/noise', (req, res) ->
   records =
@@ -183,10 +225,18 @@ app.post '/noise', (req, res) ->
   fs.writeFile './images/noise.png', decodedImage, (err) ->
     # we don't handle error
     console.log err if err?
+
+    # dummy output information
+    result =
+      output:
+        field1: 'information field1'
+        field2: 'information field2'
+        field3: 4
+
     # set a random timeout before sendin response
     # timeout should be between 1 and server.timeout
     random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-    setTimeout (-> res.send {}), random * 1000
+    setTimeout (-> res.send result), random * 1000
 
 app.get '/otsubinazrization', (req, res) ->
   records =
@@ -194,24 +244,55 @@ app.get '/otsubinazrization', (req, res) ->
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
     input: [
-      {
-        highlighter: 'rectangle'
-      }
+      # {
+      #   highlighter: 'rectangle'
+      # }
     ]
 
   res.send records
 
 app.post '/otsubinazrization', (req, res) ->
+  return res.status(400).json error: 'no image provided' if not req.body.image?
   # write image to images folder for testing purposes
   base64image = req.body.image
   decodedImage = new Buffer(base64image, 'base64')
   fs.writeFile './images/otsubinazrization.png', decodedImage, (err) ->
     # we don't handle error
     console.log err if err?
-    # set a random timeout before sendin response
-    # timeout should be between 1 and server.timeout
-    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-    setTimeout (-> res.send {}), random * 1000
+
+    # dummy output information
+    result =
+      output:
+        field1: 'information field1'
+        field2: 'information field2'
+        field3: 4
+      highlighters: [
+        {
+          segments: [
+            [100, 100]
+            [150, 100]
+            [150, 150]
+            [100, 150]
+          ]
+        }
+        {
+          segments: [
+            [200, 200]
+            [250, 200]
+            [250, 250]
+            [200, 250]
+          ]
+        }
+      ]
+
+    # lets send another image for testing purposes
+    fs.readFile './test.png', (err, img) ->
+      if not err?
+        result.image = img.toString('base64')
+      # set a random timeout before sendin response
+      # timeout should be between 1 and server.timeout
+      random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+      setTimeout (-> res.send result), random * 1000
 
 app.get '/sauvalabinarization', (req, res) ->
   records =
@@ -229,10 +310,14 @@ app.post '/sauvalabinarization', (req, res) ->
   fs.writeFile './images/sauvalabinarization.png', decodedImage, (err) ->
     # we don't handle error
     console.log err if err?
+
+    # dummy output information
+    result = {}
+
     # set a random timeout before sendin response
     # timeout should be between 1 and server.timeout
     random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-    setTimeout (-> res.send {}), random * 1000
+    setTimeout (-> res.send result), random * 1000
 
 app.use (err, req, res, next) ->
   res.status err.status or 500
