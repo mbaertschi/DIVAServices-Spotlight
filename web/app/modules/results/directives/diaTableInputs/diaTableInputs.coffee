@@ -21,6 +21,8 @@ angular.module('app.results').directive 'diaTableInputs', [
         $(img).bind 'load', ->
           width = $('.table-inputs')[0].clientWidth
           height = img.height * (width/img.width)
+          # width = img.width
+          # height = img.height
           canvas.width = width
           canvas.height = height
           callback()
@@ -30,7 +32,9 @@ angular.module('app.results').directive 'diaTableInputs', [
         path.strokeColor = strokeColor
         path.strokeWidth = scope.highlighter.strokeWidth
         angular.forEach scope.highlighter.segments, (segment) ->
-          @.add new Point segment[0], segment[1]
+          x = segment[0] * scope.highlighter.scaling
+          y = segment[1] * scope.highlighter.scaling
+          @.add new Point x, y
         , path
         path.closed = true
         callback()
