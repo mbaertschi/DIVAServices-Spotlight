@@ -1,18 +1,67 @@
+.row.busy-spinning(ng-if='rendering')
+  i.fa.fa-4x.fa-cog.fa-spin
 .row
   .col-xs-12.col-lg-7
     .img-container
       img#caman-img(ng-src='{{currentImage}}', alt='Picture')
   .col-xs-12.col-lg-5#right
+    .fix-height
     .col-xs-12.dynamic-filters(ng-repeat='(filterName, settings) in filters')
-      .form-group.filter
-        label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
-        .col-xs-7.col-lg-8.filter-settings
-          input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='{{settings.min}}', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
-          span.filter-value.text-muted {{value}}
-        .col-xs-1
-          button.btn.btn-xs.btn-warning(ng-click='reset(filterName)')
-            span(tooltip-placement='top', tooltip='Reset Default')
-              span.icon.fa.fa-remove
+      div(ng-switch='', on='filterName')
+        .form-group.filter(ng-switch-when='brightness')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='-100', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset brightness')
+                span.icon.fa.fa-remove
+        .form-group.filter(ng-switch-when='exposure')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='-100', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset exposure')
+                span.icon.fa.fa-remove
+        .form-group.filter(ng-switch-when='vibrance')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='-100', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset vibrance')
+                span.icon.fa.fa-remove
+        .form-group.filter(ng-switch-when='saturation')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='-100', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset saturation')
+                span.icon.fa.fa-remove
+        .form-group.filter(ng-switch-when='contrast')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='-100', data-slider-max='100', data-slider-step='1', data-slider-value='0', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset contrast')
+                span.icon.fa.fa-remove
+        .form-group.filter(ng-switch-when='gamma')
+          label.filter-name.col-xs-4.col-lg-3(for='{{filterName}}') {{filterName}}
+          .col-xs-7.col-lg-8.filter-settings
+            input.form-control.dia-bootstrap-slider(data-dia-bootstrap-slider='', type='text', value='', id='{{filterName}}', data-target-filter='{{filterName}}', data-slider-min='0.1', data-slider-max='1', data-slider-step='0.01', data-slider-value='1', data-slider-handle='square')
+            span.filter-value.text-muted {{value}}
+          .col-xs-1
+            button.btn.btn-xs.btn-warning.reset-button(ng-click='reset(filterName)')
+              span(tooltip-placement='top', tooltip='Reset gamma')
+                span.icon.fa.fa-remove
 .row
   .col-xs-12
     .pull-right

@@ -32,7 +32,7 @@
         .col-xs-12.col-lg-6(ng-if='inputs.length')
           dia-algorithm-inputs
         .col-xs-12.col-sm-12.col-md-12.col-lg-6
-          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6(ng-if='captchaEnabled')
             div(captcha='', options='captchaOptions')
           .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
             .pull-right

@@ -9,7 +9,7 @@ module.config [
   ($stateProvider) ->
     $stateProvider.state 'algorithm',
       parent: 'main'
-      url: '/algorithm/:host/:algorithm'
+      url: '/algorithm/:id'
       templateUrl: 'modules/algorithm/template.html'
       controller: 'AlgorithmPageController'
       data:

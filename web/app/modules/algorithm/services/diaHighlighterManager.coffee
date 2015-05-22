@@ -9,7 +9,7 @@ angular.module('app.algorithm').factory 'diaHighlighterManager', [
       @path = null
 
     highlighterManager.get = ->
-      if @path
+      if @path?.view?
         highlighter =
           strokeWidth: @path.strokeWidth
           strokeColor: @path.strokeColor
@@ -17,7 +17,13 @@ angular.module('app.algorithm').factory 'diaHighlighterManager', [
           scaling: @path.view.zoom
           closed: @path.closed
           pivot: @path.pivot
-          segments: @path.segments
+          segments: []
+        inverse = 1 / highlighter.scaling
+        angular.forEach @path.segments, (segment) ->
+          x = segment.point.x * inverse
+          y = segment.point.y * inverse
+          @.push [x, y]
+        , highlighter.segments
         highlighter
       else
         {}

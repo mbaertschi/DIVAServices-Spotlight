@@ -2,7 +2,7 @@ multer      = require 'multer'
 fs          = require 'fs-extra'
 nconf       = require 'nconf'
 mongoose    = require 'mongoose'
-logger      = require './logger'
+logger      = require '../lib/logger'
 util        = require 'util'
 
 uploader = exports = module.exports = class Uploader
@@ -11,7 +11,7 @@ uploader = exports = module.exports = class Uploader
     @multer = multer
       dest: nconf.get 'web:uploader:destination'
       limits:
-        fieldSize: 10240000
+        fieldSize: 10 * 1024 * 1024
       rename: (fieldname, filename, req, res) ->
         name = 'upload_' + req.body.index
         name

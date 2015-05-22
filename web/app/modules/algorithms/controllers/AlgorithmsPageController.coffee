@@ -22,12 +22,7 @@ angular.module('app.algorithms').controller 'AlgorithmsPageController', [
     retrieveLinks()
 
     $scope.thisAlgorithm = (algorithm) ->
-      url = new URL algorithm.url
-      host = url.host
-      algorithm = url.pathname
-      if algorithm
-        algorithm = algorithm.substring(1)
-      $state.go 'algorithm', {host: host, algorithm: algorithm}
+      $state.go 'algorithm', {id: algorithm._id}
 
     mySettings.fetch('socket').then (socket) ->
       if socket.run?

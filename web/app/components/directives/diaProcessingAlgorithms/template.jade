@@ -1,0 +1,13 @@
+.project-context.hidden-xs.dropdown(dropdown)
+  span.label Processing Queue: {{tasks}}
+  span.project-selector.dropdown-toggle(dropdown-toggle)
+    | Algorithms in processing
+    = ' '
+    i.fa.fa-angle-down
+  ul.dropdown-menu(ng-if='entries.length')
+    li(ng-repeat='entry in entries')
+      a
+        span.thumb
+          img(ng-src='{{entry.item.image.thumbUrl}}')
+        span.name.text-capitalize.text-muted {{entry.item.algorithm.name}}
+        span.remove-icon.text-danger.i.fa.fa-times-circle(ng-click='cancel(entry)')

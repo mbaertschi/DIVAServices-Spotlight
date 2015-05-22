@@ -19,12 +19,32 @@
     }
   }
 
+  .fix-height {
+    margin-bottom: 25px;
+  }
+
   @media (min-width: 1200px) {
     #right {
       position: fixed;
       right: 10px;
       overflow-y: hidden;
       width: 35%;
+    }
+  }
+
+  .busy-spinning {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(1, 1, 1, 0.6);
+
+    .fa-cog {
+      margin-top: 20vh;
+      color: #fff;
     }
   }
 

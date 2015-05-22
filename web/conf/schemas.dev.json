@@ -34,6 +34,50 @@
       }
     },
     "details": {
+      "responseSchema": {
+        "id": "responseSchema",
+        "$schema": "http://json-schema.org/schema#",
+        "description": "schema for response entry",
+        "definitions":  {
+          "segment": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "properties": {
+          "output": {
+            "type": "object"
+          },
+          "image": {
+            "type": "uri"
+          },
+          "highlighters": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "description": "Segments",
+              "type": "object",
+              "required": ["segments"],
+              "properties": {
+                "segments": {
+                  "$ref": "#/definitions/segment"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "algorithmSchema": {
         "id": "algorithmSchema",
         "$schema": "http://json-schema.org/schema#",
@@ -47,12 +91,20 @@
           "highlighter": {
             "enum": ["polygon", "rectangle"]
           },
+          "description": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
           "number": {
             "type": "object",
             "required": ["name", "options"],
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
@@ -86,6 +138,9 @@
               "name": {
                 "$ref": "#/definitions/name"
               },
+              "description": {
+                "$ref": "#/definitions/description"
+              },
               "options": {
                 "type": "object",
                 "required": ["required", "default"],
@@ -114,6 +169,9 @@
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
@@ -146,6 +204,9 @@
             "properties": {
               "name": {
                 "$ref": "#/definitions/name"
+              },
+              "description": {
+                "$ref": "#/definitions/description"
               },
               "options": {
                 "type": "object",
