@@ -82,7 +82,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
               inputs: $scope.model
               highlighter: diaHighlighterManager.get()
             item.algorithm.id = $scope.id
-            toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+            # toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
             diaProcessingQueue.push item
             $scope.captcha.refresh()
           , (err) ->
@@ -98,7 +98,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
           inputs: $scope.model
           highlighter: diaHighlighterManager.get()
         item.algorithm.id = $scope.id
-        toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+        # toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
         diaProcessingQueue.push item
 
     $scope.setHighlighterStatus = (status) ->

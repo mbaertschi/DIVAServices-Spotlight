@@ -1,6 +1,7 @@
 nconf       = require 'nconf'
 loader      = require '../lib/loader'
 mongoose    = require 'mongoose'
+fs          = require 'fs-extra'
 _           = require 'lodash'
 
 api = exports = module.exports = (router) ->
@@ -56,28 +57,41 @@ api = exports = module.exports = (router) ->
 
   router.post '/api/algorithm', (req, res) ->
     return res.status(404).send() if not req.body.algorithm
+
+    getImageAsBase64 = (path, callback) ->
+      fs.readFile path, (err, image) ->
+        if err?
+          callback "could not base64 encode image"
+        else
+          callback null, image.toString('base64')
+
     Algorithm = mongoose.model 'Algorithm'
     Algorithm.findById req.body.algorithm.id, (err, algorithm) ->
       if err or not algorithm?
         res.status(404).send()
       else
         body =
-          algorithm: algorithm.toObject()
           inputs: req.body.inputs
           highlighter: req.body.highlighter
 
-        settings =
-          options:
-            uri: algorithm.url
-            timeout: nconf.get 'server:timeout'
-            headers: {}
-            method: 'POST'
-            json: true
+        getImageAsBase64 req.body.image.path, (err, base64Image) ->
+          if err
+            res.status(500).json error: err
+          else
+            body.image = base64Image
 
-        loader.post settings, body, (err, result) ->
-          if err?
-            if _.isNumber err
-              return res.status(err).send()
-            else
-              return res.status(500).json err
-          res.status(200).json result
+            settings =
+              options:
+                uri: algorithm.url
+                timeout: nconf.get 'server:timeout'
+                headers: {}
+                method: 'POST'
+                json: true
+
+            loader.post settings, body, (err, result) ->
+              if err?
+                if _.isNumber err
+                  return res.status(err).send()
+                else
+                  return res.status(500).json err
+              res.status(200).json result

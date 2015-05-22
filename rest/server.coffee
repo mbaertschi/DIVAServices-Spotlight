@@ -2,13 +2,17 @@ express     = require 'express'
 http        = require 'http'
 sysPath     = require 'path'
 bodyParser  = require 'body-parser'
+fs          = require 'fs-extra'
+
+# make sure an images folder exists and empty it on start
+fs.emptyDirSync './images'
 
 SERVER_TIMEOUT = 1
 
 app = express()
 
 # enable body parser for json
-app.use bodyParser.json()
+app.use bodyParser.json limit: '10mb'
 
 # Root will respond with the REST url structure
 app.get '/', (req, res) ->
@@ -52,10 +56,16 @@ app.get '/histogramenhancement', (req, res) ->
   res.send records
 
 app.post '/histogramenhancement', (req, res) ->
-  # set a random timeout before sendin response
-  # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-  setTimeout (-> res.send {}), random * 1000
+  # write image to images folder for testing purposes
+  base64image = req.body.image
+  decodedImage = new Buffer(base64image, 'base64')
+  fs.writeFile './images/histogramenhancement.png', decodedImage, (err) ->
+    # we don't handle error
+    console.log err if err?
+    # set a random timeout before sendin response
+    # timeout should be between 1 and server.timeout
+    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+    setTimeout (-> res.send {}), random * 1000
 
 
 app.get '/multiscaleipd', (req, res) ->
@@ -142,10 +152,16 @@ app.get '/multiscaleipd', (req, res) ->
   res.send records
 
 app.post '/multiscaleipd', (req, res) ->
-  # set a random timeout before sendin response
-  # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-  setTimeout (-> res.send {}), random * 1000
+  # write image to images folder for testing purposes
+  base64image = req.body.image
+  decodedImage = new Buffer(base64image, 'base64')
+  fs.writeFile './images/multiscaleipd.png', decodedImage, (err) ->
+    # we don't handle error
+    console.log err if err?
+    # set a random timeout before sendin response
+    # timeout should be between 1 and server.timeout
+    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+    setTimeout (-> res.send {}), random * 1000
 
 app.get '/noise', (req, res) ->
   records =
@@ -161,10 +177,16 @@ app.get '/noise', (req, res) ->
   res.send records
 
 app.post '/noise', (req, res) ->
-  # set a random timeout before sendin response
-  # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-  setTimeout (-> res.send {}), random * 1000
+  # write image to images folder for testing purposes
+  base64image = req.body.image
+  decodedImage = new Buffer(base64image, 'base64')
+  fs.writeFile './images/noise.png', decodedImage, (err) ->
+    # we don't handle error
+    console.log err if err?
+    # set a random timeout before sendin response
+    # timeout should be between 1 and server.timeout
+    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+    setTimeout (-> res.send {}), random * 1000
 
 app.get '/otsubinazrization', (req, res) ->
   records =
@@ -180,10 +202,16 @@ app.get '/otsubinazrization', (req, res) ->
   res.send records
 
 app.post '/otsubinazrization', (req, res) ->
-  # set a random timeout before sendin response
-  # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-  setTimeout (-> res.send {}), random * 1000
+  # write image to images folder for testing purposes
+  base64image = req.body.image
+  decodedImage = new Buffer(base64image, 'base64')
+  fs.writeFile './images/otsubinazrization.png', decodedImage, (err) ->
+    # we don't handle error
+    console.log err if err?
+    # set a random timeout before sendin response
+    # timeout should be between 1 and server.timeout
+    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+    setTimeout (-> res.send {}), random * 1000
 
 app.get '/sauvalabinarization', (req, res) ->
   records =
@@ -195,10 +223,16 @@ app.get '/sauvalabinarization', (req, res) ->
   res.send records
 
 app.post '/sauvalabinarization', (req, res) ->
-  # set a random timeout before sendin response
-  # timeout should be between 1 and server.timeout
-  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
-  setTimeout (-> res.send {}), random * 1000
+  # write image to images folder for testing purposes
+  base64image = req.body.image
+  decodedImage = new Buffer(base64image, 'base64')
+  fs.writeFile './images/sauvalabinarization.png', decodedImage, (err) ->
+    # we don't handle error
+    console.log err if err?
+    # set a random timeout before sendin response
+    # timeout should be between 1 and server.timeout
+    random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+    setTimeout (-> res.send {}), random * 1000
 
 app.use (err, req, res, next) ->
   res.status err.status or 500
