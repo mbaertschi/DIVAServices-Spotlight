@@ -26,4 +26,9 @@ angular.module('app.images').factory 'imagesService', [
           'Content-Type': undefined
           'X-Requested-With': 'XMLHttpRequest').then (res) ->
             res
+
+    delete: (serverName) ->
+      $http.delete('/upload', params:
+        serverName: serverName).then (res) ->
+          res
 ]

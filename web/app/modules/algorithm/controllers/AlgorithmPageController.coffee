@@ -5,60 +5,61 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
   'toastr'
   'mySocket'
   '$state'
-  '$timeout'
   'mySettings'
   '$window'
   'imagesService'
   '$sce'
   'diaHighlighterManager'
+  'diaProcessingQueue'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, $timeout, mySettings, $window, imagesService, $sce, diaHighlighterManager) ->
+  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, mySettings, $window, imagesService, $sce, diaHighlighterManager, diaProcessingQueue) ->
     $scope.algorithm = null
     $scope.images = []
     $scope.selectedImage = null
     $scope.highlighter = null
     $scope.invalidHighlighter = false
+    $scope.captchaEnabled = false
     $scope.invalideCaptcha = true
     $scope.invalidForm = false
     $scope.inputs = []
     $scope.model = {}
     $scope.state = 'select'
+    $scope.id = null
 
     requestAlgorithm = ->
-      host = $stateParams.host
-      algorithm = $stateParams.algorithm
-      url = 'http://' + host + '/' + algorithm
+      $scope.id = $stateParams.id
 
-      if host? and algorithm?
-        algorithmService.fetch(host, algorithm).then (res) ->
-          algorithm = null
-          try
-            algorithm = JSON.parse res.data
-          catch e
-            toastr.error 'Could not parse algorithm information', 'Error'
-          finally
-            if algorithm
-              $scope.algorithm = algorithm
-              angular.forEach algorithm.input, (entry) ->
-                key = Object.keys(entry)[0]
-                if key is 'highlighter'
-                  $scope.highlighter = entry.highlighter
+      algorithmService.fetch($scope.id).then (res) ->
+        algorithm = null
+        try
+          algorithm = JSON.parse res.data
+        catch e
+          toastr.error 'Could not parse algorithm information', 'Error'
+        finally
+          if algorithm
+            $scope.algorithm = algorithm
+            angular.forEach algorithm.input, (entry) ->
+              key = Object.keys(entry)[0]
+              if key is 'highlighter'
+                $scope.highlighter = entry.highlighter
+              else
+                $scope.inputs.push entry
+                if key is 'select'
+                  $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
                 else
-                  $scope.inputs.push entry
-                  if key is 'select'
-                    $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
-                  else
-                    $scope.model[entry[key].name] = entry[key].options.default or null
-        , (err) ->
-          toastr.error 'Could not load algorithm', 'Error'
-      else
-        toastr.warning 'This algorithm does not have a correct url and can therefore not be loaded', 'Warning'
+                  $scope.model[entry[key].name] = entry[key].options.default or null
+      , (err) ->
+        toastr.error 'Could not load algorithm', 'Error'
 
     requestAlgorithm()
 
     requestImages = ->
       imagesService.fetch().then (res) ->
-        $scope.images = res.data
+        angular.forEach res.data, (image) ->
+          image.thumbPath = image.thumbPath + '?' + new Date().getTime()
+          image.url = image.url + '?' + new Date().getTime()
+          @.push image
+        , $scope.images
       , (err) ->
         toastr.err err.statusText, err.status
 
@@ -68,17 +69,37 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
 
     $scope.submit = ->
-      if not $scope.captcha.getCaptchaData().valid
-        toastr.warning 'Please fill in captcha', 'Captcha Warning'
+      if $scope.tasks >= 3
+        toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
+      else if $scope.captchaEnabled
+        if not $scope.captcha.getCaptchaData().valid
+          toastr.warning 'Please fill in captcha', 'Captcha Warning'
+        else
+          algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
+            item =
+              algorithm: $scope.algorithm
+              image: $scope.selectedImage
+              inputs: $scope.model
+              highlighter: diaHighlighterManager.get()
+            item.algorithm.id = $scope.id
+            toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+            diaProcessingQueue.push item
+            $scope.captcha.refresh()
+          , (err) ->
+            $scope.captcha.refresh()
+            if err.status is 403
+              toastr.warning 'Invalid Captcha', err.status
+            else
+              toastr.error 'Captcha validation failed. Please try again', err.status
       else
-        algorithmService.checkCaptcha($scope.captcha.getCaptchaData()).then (res) ->
-          toastr.info 'Valid captcha', res.status
-        , (err) ->
-          $scope.captcha.refresh()
-          if err.status is 403
-            toastr.warning 'Invalid Captcha', err.status
-          else
-            toastr.error 'Captcha validation failed. Please try again', err.status
+        item =
+          algorithm: $scope.algorithm
+          image: $scope.selectedImage
+          inputs: $scope.model
+          highlighter: diaHighlighterManager.get()
+        item.algorithm.id = $scope.id
+        toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
+        diaProcessingQueue.push item
 
     $scope.setHighlighterStatus = (status) ->
       $scope.safeApply ->

@@ -1,8 +1,14 @@
 express     = require 'express'
 http        = require 'http'
 sysPath     = require 'path'
+bodyParser  = require 'body-parser'
+
+SERVER_TIMEOUT = 1
 
 app = express()
+
+# enable body parser for json
+app.use bodyParser.json()
 
 # Root will respond with the REST url structure
 app.get '/', (req, res) ->
@@ -39,11 +45,18 @@ app.get '/', (req, res) ->
 app.get '/histogramenhancement', (req, res) ->
   records =
     name: 'histogramenhancement'
-    description: 'this will apply the histogramenhancement algorithm on your image'
+    description: 'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'
     url: 'http://localhost:8081/histogramenhancement'
     input: []
 
   res.send records
+
+app.post '/histogramenhancement', (req, res) ->
+  # set a random timeout before sendin response
+  # timeout should be between 1 and server.timeout
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
+
 
 app.get '/multiscaleipd', (req, res) ->
   records =
@@ -128,6 +141,12 @@ app.get '/multiscaleipd', (req, res) ->
 
   res.send records
 
+app.post '/multiscaleipd', (req, res) ->
+  # set a random timeout before sendin response
+  # timeout should be between 1 and server.timeout
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
+
 app.get '/noise', (req, res) ->
   records =
     name: 'noise'
@@ -141,14 +160,30 @@ app.get '/noise', (req, res) ->
 
   res.send records
 
+app.post '/noise', (req, res) ->
+  # set a random timeout before sendin response
+  # timeout should be between 1 and server.timeout
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
+
 app.get '/otsubinazrization', (req, res) ->
   records =
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
-    input: []
+    input: [
+      {
+        highlighter: 'rectangle'
+      }
+    ]
 
   res.send records
+
+app.post '/otsubinazrization', (req, res) ->
+  # set a random timeout before sendin response
+  # timeout should be between 1 and server.timeout
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
 
 app.get '/sauvalabinarization', (req, res) ->
   records =
@@ -159,16 +194,19 @@ app.get '/sauvalabinarization', (req, res) ->
 
   res.send records
 
+app.post '/sauvalabinarization', (req, res) ->
+  # set a random timeout before sendin response
+  # timeout should be between 1 and server.timeout
+  random = Math.floor Math.random() * SERVER_TIMEOUT + 1
+  setTimeout (-> res.send {}), random * 1000
+
 app.use (err, req, res, next) ->
   res.status err.status or 500
-  res.render 'error',
-    message: err.message
-    error: err
-  return
+  res.json err.statusText
 
 # Wrap express app with node.js server in order to have stuff like server.stop() etc.
 server = http.createServer(app)
-server.timeout = 2000
+server.timeout = 12000
 
 server.listen 8081, ->
   console.log 'Server listening on port 8081'

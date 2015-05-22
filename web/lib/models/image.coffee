@@ -10,6 +10,8 @@ ImageSchema = mongoose.Schema
   extension: String
   url: String
   path: String
+  thumbUrl: String
+  thumbPath: String
 
 ImageSchema.index sessionId: 1
 

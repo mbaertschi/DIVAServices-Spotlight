@@ -1,0 +1,11 @@
+h1 Output
+img(ng-if='outputData.image', ng-src='{{outputData.image.path}}')
+.table-responsive.input-values(ng-if='outputData.output')
+  table.table.table-bordered
+    thead
+      th Selector
+      th Value
+    tbody
+      tr(ng-repeat='(key, value) in outputData.output')
+        td {{key}}
+        td {{value}}

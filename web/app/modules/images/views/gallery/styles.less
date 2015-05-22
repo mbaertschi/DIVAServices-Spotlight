@@ -1,103 +1,129 @@
-.images-gallery {
+@import "vendor/styles/variables.less";
 
-  .slider {
-    display: block;
-    background: #222;
-    padding: 5px;
-    border-radius: 5px;
-  }
+.as-superbox *,
+.as-superbox *:after,
+.as-superbox *:before {
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-font-smoothing:antialiased;
+	-moz-font-smoothing:antialiased;
+	-o-font-smoothing:antialiased;
+	font-smoothing:antialiased;
+	text-rendering:optimizeLegibility;
+}
 
-  .slider .slide {
-    margin: auto;
-    max-width: 80%;
-    max-height: 70vh;
-    min-height: 20vh;
-  }
+/* SuperBox */
+.as-superbox-list {
+	display:inline-block;
+	*display:inline;
+	zoom:1;
+	width:12.5%;
+	padding:5px;
+	position:relative;
+}
+.as-superbox-list.active:before {
+	content: "\f0d8";
+	font-family: FontAwesome;
+	display: block;
+	position: absolute;
+	left: 43%;
+	bottom: -34px;
+	z-index: 2;
+	text-align: center;
+	font-size: 45px;
+	color: @gray-darker;
+}
 
-  .arrow {
-      cursor: pointer;
-      display: block;
-      height: 64px;
-      margin-top: -35px;
-      outline: medium none;
-      position: absolute;
-      top: 50%;
-      width: 64px;
-      z-index: 5;
-  }
+.as-superbox-img {
+	max-width:100%;
+	width:100%;
+	cursor:pointer;
+	border: 1px solid #222222;
+}
+.as-superbox-show {
+	text-align:left;
+	position:relative;
+	background-color: @gray-darker;
+	width:100%;
+  float:left;
+	padding:25px 0 12px 25px;
+	display:none;
+	margin: 5px 0;
+}
+.as-superbox-current-img {
+	width:50%;
+	float:left;
+	padding-right:25px;
+	padding-bottom:13px;
+}
+.as-superbox-img:hover {
+	opacity:0.8;
+}
+.as-superbox-float {
+	float:left;
+}
+.as-superbox-close {
+	opacity:0.7;
+	cursor:pointer;
+	position:absolute;
+	top:15px;
+	right:15px;
+	transition: all 0.1s linear 0s;
+}
+.as-superbox-close:hover {
+	opacity:1;
+}
 
-  .arrow.prev {
-      background-image: url("../images/prev.png");
-      left: 20px;
-      opacity: 0.2;
-      transition: all 0.2s linear 0s;
-  }
+.as-superbox-imageinfo {
+	display:inline-block;
+	max-width:500px;
+	color:#fff;
+	padding:0 25px 0 0;
+}
 
-  .arrow.next {
-      background-image: url("../images/next.png");
-      opacity: 0.2;
-      right: 20px;
-      transition: all 0.2s linear 0s;
-  }
+.as-superbox-imageinfo span {
+	font-size:13px;
+	color: lighten(@asideColor-start, 45%);
+	margin-right:-2px;
+	padding-top:10px;
+	display:inline-block;
+	padding-bottom:13px;
+}
 
-  .arrow.prev:hover{
-      opacity:1;
-  }
+.as-superbox-imageinfo >:first-child {
+	margin-bottom:10px;
+	font-weight:bold;
+}
 
-  .arrow.next:hover{
-      opacity:1;
-  }
+.as-superbox-imageinfo span p:last-child {
+	margin-top:30px;
+}
 
-  .nav {
-      bottom: -4px;
-      display: block;
-      height: 40px;
-      left: 0;
-      margin: 0 auto;
-      position: absolute;
-      text-align: center;
-      width: 100%;
-  }
-
-  .nav li {
-      border: 5px solid #ddd;
-      border-radius: 5px;
-      cursor: pointer;
-      display: inline-block;
-      margin: 0 8px;
-      position: relative;
-      width: 50px;
-      bottom: 10px;
-  }
-
-  .nav li.active {
-      border: 5px solid #999;
-  }
-
-  .nav li img {
-      width: 100%;
-  }
-
-  .edit-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-
-  .slide.ng-hide-add.ng-hide-add-active {
-      opacity:0;
-  }
-
-  .slide.ng-hide-remove {
-      -webkit-transition:1s linear all;
-      -moz-transition:1s linear all;
-      -o-transition:1s linear all;
-      transition:1s linear all;
-      display:block!important;
-      opacity:0;
-  }
-
-  .slide, .slide.ng-hide-remove.ng-hide-remove-active {
-      opacity:1;
-  }
+@media only screen and (min-width: 320px) {
+	.superbox-list {
+		width:50%;
+	}
+}
+@media only screen and (min-width: 486px) {
+	.superbox-list {
+		width:25%;
+	}
+}
+@media only screen and (min-width: 768px) {
+	.superbox-list {
+		width:16.66666667%;
+	}
+}
+@media only screen and (min-width: 1025px) {
+	.superbox-list {
+		width:12.5%;
+	}
+}
+@media only screen and (min-width: 1824px) {
+	.superbox-list {
+		width:12.5%;
+	}
 }

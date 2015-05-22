@@ -19,6 +19,12 @@ exports.config =
         before: [
           'app/**/module.coffee'
         ]
+        after: [
+          'vendor/plugins/datatables-colvis/js/dataTables.colVis.js'
+          'vendor/plugins/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.js'
+          'vendor/plugins/datatables-tabletools/js/dataTables.tableTools.js'
+          'vendor/plugins/datatables-responsive/files/1.10/js/datatables.responsive.js'
+        ]
 
     stylesheets:
       defaultExtension: 'less'

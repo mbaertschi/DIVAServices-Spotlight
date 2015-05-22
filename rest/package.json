@@ -17,6 +17,7 @@
     "start": "coffee server.coffee"
   },
   "dependencies": {
+    "body-parser": "1.12.4",
     "coffee-script": "^1.9.1",
     "express": "^4.10.7"
   }

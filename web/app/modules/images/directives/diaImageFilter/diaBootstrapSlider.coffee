@@ -1,4 +1,4 @@
-angular.module('app').directive 'diaBootstrapSlider', [
+angular.module('app.images').directive 'diaBootstrapSlider', [
   ->
     restrict: 'A'
 
@@ -20,6 +20,6 @@ angular.module('app').directive 'diaBootstrapSlider', [
 
       $(element).on 'slideStop', (event) ->
         scope.safeApply -> scope.value = event.value
-        scope.filter attrs.targetFilter , event.value
+        scope.filter attrs.targetFilter, event.value
 
 ]

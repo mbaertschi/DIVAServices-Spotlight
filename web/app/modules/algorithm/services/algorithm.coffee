@@ -3,10 +3,9 @@ angular.module('app.algorithm').factory 'algorithmService', [
 
   ($http) ->
 
-    fetch: (host, algorithm) ->
+    fetch: (id) ->
       $http.get('/api/algorithm', params:
-        algorithm: algorithm
-        host: host).then (res) ->
+        id: id).then (res) ->
           res
 
     checkCaptcha: (params) ->
