@@ -1,68 +1,30 @@
+###
+Directive diaAlgorithmPolygon
+
+* manages polygon selection for selectedImage
+* uses diaPaperManager for setting up paperJS
+* uses diaHighlighterManager for storing information about currently
+  selected polygon
+* handles mouseDown, mouseUp and mouseDrag events
+###
 angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
   'diaHighlighterManager'
+  'diaPaperManager'
 
-  (diaHighlighterManager) ->
+  (diaHighlighterManager, diaPaperManager) ->
     restrict: 'AE'
 
     link: (scope, element, attrs) ->
-      image = canvas = raster = path = handle = segmentIndex = null
-      initialized = false
+      path = handle = segmentIndex = null
       strokeColor = 'red'
-      strokeWidth = 5
       fillColor = new paper.Color 1, 0, 0, 0.1
+      scope.strokeWidth = 5
 
-      scope.$watch 'selectedImage', ->
-        scope.setHighlighterStatus true
-        image = scope.selectedImage
-        canvas = element[0]
-        diaHighlighterManager.reset()
-        diaHighlighterManager.type = scope.highlighter
-        if path
-          path.remove()
-          path = null
-        initializeCanvas ->
-          if initialized
-            view.viewSize = new Size(canvas.width, canvas.height)
-            view.zoom = 1
-            view.update()
-          else
-            initPaper()
-          drawRaster()
+      # tell diaPaperManager to re-initialize paperJS. This is executed
+      # everytime the algorithm changes (but not when selectedImage changes)
+      diaPaperManager.reset()
 
-      initializeCanvas = (callback) ->
-        img = new Image()
-        img.src = image.url
-        $(img).bind 'load', ->
-          width = $('.canvas-wrapper')[0].clientWidth
-          height = img.height * (width/img.width)
-          canvas.width = width
-          canvas.height = height
-          callback()
-
-      drawRaster = ->
-        if project.layers[0]?
-          project.layers[0].removeChildren()
-        raster = new Raster
-          source: image.url
-          position: view.center
-        raster.on 'load', ->
-          scale = view.size.width / @.bounds.width
-          inverseScale = @.bounds.width / view.size.width
-          strokeWidth = 5 * inverseScale
-          view.zoom = scale
-          view.update()
-
-      initPaper = ->
-        paper.install window
-        paper.setup canvas
-        toolPolygon = new Tool()
-        toolPolygon.onMouseDown = mouseDown
-        toolPolygon.onMouseUp = mouseUp
-        toolPolygon.onMouseDrag = mouseDrag
-        toolPolygon.activate()
-        initialized = true
-
-      mouseDown = (event) ->
+      scope.mouseDown = (event) ->
         handle = null
         point = event.point
         if path
@@ -95,19 +57,19 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
             diaHighlighterManager.path = null
             scope.setHighlighterStatus true
 
-      mouseUp = (event) ->
+      scope.mouseUp = (event) ->
         point = event.point
         unless path
           path = new Path()
           path.strokeColor = strokeColor
-          path.strokeWidth = strokeWidth
+          path.strokeWidth = scope.strokeWidth
           path.fullySelected = true
         if not path.closed and handle isnt 'segment'
           path.add point
         segmentIndex = null
         diaHighlighterManager.path = path
 
-      mouseDrag = (event) ->
+      scope.mouseDrag = (event) ->
         x = event.delta.x
         y = event.delta.y
         switch handle
@@ -120,4 +82,8 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
             # can only be true once the path is closed
             path.segments[segmentIndex].point.x += x
             path.segments[segmentIndex].point.y += y
+
+      # update paper settings if selectedImage has changed
+      scope.$watch 'selectedImage', ->
+        diaPaperManager.setup scope, element
 ]

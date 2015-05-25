@@ -1,17 +1,31 @@
+# Uploader
+# ========
+#
+# **Uploader** makes use of the `multer` middleware for handling
+# multipart/form-data. This module is mandatory when using Dropzone.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 multer      = require 'multer'
 fs          = require 'fs-extra'
 nconf       = require 'nconf'
 mongoose    = require 'mongoose'
 logger      = require '../lib/logger'
-util        = require 'util'
 
+# Expose uploader
 uploader = exports = module.exports = class Uploader
 
+  # ---
+  # **constructor**</br>
+  # Configure multer settings. Images are renamed to upload\_[x] and
+  # stored under `./public/uploads/[sessionId]/upload_[x]`. Once upload
+  # has completed, all image information are stored in mongoDB
   constructor: ->
     @multer = multer
       dest: nconf.get 'web:uploader:destination'
       limits:
-        fieldSize: 10 * 1024 * 1024
+        fieldSize: nconf.get 'server:maxFileSize'
       rename: (fieldname, filename, req, res) ->
         name = 'upload_' + req.body.index
         name
@@ -42,7 +56,5 @@ uploader = exports = module.exports = class Uploader
 
         Image.update query, image, upsert: true, (err) ->
           logger.log 'warn', 'could not save image', 'Uploader' if err?
-          return
 
-  multer: =>
-    @multer
+    return @multer

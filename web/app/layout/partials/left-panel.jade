@@ -2,8 +2,11 @@
 navigation
   nav:item(state='dashboard', icon='dashboard', title='Dashboard')
   nav:group(title='Documents', icon='graduation-cap')
-    nav:item(state='docs.architecture', icon='university', title='Architecture')
-    nav:item(state='docs.api', icon='comments', title='API')
+    nav:item(state='docs.howto', icon='info-circle', title='HowTo')
+    nav:item(state='docs.faq', icon='question-circle', title='FAQ')
+    nav:group(title='API', icon='comments')
+      nav:item(state='docs.api.backend', icon='exchange', title='Backend')
+      nav:item(state='docs.api.server', icon='server', title='Server')
   nav:item(state='algorithms', icon='tasks', title='Algorithms')
   nav:group(title='Images', icon='image')
     nav:item(state='images.gallery', icon='list-alt', title='Gallery')

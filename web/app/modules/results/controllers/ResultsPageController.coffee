@@ -1,3 +1,9 @@
+###
+Controller ResultsPageController
+
+* loads finished algorithms from diaProcessingQueue
+* setups the diaDatatable directive
+###
 angular.module('app.results').controller 'ResultsPageController', [
   '$scope'
   'diaProcessingQueue'

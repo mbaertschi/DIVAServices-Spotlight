@@ -1,3 +1,12 @@
+###
+Factory diaProcessingQueue
+
+* maintains queue for algorithms to be processed
+* handles abort for submitted algorithms
+* exposes results and queue array as well as push method
+* once an algorithm has been processed successfully, it will be added to
+  results array which itself is handled by results page
+###
 angular.module('app').factory 'diaProcessingQueue', [
   '$rootScope'
   '$http'
@@ -10,6 +19,7 @@ angular.module('app').factory 'diaProcessingQueue', [
     $rootScope.tasks = 0
     $rootScope.finished = 0
 
+    # processes the next entry in queue as long as there is one
     execNext = ->
       task = queue[0]
       url = '/api/algorithm'
@@ -26,7 +36,9 @@ angular.module('app').factory 'diaProcessingQueue', [
         if queue.length > 0
           execNext()
 
+    # add finished algorithm to results array
     createResult = (input, output) ->
+      # add html format for result so it can be displayed in a nicely way in results table
       result =
         algorithm:
           name: '<span class="text-capitalize">' + input.algorithm.name + '</span>'
@@ -48,13 +60,17 @@ angular.module('app').factory 'diaProcessingQueue', [
 
       return result
 
+    # expose results array
     results: ->
       return results
 
+    # expose queue array
     queue: ->
       return queue
 
+    # handle aborted algorithms (from diaProcessingAlgrithm directive)
     abort: (entry) ->
+      # remove algorithm with given index from processing queue
       angular.forEach queue, (queueEntry, index) ->
         if entry.item.index is queueEntry.item.index
           queue.splice index, 1
@@ -63,8 +79,11 @@ angular.module('app').factory 'diaProcessingQueue', [
             execNext()
 
 
+    # add new algorithm to processing queue. We use promises in order to be able
+    # to handle aborted algorithms
     push: (item) ->
       defer = $q.defer()
+      # store a reference to index in queue
       item.index = queue.length
       item.start = new Date
       queue.push

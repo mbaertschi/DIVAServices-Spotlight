@@ -3,4 +3,4 @@
 set -e # exit on errors
 
 echo 'parsing ...'
-./web/node_modules/codo/bin/codo -o ./data/documentation/server --closure --private ./web/lib
+find ./web -name '*.coffee' ! -path "./web/app/*" ! -path "./web/bower_components/*" ! -path "./web/node_modules/*" ! -path "./web/vendor/*" | xargs ./web/node_modules/docco/bin/docco -l linear -c ./scripts/custom.css -o ./web/app/assets/documentation/server web/*.coffee

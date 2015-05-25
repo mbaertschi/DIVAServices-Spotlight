@@ -1,11 +1,18 @@
+###
+Directive diaSmartDropzone
+
+* handles functionality for uploading images with Dropzone.js
+* loads stored images from server (for active session) on page reload
+* loads Dropzone settings from server
+###
 angular.module('app.images').directive 'diaSmartDropzone', [
   '$http'
-  'mySettings'
-  'toastr'
+  'diaSettings'
   'diaStateManager'
-  'imagesService'
+  'diaImagesService'
+  'toastr'
 
-  ($http, mySettings, toastr, diaStateManager, imagesService) ->
+  ($http, diaSettings, diaStateManager, diaImagesService, toastr) ->
     restrict: 'A'
     (scope, element, attrs) ->
 
@@ -13,26 +20,22 @@ angular.module('app.images').directive 'diaSmartDropzone', [
       scope.safeApply ->
         dropzone = undefined
 
-      mySettings.fetch('dropzone').then (settings) ->
+      diaSettings.fetch('dropzone').then (settings) ->
         max = (settings.maxFiles-1)
         availableIndexes = (index for index in [0..max])
 
         config =
           init: ->
             self = @
-            $http.get('/upload').then (res) ->
-              images = res.data
+            # load images for active session if there are any
+            diaImagesService.fetchUpload().then (res) ->
               scope.safeApply ->
-                angular.forEach images, (image) ->
-                  mockFile =
-                    name: image.serverName
-                    size: image.size
-                    type: image.type
-                    index: image.index
-                    src: image.url
-                  self.emit 'addedfile', mockFile
-                  self.emit 'thumbnail', mockFile, image.thumbUrl + '?' + new Date().getTime()
-                  self.emit 'success', mockFile
+                angular.forEach res.data, (image) ->
+                  # add them as thumbnail
+                  self.emit 'addedfile', image.mockFile
+                  self.emit 'thumbnail', image.mockFile, image.thumbUrl
+                  self.emit 'success', image.mockFile
+                  # and handle index and maxFiles changes
                   index = availableIndexes.indexOf image.index
                   if index >= 0
                     availableIndexes.splice index, 1
@@ -52,6 +55,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
 
           success: (file, res) ->
             if res
+              # new uploaded image
               uploadedImages.push
                 name: file.name
                 serverName: res.serverName
@@ -61,6 +65,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
                 name: res.serverName
               @.emit 'thumbnail', file, res.thumbUrl + '?' + new Date().getTime()
             else
+              # image was loaded from server after page refresh
               image =
                 src: file.src
                 name: file.name
@@ -83,7 +88,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
               availableIndexes.push (parseInt file.index)
 
             if removeImage?
-              imagesService.delete(removeImage.serverName).then (res) ->
+              diaImagesService.delete(removeImage.serverName).then (res) ->
                 if res.status isnt 200
                   toastr.warning 'There was an error while removing this image on the server. Please reload the page and try again', 'Warning'
                 else

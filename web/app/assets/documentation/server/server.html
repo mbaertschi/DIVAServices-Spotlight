@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Server</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="server">Server</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Server</strong> is the main entry point for running the DIA-Distributed application. DIA-Distributed
+is running on an <a href="https://nodejs.org/">nodeJS</a> plattform and uses the <a href="http://expressjs.com/">Express</a>
+framework.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Set the <code>NODE_ENV</code> environment variable to <code>dev</code> or <code>prod</code> depending on whether you are
+in development mode or in production mode</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> process.env.NODE_ENV? <span class="hljs-keyword">or</span> process.env.NODE_ENV <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">'dev'</span>, <span class="hljs-string">'prod'</span>]
+  <span class="hljs-built_in">console</span>.log <span class="hljs-string">'please set NODE_ENV to [dev, prod]. going to exit'</span>
+  process.exit <span class="hljs-number">0</span></pre></div>
+        
+      
+        
+        <p>Load the configuration files. We use <code>nconf</code> for managing
+our application settings</p>
+
+        
+          <div class='highlight'><pre>nconf = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+nconf.add <span class="hljs-string">'server'</span>, <span class="hljs-attribute">type</span>: <span class="hljs-string">'file'</span>, <span class="hljs-attribute">file</span>: <span class="hljs-string">'./conf/server.'</span> + process.env.NODE_ENV + <span class="hljs-string">'.json'</span>
+nconf.add <span class="hljs-string">'client'</span>, <span class="hljs-attribute">type</span>: <span class="hljs-string">'file'</span>, <span class="hljs-attribute">file</span>: <span class="hljs-string">'./conf/client.'</span> + process.env.NODE_ENV + <span class="hljs-string">'.json'</span>
+nconf.add <span class="hljs-string">'schemas'</span>, <span class="hljs-attribute">type</span>: <span class="hljs-string">'file'</span>, <span class="hljs-attribute">file</span>: <span class="hljs-string">'./conf/schemas.json'</span></pre></div>
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>express     = <span class="hljs-built_in">require</span> <span class="hljs-string">'express'</span>
+session     = <span class="hljs-built_in">require</span> <span class="hljs-string">'express-session'</span>
+http        = <span class="hljs-built_in">require</span> <span class="hljs-string">'http'</span>
+sysPath     = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
+slashes     = <span class="hljs-built_in">require</span> <span class="hljs-string">'connect-slashes'</span>
+bodyParser  = <span class="hljs-built_in">require</span> <span class="hljs-string">'body-parser'</span>
+router      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./routes/router'</span>
+Poller      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/poller'</span>
+Pusher      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/pusher'</span>
+Mongo       = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/mongo'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+SessionStore= <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/sessionStore'</span>
+Uploader    = <span class="hljs-built_in">require</span> <span class="hljs-string">'./routes/uploader'</span></pre></div>
+        
+      
+        
+        <p>Expose <code>server</code></p>
+
+        
+          <div class='highlight'><pre>server = exports = <span class="hljs-built_in">module</span>.exports = {}</pre></div>
+        
+      
+        
+        <p>Export <code>startServer</code> function which is used by <a href="http://brunch.io/">Brunch</a></p>
+
+        
+          <div class='highlight'><pre>server.startServer = <span class="hljs-function"><span class="hljs-params">(port, path, callback)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <p>Initialize our <code>mongoDB</code></p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-property">@db</span> = <span class="hljs-keyword">new</span> Mongo</pre></div>
+        
+      
+        
+        <p>Setup <code>Express</code> framework</p>
+
+        
+          <div class='highlight'><pre>  app = express()</pre></div>
+        
+      
+        
+        <p>Setup sessions. We use a session store which uses a mongoDB connection
+to store the sessions in. This allows us to hook into the session destroy
+method and handle image deletion (on disk and in mongoDB)</p>
+
+        
+          <div class='highlight'><pre>  sessionStore = <span class="hljs-keyword">new</span> SessionStore session
+  app.use session sessionStore</pre></div>
+        
+      
+        
+        <p>Route all static files to http paths</p>
+
+        
+          <div class='highlight'><pre>  app.use <span class="hljs-string">''</span>, express.static sysPath.resolve path</pre></div>
+        
+      
+        
+        <p>Redirect requests that include a trailing slash</p>
+
+        
+          <div class='highlight'><pre>  app.use slashes <span class="hljs-literal">false</span></pre></div>
+        
+      
+        
+        <p>Enable multipart/form-data. We use <code>multer</code> as middleware</p>
+
+        
+          <div class='highlight'><pre>  uploader = <span class="hljs-keyword">new</span> Uploader
+  app.use uploader</pre></div>
+        
+      
+        
+        <p>Enable body parser for json</p>
+
+        
+          <div class='highlight'><pre>  app.use bodyParser.json()</pre></div>
+        
+      
+        
+        <p>Setup our routes</p>
+
+        
+          <div class='highlight'><pre>  app.use router</pre></div>
+        
+      
+        
+        <p>Route all non-existent files to <code>index.html</code></p>
+
+        
+          <div class='highlight'><pre>  app.all <span class="hljs-string">'*'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    res.sendFile __dirname + <span class="hljs-string">'/'</span> + sysPath.join path, <span class="hljs-string">'index.html'</span></pre></div>
+        
+      
+        
+        <p>Wrap <code>Express</code> with <code>httpServer</code> for <code>socket.io</code></p>
+
+        
+          <div class='highlight'><pre>  app.server = http.createServer app</pre></div>
+        
+      
+        
+        <p>Set server timeout to value specified in configuration file</p>
+
+        
+          <div class='highlight'><pre>  app.server.timeout = nconf.get <span class="hljs-string">'server:timeout'</span></pre></div>
+        
+      
+        
+        <p>Start the <code>pusher</code> if defined so</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
+    io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>)(app.server)
+    pusher = <span class="hljs-keyword">new</span> Pusher io</pre></div>
+        
+      
+        
+        <p>Start the <code>poller</code> if defined so</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'poller:run'</span>
+    <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
+      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>, pusher
+    <span class="hljs-keyword">else</span>
+      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>
+    poller.run()</pre></div>
+        
+      
+        
+        <p>Start server on port specified in configuration file</p>
+
+        
+          <div class='highlight'><pre>  app.server.listen port, callback</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

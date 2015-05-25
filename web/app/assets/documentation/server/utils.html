@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Utils</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="utils">Utils</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Utils</strong> encapsulates all methods used for image manipulation.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>fs        = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
+logger    = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span>
+ExifImage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'exif'</span>).ExifImage
+lwip      = <span class="hljs-built_in">require</span> <span class="hljs-string">'lwip'</span></pre></div>
+        
+      
+        
+        <p>We don’t want images to be larger than 1024 pixels with / height</p>
+
+        
+          <div class='highlight'><pre>MAX_SIZE = <span class="hljs-number">1024</span></pre></div>
+        
+      
+        
+        <p>Expose utils</p>
+
+        
+          <div class='highlight'><pre>utils = exports = <span class="hljs-built_in">module</span>.exports = {}</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.getFilesizeInBytes</strong></br>
+Read an image from disk and return its file size</br>
+<code>params:</code></p>
+<ul>
+<li><em>filename</em> <code>&lt;String&gt;</code> path to image location</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.getFilesizeInBytes = <span class="hljs-function"><span class="hljs-params">(filename)</span> -&gt;</span>
+  stats = fs.statSync(filename)
+  fileSizeInBytes = stats[<span class="hljs-string">'size'</span>]
+  fileSizeInBytes</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.writeImage</strong></br>
+Write a base64 encoded image to disk and callback its file size</br>
+<code>params:</code></p>
+<ul>
+<li><em>image</em> <code>&lt;Object&gt;</code> image object from mongoDB</li>
+<li><em>file</em> <code>&lt;String&gt;</code> base64 encoded image</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.writeImage = <span class="hljs-function"><span class="hljs-params">(image, file, callback)</span> -&gt;</span>
+  matches = file.match(<span class="hljs-regexp">/^data:([A-Za-z-+\/]+);base64,(.+)$/</span>)
+  imageBuffer = {}
+
+  <span class="hljs-keyword">if</span> (matches.length <span class="hljs-keyword">isnt</span> <span class="hljs-number">3</span>)
+    logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'invalid input string for image'</span>, <span class="hljs-string">'Utils'</span>
+    callback <span class="hljs-string">'Invalid input string'</span>
+  <span class="hljs-keyword">else</span>
+    imageBuffer.type = matches[<span class="hljs-number">1</span>];
+    imageBuffer.data = <span class="hljs-keyword">new</span> Buffer(matches[<span class="hljs-number">2</span>], <span class="hljs-string">'base64'</span>);
+
+    fs.ensureDirSync <span class="hljs-string">'public/uploads/'</span> + image.sessionId
+
+    fs.writeFile image.path, imageBuffer.data, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while storing one of the images'</span>, <span class="hljs-string">'Utils'</span>
+        callback err
+      <span class="hljs-keyword">else</span>
+        callback <span class="hljs-literal">null</span>, utils.getFilesizeInBytes(image.path)</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.getRotation</strong></br>
+Read Exif meta-data from an image and callback rotation in degree</br>
+<code>params:</code></p>
+<ul>
+<li>path <code>&lt;String&gt;</code> path to image location</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.getRotation = <span class="hljs-function"><span class="hljs-params">(path, callback)</span> -&gt;</span>
+  <span class="hljs-keyword">try</span>
+    <span class="hljs-keyword">new</span> ExifImage <span class="hljs-attribute">image</span>: path, <span class="hljs-function"><span class="hljs-params">(err, exifData)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        callback <span class="hljs-string">"could not extract exif meta-data from image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> exifData.image
+          rotate = <span class="hljs-number">0</span>
+          <span class="hljs-keyword">switch</span> exifData.image.Orientation
+            <span class="hljs-keyword">when</span> <span class="hljs-number">3</span>, <span class="hljs-number">4</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">180</span>
+            <span class="hljs-keyword">when</span> <span class="hljs-number">5</span>, <span class="hljs-number">6</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">90</span>
+            <span class="hljs-keyword">when</span> <span class="hljs-number">7</span>, <span class="hljs-number">8</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">270</span>
+            <span class="hljs-keyword">else</span> rotate = <span class="hljs-number">0</span>
+          callback <span class="hljs-literal">null</span>, rotate
+        <span class="hljs-keyword">else</span> callback <span class="hljs-literal">null</span>, <span class="hljs-number">0</span>
+  <span class="hljs-keyword">catch</span> err
+    callback <span class="hljs-string">"could not load ExifImage on image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.orientateJpegImage</strong></br>
+Resize and rotate an image. Callback once you are done</br>
+<code>params:</code></p>
+<ul>
+<li>image <code>&lt;Object&gt;</code> image object from mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.orientateJpegImage = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
+  path = image.path
+<span class="hljs-function">
+  <span class="hljs-title">resizeAndRotate</span> = <span class="hljs-params">(image, rotate)</span> -&gt;</span>
+    lwip.open path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not load image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+        callback()
+      <span class="hljs-keyword">else</span>
+        width = img.width()
+        height = img.height()
+        <span class="hljs-keyword">if</span> width &gt; height
+          <span class="hljs-keyword">if</span> width &gt; MAX_SIZE
+            width = MAX_SIZE
+            height = height * (width/img.width())
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">if</span> height &gt; MAX_SIZE
+            height = MAX_SIZE
+            width = width * (height/img.height())
+        img.batch().resize(width, height).rotate(rotate).writeFile path, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not rotate image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+          callback()
+
+  <span class="hljs-keyword">if</span> image.type <span class="hljs-keyword">is</span> <span class="hljs-string">'image/jpeg'</span>
+    utils.getRotation path, <span class="hljs-function"><span class="hljs-params">(err, rotate)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'info'</span>, err, <span class="hljs-string">'Utils'</span>
+        callback()
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> rotate
+          resizeAndRotate image, rotate, callback
+        <span class="hljs-keyword">else</span>
+          resizeAndRotate image, <span class="hljs-number">0</span>, callback
+  <span class="hljs-keyword">else</span>
+    resizeAndRotate image, <span class="hljs-number">0</span>, callback</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.convertToPng</strong></br>
+Convert an image to .png if not yet so. Callback updated image object to store in mongoDB</br>
+<code>params:</code></p>
+<ul>
+<li>image <code>&lt;Object&gt;</code> image object from mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.convertToPng = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
+  <span class="hljs-keyword">if</span> image.type <span class="hljs-keyword">isnt</span> <span class="hljs-string">'image/png'</span>
+    lwip.open image.path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not open image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+        callback <span class="hljs-literal">null</span>, image
+      <span class="hljs-keyword">else</span>
+        name = image.serverName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
+        path = image.path.replace image.serverName, name
+        img.writeFile path, <span class="hljs-string">'png'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"could not convert to png image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+            callback <span class="hljs-literal">null</span>, image
+          <span class="hljs-keyword">else</span>
+            fs.removeSync image.path
+            serverName = image.serverName
+            image.serverName = name
+            image.clientName = image.clientName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
+            image.type = <span class="hljs-string">'image/png'</span>
+            image.extension = <span class="hljs-string">'png'</span>
+            image.url = image.url.replace serverName, name
+            image.path = path
+            callback <span class="hljs-literal">null</span>, image
+  <span class="hljs-keyword">else</span>
+    callback <span class="hljs-literal">null</span>, image</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>utils.createThumbnail</strong></br>
+Create a thumbnail for the given image. Callback its path and url to store in mongoDB</br>
+<code>params:</code></p>
+<ul>
+<li>image <code>&lt;Object&gt;</code> image object from mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>utils.createThumbnail = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
+  lwip.open image.path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> err?
+      logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not load image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+      <span class="hljs-keyword">if</span> image.thumbPath?
+        callback <span class="hljs-literal">null</span>, image.thumbPath, image.thumbUrl
+      <span class="hljs-keyword">else</span>
+        callback <span class="hljs-literal">null</span>, image.path, image.url
+    <span class="hljs-keyword">else</span>
+      thumbSize = <span class="hljs-number">160</span>
+      <span class="hljs-keyword">if</span> img.width() &lt; img.height()
+        scale = (thumbSize / img.width())
+      <span class="hljs-keyword">else</span>
+        scale = (thumbSize / img.height())
+      imageName = image.serverName.split(<span class="hljs-string">'.'</span> + image.extension)[<span class="hljs-number">0</span>]
+      thumbName = imageName + <span class="hljs-string">'_thumbnail.'</span> + image.extension
+      thumbPath = image.path.replace image.serverName, thumbName
+      thumbUrl = image.url.replace image.serverName, thumbName
+      img.batch().scale(scale).crop(thumbSize, thumbSize).writeFile thumbPath, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err?
+          logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not create thumbnail for image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+          thumbPath = image.path
+          thumbUrl = image.url
+        callback <span class="hljs-literal">null</span>, thumbPath, thumbUrl</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

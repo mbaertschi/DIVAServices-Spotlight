@@ -1,12 +1,20 @@
-exports.config =
-  # See docs at https://github.com/brunch/brunch/blob/stable/docs/config.md
+# Config
+# ======
+#
+# **Config** is the configuration file for [Brunch](http://brunch.io/).
+# See docs at `https://github.com/brunch/brunch/blob/stable/docs/config.md`
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
 
-  # Not required for angular
+# Expose brunch settings
+brunchSettings = exports = module.exports = {}
+
+# Brunch configurations
+brunchSettings.config =
+
   modules:
     definition: false
     wrapper: false
-
-  sourceMaps: true
 
   files:
 

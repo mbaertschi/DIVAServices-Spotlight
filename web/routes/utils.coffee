@@ -1,17 +1,38 @@
+# Utils
+# =====
+#
+# **Utils** encapsulates all methods used for image manipulation.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 fs        = require 'fs-extra'
 logger    = require '../lib/logger'
 ExifImage = require('exif').ExifImage
 lwip      = require 'lwip'
 
+# We don't want images to be larger than 1024 pixels with / height
 MAX_SIZE = 1024
 
+# Expose utils
 utils = exports = module.exports = {}
 
+# ---
+# **utils.getFilesizeInBytes**</br>
+# Read an image from disk and return its file size</br>
+# `params:`
+#   * *filename* `<String>` path to image location
 utils.getFilesizeInBytes = (filename) ->
   stats = fs.statSync(filename)
   fileSizeInBytes = stats['size']
   fileSizeInBytes
 
+# ---
+# **utils.writeImage**</br>
+# Write a base64 encoded image to disk and callback its file size</br>
+# `params:`
+#   * *image* `<Object>` image object from mongoDB
+#   * *file* `<String>` base64 encoded image
 utils.writeImage = (image, file, callback) ->
   matches = file.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
   imageBuffer = {}
@@ -32,6 +53,11 @@ utils.writeImage = (image, file, callback) ->
       else
         callback null, utils.getFilesizeInBytes(image.path)
 
+# ---
+# **utils.getRotation**</br>
+# Read Exif meta-data from an image and callback rotation in degree</br>
+# `params:`
+#   * path `<String>` path to image location
 utils.getRotation = (path, callback) ->
   try
     new ExifImage image: path, (err, exifData) ->
@@ -50,6 +76,11 @@ utils.getRotation = (path, callback) ->
   catch err
     callback "could not load ExifImage on image=#{path} error=#{err}"
 
+# ---
+# **utils.orientateJpegImage**</br>
+# Resize and rotate an image. Callback once you are done</br>
+# `params:`
+#   * image `<Object>` image object from mongoDB
 utils.orientateJpegImage = (image, callback) ->
   path = image.path
 
@@ -86,6 +117,11 @@ utils.orientateJpegImage = (image, callback) ->
   else
     resizeAndRotate image, 0, callback
 
+# ---
+# **utils.convertToPng**</br>
+# Convert an image to .png if not yet so. Callback updated image object to store in mongoDB</br>
+# `params:`
+#   * image `<Object>` image object from mongoDB
 utils.convertToPng = (image, callback) ->
   if image.type isnt 'image/png'
     lwip.open image.path, (err, img) ->
@@ -100,7 +136,6 @@ utils.convertToPng = (image, callback) ->
             logger.log 'info', "could not convert to png image=#{image.serverName} error=#{err}", 'Utils'
             callback null, image
           else
-            #remove old jpg image
             fs.removeSync image.path
             serverName = image.serverName
             image.serverName = name
@@ -113,6 +148,11 @@ utils.convertToPng = (image, callback) ->
   else
     callback null, image
 
+# ---
+# **utils.createThumbnail**</br>
+# Create a thumbnail for the given image. Callback its path and url to store in mongoDB</br>
+# `params:`
+#   * image `<Object>` image object from mongoDB
 utils.createThumbnail = (image, callback) ->
   lwip.open image.path, (err, img) ->
     if err?

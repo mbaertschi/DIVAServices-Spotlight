@@ -1,12 +1,26 @@
+# Server
+# ======
+#
+# **Server** is the main entry point for running the DIA-Distributed application. DIA-Distributed
+# is running on an [nodeJS](https://nodejs.org/) plattform and uses the [Express](http://expressjs.com/)
+# framework.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Set the `NODE_ENV` environment variable to `dev` or `prod` depending on whether you are
+# in development mode or in production mode
 if not process.env.NODE_ENV? or process.env.NODE_ENV not in ['dev', 'prod']
   console.log 'please set NODE_ENV to [dev, prod]. going to exit'
-  process.exit(0)
+  process.exit 0
 
-nconf       = require 'nconf'
+# Load the configuration files. We use `nconf` for managing
+# our application settings
+nconf = require 'nconf'
 nconf.add 'server', type: 'file', file: './conf/server.' + process.env.NODE_ENV + '.json'
 nconf.add 'client', type: 'file', file: './conf/client.' + process.env.NODE_ENV + '.json'
-nconf.add 'schemas', type: 'file', file: './conf/schemas.' + process.env.NODE_ENV + '.json'
+nconf.add 'schemas', type: 'file', file: './conf/schemas.json'
 
+# Module dependencies
 express     = require 'express'
 session     = require 'express-session'
 http        = require 'http'
@@ -21,49 +35,56 @@ mongoose    = require 'mongoose'
 SessionStore= require './lib/sessionStore'
 Uploader    = require './routes/uploader'
 
-# start the web service
-exports.startServer = (port, path, callback) ->
+# Expose `server`
+server = exports = module.exports = {}
 
-  # initialize the mongoDB
+# Export `startServer` function which is used by [Brunch](http://brunch.io/)
+server.startServer = (port, path, callback) ->
+
+  # Initialize our `mongoDB`
   @db = new Mongo
 
-  # setup express framework
+  # Setup `Express` framework
   app = express()
 
-  # setup session
+  # Setup sessions. We use a session store which uses a mongoDB connection
+  # to store the sessions in. This allows us to hook into the session destroy
+  # method and handle image deletion (on disk and in mongoDB)
   sessionStore = new SessionStore session
-  app.use session(sessionStore.session)
+  app.use session sessionStore
 
-  # route all static files to http paths.
-  app.use '', express.static(sysPath.resolve(path))
+  # Route all static files to http paths
+  app.use '', express.static sysPath.resolve path
 
-  # redirect requests that include a trailing slash.
-  app.use slashes(false)
+  # Redirect requests that include a trailing slash
+  app.use slashes false
 
-  # enable multipart/form-data
+  # Enable multipart/form-data. We use `multer` as middleware
   uploader = new Uploader
-  app.use uploader.multer
+  app.use uploader
 
-  # enable body parser for json
+  # Enable body parser for json
   app.use bodyParser.json()
 
-  # routing
+  # Setup our routes
   app.use router
 
-  # route all non-existent files to `index.html`
+  # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->
-    res.sendFile __dirname + '/' + sysPath.join(path, 'index.html')
+    res.sendFile __dirname + '/' + sysPath.join path, 'index.html'
 
-  # wrap express with httpServer for socket.io
+  # Wrap `Express` with `httpServer` for `socket.io`
   app.server = http.createServer app
+
+  # Set server timeout to value specified in configuration file
   app.server.timeout = nconf.get 'server:timeout'
 
-  # start the pusher if defined
+  # Start the `pusher` if defined so
   if nconf.get 'pusher:run'
     io = require('socket.io')(app.server)
     pusher = new Pusher io
 
-  # start the poller if defined
+  # Start the `poller` if defined so
   if nconf.get 'poller:run'
     if nconf.get 'pusher:run'
       poller = new Poller @db, pusher
@@ -71,4 +92,5 @@ exports.startServer = (port, path, callback) ->
       poller = new Poller @db
     poller.run()
 
+  # Start server on port specified in configuration file
   app.server.listen port, callback

@@ -13,19 +13,40 @@ module.config [
       data:
         title: 'Documents'
 
-    $stateProvider.state 'docs.architecture',
+    $stateProvider.state 'docs.howto',
       parent: 'main'
-      url: '/docs/architecture'
-      templateUrl: 'modules/docs/views/architecture.html'
-      controller: 'ArchitecturePageController'
+      url: '/docs/howto'
+      templateUrl: 'modules/docs/views/howto.html'
       data:
-        title: 'Architecture'
+        title: 'HowTo'
+
+    $stateProvider.state 'docs.faq',
+      parent: 'main'
+      url: '/docs/faq'
+      templateUrl: 'modules/docs/views/faq.html'
+      data:
+        title: 'FAQ'
 
     $stateProvider.state 'docs.api',
       parent: 'main'
       url: '/docs/api'
-      templateUrl: 'modules/docs/views/api.html'
-      controller: 'ApiPageController'
+      abstract: true
       data:
         title: 'API Documentation'
+
+    $stateProvider.state 'docs.api.backend',
+      parent: 'main'
+      url: 'docs/api/backend'
+      templateUrl: 'modules/docs/views/backend.html'
+      controller: 'BackendPageController'
+      data:
+        title: 'Backend'
+
+    $stateProvider.state 'docs.api.server',
+      parent: 'main'
+      url: 'docs/api/server'
+      templateUrl: 'modules/docs/views/server.html'
+      controller: 'ServerPageController'
+      data:
+        title: 'Server'
 ]

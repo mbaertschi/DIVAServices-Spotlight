@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Algorithm</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="algorithm">Algorithm</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Algorithm</strong> is the mongoose model for the algorithm schema.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../logger'</span></pre></div>
+        
+      
+        
+        <p><code>Algorithm</code> schema definition</p>
+
+        
+          <div class='highlight'><pre>AlgorithmSchema = mongoose.Schema
+  <span class="hljs-attribute">name</span>: String
+  <span class="hljs-attribute">description</span>: String
+  <span class="hljs-attribute">url</span>: String
+  <span class="hljs-attribute">host</span>: String
+  <span class="hljs-attribute">_lastChange</span>: Date</pre></div>
+        
+      
+        
+        <p>Set the algorithms url as its index</p>
+
+        
+          <div class='highlight'><pre>AlgorithmSchema.index <span class="hljs-attribute">url</span>: <span class="hljs-number">1</span></pre></div>
+        
+      
+        
+        <p>Set <code>_lastChange</code> attribute to current time before algorithm is updated</p>
+
+        
+          <div class='highlight'><pre>AlgorithmSchema.pre <span class="hljs-string">'save'</span>, <span class="hljs-function"><span class="hljs-params">(next)</span> -&gt;</span>
+  @._lastChange = <span class="hljs-keyword">new</span> Date
+  next()</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>AlgorithmSchema.methods.compareAndSave</strong></br>
+Expose <code>compareAndSave</code> method on <code>Algorithm</code> schema. <code>compareAndSave</code> takes
+the new algorithm as parameter input and compares each attributes value against
+the old algorithm stored in the mongoDB. If there are any changes, the algorithm
+will be updated</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithm</em> <code>&lt;Object&gt;</code> to compare against algorithm stored in mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>AlgorithmSchema.methods.compareAndSave = <span class="hljs-function"><span class="hljs-params">(algorithm, callback)</span> -&gt;</span>
+  doc = @
+  Algorithm = mongoose.model <span class="hljs-string">'Algorithm'</span>
+  newAlgorithm = <span class="hljs-keyword">new</span> Algorithm(algorithm).toObject()
+  oldAlgorithm = @.toObject()
+
+  changes = _findDifferences newAlgorithm, oldAlgorithm
+
+  <span class="hljs-keyword">if</span> changes.length &gt; <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> change <span class="hljs-keyword">in</span> changes
+      doc[change.attr] = change.<span class="hljs-keyword">new</span>
+
+    doc.save (err, algorithm) -&gt;
+      <span class="hljs-keyword">if</span> err
+        logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">'there was an error while storing changed algorithm. Check mongoose log'</span>, <span class="hljs-string">'Algorithm'</span>
+      callback <span class="hljs-literal">null</span>, changes
+
+  <span class="hljs-keyword">else</span>
+    callback <span class="hljs-literal">null</span>, changes</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_findDifferences</strong></br>
+Recursively iterate over all attributes and return differences if there are any</br>
+<code>params:</code></p>
+<ul>
+<li><em>newObj</em> <code>&lt;Object&gt;</code> the new object to be compared</li>
+<li><em>oldObj</em> <code>&lt;Object&gt;</code> the old object to be compared</li>
+<li><em>scope</em> <code>&lt;String&gt;</code> (optional) scope to apply this method on</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">_findDifferences</span> = <span class="hljs-params">(newObj, oldObj, scope)</span> -&gt;</span>
+  scope <span class="hljs-keyword">or</span> (scope = <span class="hljs-string">''</span>)
+  differences = []
+
+  keys1 = _.chain(newObj).keys().filter(<span class="hljs-function"><span class="hljs-params">(key)</span> -&gt;</span>
+    key.search(<span class="hljs-string">'_'</span>) != <span class="hljs-number">0</span>
+  ).value()
+
+  keys2 = _.chain(oldObj).keys().filter(<span class="hljs-function"><span class="hljs-params">(key)</span> -&gt;</span>
+    key.search(<span class="hljs-string">'_'</span>) != <span class="hljs-number">0</span>
+  ).value()
+
+  keyDiff = _.difference(keys1, keys2).concat(_.difference(keys2, keys1))
+
+  <span class="hljs-keyword">if</span> keyDiff.length &gt; <span class="hljs-number">0</span>
+    _.each keyDiff, <span class="hljs-function"><span class="hljs-params">(key)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> _.isObject(newObj[key]) <span class="hljs-keyword">and</span> _.isObject(oldObj[key])
+        differences = differences.concat(_findDifferences(newObj[key], oldObj[key]), scope + key + <span class="hljs-string">'.'</span>)
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> key <span class="hljs-keyword">in</span> newObj
+          differences.push
+            <span class="hljs-attribute">type</span>: <span class="hljs-string">'new attr'</span>
+            <span class="hljs-attribute">attr</span>: scope + key
+            <span class="hljs-attribute">new</span>: newObj[key]
+            <span class="hljs-attribute">old</span>: <span class="hljs-literal">undefined</span>
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> oldObj[key] != <span class="hljs-literal">null</span>
+          differences.push
+            <span class="hljs-attribute">type</span>: <span class="hljs-string">'del attr'</span>
+            <span class="hljs-attribute">attr</span>: scope + key
+            <span class="hljs-attribute">new</span>: <span class="hljs-literal">undefined</span>
+            <span class="hljs-attribute">old</span>: oldObj[key]
+
+  keyIntersection = _.intersection keys1, keys2
+
+  _.each keyIntersection, <span class="hljs-function"><span class="hljs-params">(key)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> _.isObject(newObj[key]) <span class="hljs-keyword">and</span> _.isObject(oldObj[key]) <span class="hljs-keyword">and</span> _.isDate(newObj[key]) <span class="hljs-keyword">is</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">and</span> _.isDate(oldObj[key]) <span class="hljs-keyword">is</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">and</span> _.isArray(newObj[key]) <span class="hljs-keyword">is</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">and</span> _.isArray(oldObj[key]) <span class="hljs-keyword">is</span> <span class="hljs-literal">false</span>
+      differences = differences.concat(_findDifferences(newObj[key], oldObj[key], scope + key + <span class="hljs-string">'.'</span>))
+    <span class="hljs-keyword">else</span>
+      v1 = newObj[key]
+      v2 = oldObj[key]
+      <span class="hljs-keyword">if</span> _.isDate(v1)
+        v1 = v1.toString()
+      <span class="hljs-keyword">if</span> _.isDate(v2)
+        v2 = v2.toString()
+      <span class="hljs-keyword">if</span> _.isArray(v1) <span class="hljs-keyword">and</span> _.isArray(v2)
+        diff = objectDiff.diffOwnProperties(v1, v2)
+        <span class="hljs-keyword">if</span> diff.changed != <span class="hljs-string">'equal'</span>
+          differences.push
+            <span class="hljs-attribute">type</span>: <span class="hljs-string">'mod attr'</span>
+            <span class="hljs-attribute">attr</span>: scope + key
+            <span class="hljs-attribute">new</span>: v1
+            <span class="hljs-attribute">old</span>: v2
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>
+      <span class="hljs-keyword">if</span> _.isArray(v1)
+        v1 = JSON.stringify(v1)
+      <span class="hljs-keyword">if</span> _.isArray(v2)
+        v2 = JSON.stringify(v2)
+      <span class="hljs-keyword">if</span> v1 != v2
+        differences.push
+          <span class="hljs-attribute">type</span>: <span class="hljs-string">'mod attr'</span>
+          <span class="hljs-attribute">attr</span>: scope + key
+          <span class="hljs-attribute">new</span>: v1
+          <span class="hljs-attribute">old</span>: v2
+  differences</pre></div>
+        
+      
+        
+        <p>Expose <code>Algorithm</code> schema</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = mongoose.model <span class="hljs-string">'Algorithm'</span>, AlgorithmSchema</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

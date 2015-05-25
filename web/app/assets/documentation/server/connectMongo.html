@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>ConnectMongo</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="connectmongo">ConnectMongo</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>ConnectMongo</strong> is basically the same implementation of a SessionStore as
+<code>connect-mongo</code>. The only difference is, that we hook into the session destroy
+method in order to be able to handle image deletion from disk and from mongoDB.
+Therefore we don’t give any further information about the implementation. See
+docs at <code>https://github.com/kcbanner/connect-mongo</code> for detailed information.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+util        = <span class="hljs-built_in">require</span> <span class="hljs-string">'util'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+fs          = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+
+stringifySerializationOptions =
+  <span class="hljs-attribute">serialize</span>: JSON.stringify
+  <span class="hljs-attribute">unserialize</span>: JSON.parse
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(connect)</span> -&gt;</span>
+  Store = connect.Store <span class="hljs-keyword">or</span> connect.session.Store
+<span class="hljs-function">
+  <span class="hljs-title">MongoStore</span> = <span class="hljs-params">(options)</span> -&gt;</span>
+    options = _.defaults(options <span class="hljs-keyword">or</span> {}, nconf.get <span class="hljs-string">'mongoStore:defaultOptions'</span>)
+    options = _.assign(options, stringifySerializationOptions)
+    <span class="hljs-property">@options</span> = options
+    Store.call <span class="hljs-keyword">this</span>, options
+    self = <span class="hljs-keyword">this</span>
+<span class="hljs-function">
+    <span class="hljs-title">changeState</span> = <span class="hljs-params">(newState)</span> -&gt;</span>
+      self.state = newState
+      self.emit newState
+      <span class="hljs-keyword">return</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>removeImageFolder</strong></br>
+Remove all images associated to that sessionId from disk</br>
+<code>params:</code></p>
+<ul>
+<li><em>sessionId</em> <code>&lt;String&gt;</code> destroyed session id</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">    <span class="hljs-title">removeImageFolder</span> = <span class="hljs-params">(sessionId)</span> -&gt;</span>
+      dir = nconf.get(<span class="hljs-string">'web:uploader:destination'</span>) + sessionId
+      fs.exists dir, <span class="hljs-function"><span class="hljs-params">(exists)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> exists
+          fs.emptyDir dir, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> err
+              logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"the following directory was not removed: <span class="hljs-subst">#{dir}</span>. Please do it manually to keep the server clean"</span>, <span class="hljs-string">'ConnectMongo'</span>
+            <span class="hljs-keyword">else</span>
+              logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"removed directory <span class="hljs-subst">#{dir}</span>"</span>, <span class="hljs-string">'ConnectMongo'</span>
+              fs.rmdir dir</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>removeImagesFromDb</strong></br>
+Remove all images associated to that sessionId from mongoDB</br>
+<code>params:</code></p>
+<ul>
+<li><em>sessionId</em> <code>&lt;String&gt;</code> destroyed session id</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">    <span class="hljs-title">removeImagesFromDb</span> = <span class="hljs-params">(sessionId)</span> -&gt;</span>
+      Image = mongoose.model <span class="hljs-string">'Image'</span>
+      query =
+        <span class="hljs-attribute">sessionId</span>: sessionId
+      Image.remove query, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"images for session=<span class="hljs-subst">#{sessionId}</span> were not removed error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'ConnectMongo'</span></pre></div>
+        
+      
+        
+        
+        
+          <div class='highlight'><pre><span class="hljs-function">    <span class="hljs-title">connectionReady</span> = <span class="hljs-params">(err)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">'not able to connect to the database'</span>, <span class="hljs-string">'ConnectMongo'</span>
+        changeState <span class="hljs-string">'disconnected'</span>
+        <span class="hljs-keyword">throw</span> err
+
+      self.collection = self.db.collection(options.collection)</pre></div>
+        
+      
+        
+        <p>Hook into session destroy method for handling image deletion</p>
+
+        
+          <div class='highlight'><pre>      setInterval (<span class="hljs-function">-&gt;</span>
+        self.collection.find(<span class="hljs-attribute">expires</span>: <span class="hljs-attribute">$lt</span>: <span class="hljs-keyword">new</span> Date).toArray (err, sessions) -&gt;
+          <span class="hljs-keyword">if</span> err
+            <span class="hljs-keyword">throw</span> err
+          <span class="hljs-keyword">for</span> session <span class="hljs-keyword">in</span> sessions
+            removeImageFolder session._id
+            removeImagesFromDb session._id
+          self.collection.remove { <span class="hljs-attribute">expires</span>: { <span class="hljs-attribute">$lt</span>: <span class="hljs-keyword">new</span> Date } }, <span class="hljs-attribute">w</span>: <span class="hljs-number">0</span>
+          <span class="hljs-keyword">return</span>
+        <span class="hljs-keyword">return</span>
+      ), options.autoRemoveInterval
+      changeState <span class="hljs-string">'connected'</span>
+      <span class="hljs-keyword">return</span>
+<span class="hljs-function">
+    <span class="hljs-title">initWithMongooseConnection</span> = -&gt;</span>
+      <span class="hljs-keyword">if</span> options.mongooseConnection.readyState == <span class="hljs-number">1</span>
+        self.db = options.mongooseConnection.db
+        process.nextTick connectionReady
+      <span class="hljs-keyword">else</span>
+        options.mongooseConnection.once <span class="hljs-string">'open'</span>, <span class="hljs-function">-&gt;</span>
+          self.db = options.mongooseConnection.db
+          connectionReady()
+          <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+
+    <span class="hljs-property">@getCollection</span> = <span class="hljs-function"><span class="hljs-params">(done)</span> -&gt;</span>
+      <span class="hljs-keyword">switch</span> self.state
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'connected'</span>
+          done <span class="hljs-literal">null</span>, self.collection
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'connecting'</span>
+          self.once <span class="hljs-string">'connected'</span>, <span class="hljs-function">-&gt;</span>
+            done <span class="hljs-literal">null</span>, self.collection
+            <span class="hljs-keyword">return</span>
+        <span class="hljs-keyword">when</span> <span class="hljs-string">'disconnected'</span>
+          done <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Not connected'</span>)
+      <span class="hljs-keyword">return</span>
+
+    <span class="hljs-property">@getSessionId</span> = <span class="hljs-function"><span class="hljs-params">(sid)</span> -&gt;</span>
+      sid
+
+    changeState <span class="hljs-string">'init'</span>
+    initWithMongooseConnection()
+    changeState <span class="hljs-string">'connecting'</span>
+    <span class="hljs-keyword">return</span>
+
+  util.inherits MongoStore, Store
+
+  <span class="hljs-attribute">MongoStore</span>::get = <span class="hljs-function"><span class="hljs-params">(sid, callback)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> !callback
+      callback = _.noop
+    sid = <span class="hljs-property">@getSessionId</span>(sid)
+    self = <span class="hljs-keyword">this</span>
+    query =
+      <span class="hljs-attribute">_id</span>: sid
+      <span class="hljs-attribute">$or</span>: [
+        <span class="hljs-attribute">expires</span>: <span class="hljs-attribute">$exists</span>: <span class="hljs-literal">false</span>
+        <span class="hljs-attribute">expires</span>: <span class="hljs-attribute">$gt</span>: <span class="hljs-keyword">new</span> Date
+      ]
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.findOne query, <span class="hljs-function"><span class="hljs-params">(err, session)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"not able to execute `find` query for session: <span class="hljs-subst">#{sid}</span>"</span>, <span class="hljs-string">'ConnectMongo'</span>
+          <span class="hljs-keyword">return</span> callback(err)
+        <span class="hljs-keyword">if</span> session
+          s = <span class="hljs-literal">undefined</span>
+          <span class="hljs-keyword">try</span>
+            s = self.options.unserialize(session.session)
+            <span class="hljs-keyword">if</span> self.options.touchAfter &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> session.lastModified
+              s.lastModified = session.lastModified
+          <span class="hljs-keyword">catch</span> err
+            logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">'unable to deserialize session'</span>, <span class="hljs-string">'ConnectMongo'</span>
+            callback err
+          callback <span class="hljs-literal">null</span>, s
+        <span class="hljs-keyword">else</span>
+          callback()
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  <span class="hljs-attribute">MongoStore</span>::set = <span class="hljs-function"><span class="hljs-params">(sid, session, callback)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> !callback
+      callback = _.noop
+    sid = <span class="hljs-property">@getSessionId</span>(sid)
+    <span class="hljs-keyword">if</span> <span class="hljs-property">@options</span>.touchAfter &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> session <span class="hljs-keyword">and</span> session.lastModified
+      <span class="hljs-keyword">delete</span> session.lastModified
+    s = <span class="hljs-literal">undefined</span>
+    <span class="hljs-keyword">try</span>
+      s =
+        <span class="hljs-attribute">_id</span>: sid
+        <span class="hljs-attribute">session</span>: <span class="hljs-property">@options</span>.serialize(session)
+    <span class="hljs-keyword">catch</span> err
+      logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">'unable to serialize session'</span>, <span class="hljs-string">'ConnectMongo'</span>
+      callback err
+    <span class="hljs-keyword">if</span> session <span class="hljs-keyword">and</span> session.cookie <span class="hljs-keyword">and</span> session.cookie.expires
+      s.expires = <span class="hljs-keyword">new</span> Date(session.cookie.expires)
+    <span class="hljs-keyword">else</span>
+      s.expires = <span class="hljs-keyword">new</span> Date(Date.now() + <span class="hljs-property">@options</span>.ttl * <span class="hljs-number">1000</span>)
+    <span class="hljs-keyword">if</span> <span class="hljs-property">@options</span>.touchAfter &gt; <span class="hljs-number">0</span>
+      s.lastModified = <span class="hljs-keyword">new</span> Date
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.update { <span class="hljs-attribute">_id</span>: sid }, s, {
+        <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>
+        <span class="hljs-attribute">safe</span>: <span class="hljs-literal">true</span>
+      }, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"not able to set/update session: <span class="hljs-subst">#{sid}</span>"</span>, <span class="hljs-string">'ConnectMongo'</span>
+        callback err
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  <span class="hljs-attribute">MongoStore</span>::touch = <span class="hljs-function"><span class="hljs-params">(sid, session, callback)</span> -&gt;</span>
+    updateFields = {}
+    touchAfter = <span class="hljs-property">@options</span>.touchAfter * <span class="hljs-number">1000</span>
+    lastModified = <span class="hljs-keyword">if</span> session.lastModified <span class="hljs-keyword">then</span> session.lastModified.getTime() <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+    currentDate = <span class="hljs-keyword">new</span> Date
+    sid = <span class="hljs-property">@getSessionId</span>(sid)
+    callback = <span class="hljs-keyword">if</span> callback <span class="hljs-keyword">then</span> callback <span class="hljs-keyword">else</span> _.noop
+
+    <span class="hljs-keyword">if</span> touchAfter &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> lastModified &gt; <span class="hljs-number">0</span>
+      timeElapsed = currentDate.getTime() - session.lastModified
+      <span class="hljs-keyword">if</span> timeElapsed &lt; touchAfter
+        <span class="hljs-keyword">return</span> callback()
+      <span class="hljs-keyword">else</span>
+        updateFields.lastModified = currentDate
+    <span class="hljs-keyword">if</span> session <span class="hljs-keyword">and</span> session.cookie <span class="hljs-keyword">and</span> session.cookie.expires
+      updateFields.expires = <span class="hljs-keyword">new</span> Date(session.cookie.expires)
+    <span class="hljs-keyword">else</span>
+      updateFields.expires = <span class="hljs-keyword">new</span> Date(Date.now() + <span class="hljs-property">@options</span>.ttl * <span class="hljs-number">1000</span>)
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.update { <span class="hljs-attribute">_id</span>: sid }, { <span class="hljs-attribute">$set</span>: updateFields }, { <span class="hljs-attribute">safe</span>: <span class="hljs-literal">true</span> }, <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"not able to touch session: <span class="hljs-subst">#{sid}</span> (error)"</span>, <span class="hljs-string">'ConnectMongo'</span>
+          callback err
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.nModified == <span class="hljs-number">0</span>
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"not able to touch session: <span class="hljs-subst">#{sid}</span> (not found)"</span>, <span class="hljs-string">'ConnectMongo'</span>
+          callback <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Unable to find the session to touch'</span>)
+        callback()
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  <span class="hljs-attribute">MongoStore</span>::destroy = <span class="hljs-function"><span class="hljs-params">(sid, callback)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> !callback
+      callback = _.noop
+    sid = <span class="hljs-property">@getSessionId</span>(sid)
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.remove { <span class="hljs-attribute">_id</span>: sid }, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"not able to destroy session: <span class="hljs-subst">#{sid}</span>"</span>, <span class="hljs-string">'ConnectMongo'</span>
+        callback err
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  <span class="hljs-attribute">MongoStore</span>::length = <span class="hljs-function"><span class="hljs-params">(callback)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> !callback
+      callback = _.noop
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.count {}, <span class="hljs-function"><span class="hljs-params">(err, count)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">'not able to count sessions'</span>, <span class="hljs-string">'ConnectMongo'</span>
+        callback err, count
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  <span class="hljs-attribute">MongoStore</span>::clear = <span class="hljs-function"><span class="hljs-params">(callback)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> !callback
+      callback = _.noop
+    <span class="hljs-property">@getCollection</span> (err, collection) -&gt;
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback(err)
+      collection.drop (err) -&gt;
+        <span class="hljs-keyword">if</span> err
+          logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">'not able to clear sessions'</span>, <span class="hljs-string">'ConnectMongo'</span>
+        callback err
+        <span class="hljs-keyword">return</span>
+      <span class="hljs-keyword">return</span>
+    <span class="hljs-keyword">return</span>
+
+  MongoStore</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>
