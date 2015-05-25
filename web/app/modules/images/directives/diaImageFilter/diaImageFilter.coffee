@@ -1,11 +1,11 @@
 angular.module('app.images').directive 'diaImageFilter', [
   '$state'
   'diaStateManager'
-  'imagesService'
+  'diaImagesService'
   'toastr'
   '_'
 
-  ($state, diaStateManager, imagesService, toastr, _) ->
+  ($state, diaStateManager, diaImagesService, toastr, _) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageFilter/template.html'
 
@@ -52,7 +52,7 @@ angular.module('app.images').directive 'diaImageFilter', [
       scope.save = ->
         scope.safeApply -> scope.rendering = true
         base64Image = caman.toBase64()
-        imagesService.put(base64Image, diaStateManager.image.name).then (res) ->
+        diaImagesService.put(base64Image, diaStateManager.image.name).then (res) ->
           scope.safeApply -> scope.rendering = false
           if res.status isnt 200
             toastr.warning 'Image was not safed on server', 'Warning'

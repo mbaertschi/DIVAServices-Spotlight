@@ -1,4 +1,5 @@
 angular.module('app.algorithm').factory 'diaHighlighterManager', [
+
   ->
     highlighterManager =
       type: null

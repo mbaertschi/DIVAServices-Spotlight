@@ -2,7 +2,7 @@ angular.module('app').directive 'panel', ->
   restrict: 'E'
   transclude: true
   replace: true
-  templateUrl: 'components/panels/template.html'
+  templateUrl: 'components/directives/panels/template.html'
   scope:
     heading: '@'
     icon: '@'

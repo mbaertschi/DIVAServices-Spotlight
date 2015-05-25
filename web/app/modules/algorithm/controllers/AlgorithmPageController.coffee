@@ -1,18 +1,17 @@
 angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$scope'
   '$stateParams'
-  'algorithmService'
-  'toastr'
-  'mySocket'
   '$state'
-  'mySettings'
   '$window'
-  'imagesService'
   '$sce'
+  'diaSocket'
+  'diaSettings'
+  'diaAlgorithmService'
   'diaHighlighterManager'
   'diaProcessingQueue'
+  'toastr'
 
-  ($scope, $stateParams, algorithmService, toastr, mySocket, $state, mySettings, $window, imagesService, $sce, diaHighlighterManager, diaProcessingQueue) ->
+  ($scope, $stateParams, $state, $window, $sce, diaSocket, diaSettings, diaAlgorithmService, diaHighlighterManager, diaProcessingQueue, toastr) ->
     $scope.algorithm = null
     $scope.images = []
     $scope.selectedImage = null
@@ -29,7 +28,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     requestAlgorithm = ->
       $scope.id = $stateParams.id
 
-      algorithmService.fetch($scope.id).then (res) ->
+      diaAlgorithmService.fetch($scope.id).then (res) ->
         $scope.algorithm = res.data
         angular.forEach $scope.algorithm.input, (entry) ->
           key = Object.keys(entry)[0]
@@ -47,12 +46,8 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     requestAlgorithm()
 
     requestImages = ->
-      imagesService.fetch().then (res) ->
-        angular.forEach res.data, (image) ->
-          image.thumbPath = image.thumbPath + '?' + new Date().getTime()
-          image.url = image.url + '?' + new Date().getTime()
-          @.push image
-        , $scope.images
+      diaAlgorithmService.fetchImages().then (res) ->
+        $scope.images = res.data
       , (err) ->
         toastr.err err.statusText, err.status
 
@@ -140,7 +135,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       """
     )
 
-    mySettings.fetch('socket').then (socket) ->
+    diaSettings.fetch('socket').then (socket) ->
       if socket.run?
         $scope.$on 'socket:update algorithms', (ev, algorithms) ->
           angular.forEach algorithms, (algorithm) ->

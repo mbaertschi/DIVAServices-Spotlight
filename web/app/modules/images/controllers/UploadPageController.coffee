@@ -1,10 +1,9 @@
 angular.module('app.images').controller 'UploadPageController', [
   '$scope'
   'diaStateManager'
-  'imagesService'
   'toastr'
 
-  ($scope, diaStateManager, imagesService, toastr) ->
+  ($scope, diaStateManager, toastr) ->
 
     $scope.state = 'upload'
 

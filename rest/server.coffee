@@ -55,6 +55,8 @@ app.use bodyParser.json limit: '10mb'
 #   "additionalProperties": false
 # }
 # ```
+# ---
+# **app.get** `/`</br>
 # Each entry will appear on the algorithms overview page. ``url`` must point to the
 # algorithm uri. The response JSON file will be validated against the JSON-Schema
 # described above. If any errors occure the involved algorithm will be skipped and

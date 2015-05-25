@@ -1,4 +1,4 @@
-angular.module('app').factory 'mySettings', [
+angular.module('app').factory 'diaSettings', [
   '$http'
 
   ($http) ->

@@ -1,9 +1,9 @@
 angular.module('app.images').directive 'diaImageCropper', [
   'toastr'
   'diaStateManager'
-  'imagesService'
+  'diaImagesService'
 
-  (toastr, diaStateManager, imagesService) ->
+  (toastr, diaStateManager, diaImagesService) ->
     restrict: 'AC'
     templateUrl: 'modules/images/directives/diaImageCropper/template.html'
 
@@ -39,7 +39,7 @@ angular.module('app.images').directive 'diaImageCropper', [
             else
               # save the base64Image on the server and go to next state
               base64Image = canvas.toDataURL imageType
-              imagesService.put(base64Image, diaStateManager.image.name).then (res) ->
+              diaImagesService.put(base64Image, diaStateManager.image.name).then (res) ->
                 if res.status isnt 200
                   toastr.warning 'Image was not safed on server. Please try again', 'Warning'
                 else
