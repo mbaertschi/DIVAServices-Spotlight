@@ -11,7 +11,7 @@
 #mongo: cd web && node ./node_modules/mongo-express/app.js
 
 # start the backend server
-api: cd rest && forever -m 5 --minUptime 1000 --spinSleepTime 5000 --watch -c coffee server.coffee
+api: cd rest && forever -m 5 --minUptime 1000 --spinSleepTime 5000 -c coffee server.coffee
 
 # start the server
-web: cd web && brunch watch -s
+web: cd web && forever -m 5 --minUptime 1000 --spinSleepTime 5000 -c coffee server.coffee

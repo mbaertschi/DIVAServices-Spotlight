@@ -78,7 +78,7 @@ If you want to run the tests with npm:
 
   ```bash
   $ cd /
-  $ nf -j Procfile.test start
+  $ nf -j Procfile.dev start
   $ cd tests/frontend
   $ npm run e2e
   ```
@@ -94,7 +94,7 @@ If you want to run the tests with npm:
 To start and stop dummy rest server and web client with one command:
 
 ```bash
-$ nf start
+$ nf -j Procfile.dev start
 ```
 
 For manually starting backend server
@@ -115,4 +115,11 @@ Then go to [localhost:3000](http://localhost:3000)
 
 ## Production
 
-Coming soon
+To run DIA-Distributed in production mode follow those steps:
+
+```bash
+$ export NODE_ENV=prod
+$ cd web && brunch b -P
+$ cd ..
+$ nf start
+```
