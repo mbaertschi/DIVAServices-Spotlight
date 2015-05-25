@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>API</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="api">API</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>API</strong> exposes all routes belonging to <code>/api/</code>.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+loader      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/loader'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+fs          = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
+Validator   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonschema'</span>).Validator
+validator   = <span class="hljs-keyword">new</span> Validator
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span></pre></div>
+        
+      
+        
+        <p>Expose api routes</p>
+
+        
+          <div class='highlight'><pre>api = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(router)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.get</strong> <code>/api/settings</code></p>
+<ul>
+<li>method: GET</li>
+<li>params:<ul>
+<li><em>type</em> <code>&lt;String&gt;</code> (optional) set type if you want to only fetch some parts of the
+client settings specified in <code>./web/conf/client.[dev/prod].json</code></li>
+</ul>
+</li>
+<li>return: client side settings specified in <code>./web/conf/client.[dev/prod].json</code></li>
+</ul>
+
+        
+          <div class='highlight'><pre>  router.get <span class="hljs-string">'/api/settings'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    params = req.query
+
+    <span class="hljs-keyword">if</span> params.type?
+      settings = nconf.get <span class="hljs-string">"web:<span class="hljs-subst">#{params.type}</span>"</span>
+    <span class="hljs-keyword">else</span>
+      settings = nconf.get <span class="hljs-string">'web'</span>
+
+    res.status(<span class="hljs-number">200</span>).json settings</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.get</strong> <code>/api/algorithms</code></p>
+<ul>
+<li>method: GET</li>
+<li>params: none</li>
+<li>return: All algorithms currently stored in mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  router.get <span class="hljs-string">'/api/algorithms'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    Algorithm = mongoose.model <span class="hljs-string">'Algorithm'</span>
+
+    fields =
+      <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">host</span>: <span class="hljs-literal">true</span>
+
+    Algorithm.find {}, fields, <span class="hljs-function"><span class="hljs-params">(err, algorithms)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'There was an error while loading the algorithms'</span>
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> algorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+        res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'Not found'</span>
+      <span class="hljs-keyword">else</span>
+        res.status(<span class="hljs-number">200</span>).json algorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.get</strong> <code>/api/algorithm</code></p>
+<ul>
+<li>method: GET</li>
+<li>params:<ul>
+<li><em>id</em> <code>&lt;String&gt;</code> the algorithms id</li>
+</ul>
+</li>
+<li>return: algorithm details for algorithm with _id == id</li>
+</ul>
+<p>This method will first fetch the algorithm from mongoDB and then
+calls the algorithms url to fetch the details from the remote host.
+Those details are validated against the algorithm schema defined
+in in <code>./web/conf/schemas.json</code></p>
+
+        
+          <div class='highlight'><pre>  router.get <span class="hljs-string">'/api/algorithm'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    params = req.query
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">404</span>).json <span class="hljs-string">'error'</span>: <span class="hljs-string">'Not found'</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> params.id
+
+    Algorithm = mongoose.model <span class="hljs-string">'Algorithm'</span>
+    Algorithm.findById params.id, <span class="hljs-function"><span class="hljs-params">(err, algorithm)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'Not found'</span>
+      <span class="hljs-keyword">else</span>
+        url = algorithm.url
+
+        settings =
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">uri</span>: url
+            <span class="hljs-attribute">timeout</span>: nconf.get <span class="hljs-string">'server:timeout'</span>
+            <span class="hljs-attribute">headers</span>: {}
+          <span class="hljs-attribute">retries</span>: nconf.get <span class="hljs-string">'poller:retries'</span>
+
+        loader.get settings, <span class="hljs-function"><span class="hljs-params">(err, resp)</span> -&gt;</span>
+          <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">404</span>).json <span class="hljs-string">'error'</span>: <span class="hljs-string">'Algorithm could not be loaded'</span> <span class="hljs-keyword">if</span> err?
+          <span class="hljs-keyword">try</span>
+            details = JSON.parse resp
+            valid = <span class="hljs-literal">true</span>
+          <span class="hljs-keyword">catch</span> e
+            valid = <span class="hljs-literal">false</span>
+          <span class="hljs-keyword">finally</span>
+            <span class="hljs-keyword">if</span> valid
+              algorithmDetailsErrors = validator.validate(details, nconf.get(<span class="hljs-string">'parser:details:algorithmSchema'</span>)).errors
+              <span class="hljs-keyword">if</span> algorithmDetailsErrors.length
+                res.status(<span class="hljs-number">400</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'invalid json structure'</span>
+              <span class="hljs-keyword">else</span>
+                res.status(<span class="hljs-number">200</span>).json details
+            <span class="hljs-keyword">else</span>
+              res.status(<span class="hljs-number">400</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'invalid json structure'</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.post</strong> <code>/api/algorithm</code></p>
+<ul>
+<li>method: POST</li>
+<li>params:<ul>
+<li><em>algorithm</em> <code>&lt;Object&gt;</code> the algorithm to use</li>
+<li><em>image</em> <code>&lt;Object&gt;</code> the image to process</li>
+<li><em>inputs</em> <code>&lt;Object&gt;</code> additional information for the algorithm</li>
+<li><em>highlighter</em> <code>&lt;Object&gt;</code> the selected region</li>
+</ul>
+</li>
+<li>return: the result of the algorithm applied on the image with the given additional information</li>
+</ul>
+<p>The algorithm and image objects must conform to the mongoDB schemas specified for them. The image will
+be sent to the remote host as base64 encoded image along with the other information. The response from
+the remote host must meet the JSON-Schema specification defined in <code>./web/conf/schemas.json</code>. If response
+contains a base64 encoded image, this will be stored as .png image and passed on as result image. Otherwise
+the origin image will be passed on (if highlighters are defined in response)</p>
+
+        
+          <div class='highlight'><pre>  router.post <span class="hljs-string">'/api/algorithm'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    params = req.body
+    <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">400</span>).send() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> params.algorithm <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> params.image <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> params.inputs <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> params.highlighter
+<span class="hljs-function">
+    <span class="hljs-title">getImageAsBase64</span> = <span class="hljs-params">(path, callback)</span> -&gt;</span>
+      fs.readFile path, <span class="hljs-function"><span class="hljs-params">(err, image)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err?
+          callback <span class="hljs-string">"could not base64 encode image"</span>
+        <span class="hljs-keyword">else</span>
+          callback <span class="hljs-literal">null</span>, image.toString(<span class="hljs-string">'base64'</span>)
+<span class="hljs-function">
+    <span class="hljs-title">processResponse</span> = <span class="hljs-params">(result, callback)</span> -&gt;</span>
+      responseErrors = validator.validate(result, nconf.get(<span class="hljs-string">'parser:details:responseSchema'</span>)).errors
+      <span class="hljs-keyword">if</span> responseErrors.length
+        callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attribute">error</span>: responseErrors[<span class="hljs-number">0</span>].stack }
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.image
+        image = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
+        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output.png'</span>
+        url = path.replace <span class="hljs-string">'public'</span>, <span class="hljs-string">''</span>
+        fs.writeFile path, image, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err
+            callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err }
+          <span class="hljs-keyword">else</span>
+            result.image = url
+            callback <span class="hljs-literal">null</span>, result
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters
+        result.image = params.image.url
+        callback <span class="hljs-literal">null</span>, result
+      <span class="hljs-keyword">else</span>
+        callback <span class="hljs-literal">null</span>, result
+
+    Algorithm = mongoose.model <span class="hljs-string">'Algorithm'</span>
+    Algorithm.findById params.algorithm.id, <span class="hljs-function"><span class="hljs-params">(err, algorithm)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> algorithm?
+        res.status(<span class="hljs-number">404</span>).send()
+      <span class="hljs-keyword">else</span>
+        body =
+          <span class="hljs-attribute">inputs</span>: params.inputs
+          <span class="hljs-attribute">highlighter</span>: params.highlighter
+
+        getImageAsBase64 params.image.path, <span class="hljs-function"><span class="hljs-params">(err, base64Image)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err
+            res.status(<span class="hljs-number">500</span>).json <span class="hljs-attribute">error</span>: err
+          <span class="hljs-keyword">else</span>
+            body.image = base64Image
+
+            settings =
+              <span class="hljs-attribute">options</span>:
+                <span class="hljs-attribute">uri</span>: algorithm.url
+                <span class="hljs-attribute">timeout</span>: nconf.get <span class="hljs-string">'server:timeout'</span>
+                <span class="hljs-attribute">headers</span>: {}
+                <span class="hljs-attribute">method</span>: <span class="hljs-string">'POST'</span>
+                <span class="hljs-attribute">json</span>: <span class="hljs-literal">true</span>
+
+            loader.post settings, body, <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
+              <span class="hljs-keyword">if</span> err?
+                <span class="hljs-keyword">if</span> _.isNumber err
+                  <span class="hljs-keyword">return</span> res.status(err).send()
+                <span class="hljs-keyword">else</span>
+                  <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).json err
+              processResponse result, <span class="hljs-function"><span class="hljs-params">(err, resultProcessed)</span> -&gt;</span>
+                <span class="hljs-keyword">if</span> err
+                  res.status(err.status).json err.error
+                <span class="hljs-keyword">else</span>
+                  res.status(<span class="hljs-number">200</span>).json resultProcessed</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

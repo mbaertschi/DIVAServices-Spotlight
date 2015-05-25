@@ -1,0 +1,9 @@
+.documents-page
+  .row
+    big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Server', 'For your information']", icon='server')
+  .row
+    .col-md-12
+      panel(heading='Server Documentation', icon='server')
+        .col-md-12.text-muted
+          | Hover over the logo to expand table of contents
+        iframe.doc(type='text/html', ng-src='{{currentFile}}')

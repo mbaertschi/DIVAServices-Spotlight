@@ -24,8 +24,23 @@ module.config [
     $stateProvider.state 'docs.api',
       parent: 'main'
       url: '/docs/api'
-      templateUrl: 'modules/docs/views/api.html'
-      controller: 'ApiPageController'
+      abstract: true
       data:
         title: 'API Documentation'
+
+    $stateProvider.state 'docs.api.backend',
+      parent: 'main'
+      url: 'docs/api/backend'
+      templateUrl: 'modules/docs/views/backend.html'
+      controller: 'BackendPageController'
+      data:
+        title: 'Backend'
+
+    $stateProvider.state 'docs.api.server',
+      parent: 'main'
+      url: 'docs/api/server'
+      templateUrl: 'modules/docs/views/server.html'
+      controller: 'ServerPageController'
+      data:
+        title: 'Server'
 ]

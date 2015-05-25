@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Pusher</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="pusher">Pusher</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Pusher</strong> is responsible for realtime communication with clients. It makes
+use of <a href="http://socket.io/">socket.io</a> to pass on notifications. Define your
+communication channels here.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span></pre></div>
+        
+      
+        
+        <p>Expose pusher</p>
+
+        
+          <div class='highlight'><pre>pusher = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Pusher</span></span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>constructor</strong></br>
+Create Pusher and assign socket.io</br>
+<code>params:</code></p>
+<ul>
+<li><em>io</em> <code>&lt;socket.io&gt;</code> the socket.io instance</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(io)</span> -&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'Pusher'</span>
+    <span class="hljs-property">@io</span> = io</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>update</strong></br>
+Sends a notification to clients that algorithms have changed. All (updated) algorithms
+are passed along with the message</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithms</em> <code>&lt;Array&gt;</code> of all (updated) algorithms</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">update</span>: <span class="hljs-function"><span class="hljs-params">(algorithms)</span> =&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'pushing algorithm updates'</span>, <span class="hljs-string">'Pusher'</span>
+    <span class="hljs-property">@io</span>.emit <span class="hljs-string">'update algorithms'</span>, algorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>add</strong></br>
+Sends a notification to clients that algorithms have been added. New algorithms
+are passed along with the message</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithms</em> <code>&lt;Array&gt;</code> of new algorithms</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">add</span>: <span class="hljs-function"><span class="hljs-params">(algorithms)</span> =&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'pushing new algorithms'</span>, <span class="hljs-string">'Pusher'</span>
+    <span class="hljs-property">@io</span>.emit <span class="hljs-string">'add algorithms'</span>, algorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>delete</strong></br>
+Sends a notification to clients that one ore more algorithms have been deleted.
+Deleted algorithms are passed along with the message so they can be removed
+on client side</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithms</em> <code>&lt;Array&gt;</code> of algorithms to be removed</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">delete</span>: <span class="hljs-function"><span class="hljs-params">(algorithms)</span> =&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'pushing algorithms to remove'</span>, <span class="hljs-string">'Pusher'</span>
+    <span class="hljs-property">@io</span>.emit <span class="hljs-string">'delete algorithms'</span>, algorithms</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

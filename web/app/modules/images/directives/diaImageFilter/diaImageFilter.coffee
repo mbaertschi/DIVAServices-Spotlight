@@ -52,7 +52,7 @@ angular.module('app.images').directive 'diaImageFilter', [
       scope.save = ->
         scope.safeApply -> scope.rendering = true
         base64Image = caman.toBase64()
-        imagesService.post(base64Image, diaStateManager.image.name).then (res) ->
+        imagesService.put(base64Image, diaStateManager.image.name).then (res) ->
           scope.safeApply -> scope.rendering = false
           if res.status isnt 200
             toastr.warning 'Image was not safed on server', 'Warning'

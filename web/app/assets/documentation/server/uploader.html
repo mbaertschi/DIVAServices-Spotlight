@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Uploader</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="uploader">Uploader</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Uploader</strong> makes use of the <code>multer</code> middleware for handling
+multipart/form-data. This module is mandatory when using Dropzone.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>multer      = <span class="hljs-built_in">require</span> <span class="hljs-string">'multer'</span>
+fs          = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span></pre></div>
+        
+      
+        
+        <p>Expose uploader</p>
+
+        
+          <div class='highlight'><pre>uploader = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Uploader</span></span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>constructor</strong></br>
+Configure multer settings. Images are renamed to upload_[x] and
+stored under <code>./public/uploads/[sessionId]/upload_[x]</code>. Once upload
+has completed, all image information are stored in mongoDB</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function">-&gt;</span>
+    <span class="hljs-property">@multer</span> = multer
+      <span class="hljs-attribute">dest</span>: nconf.get <span class="hljs-string">'web:uploader:destination'</span>
+      <span class="hljs-attribute">limits</span>:
+        <span class="hljs-attribute">fieldSize</span>: nconf.get <span class="hljs-string">'server:maxFileSize'</span>
+      <span class="hljs-attribute">rename</span>: <span class="hljs-function"><span class="hljs-params">(fieldname, filename, req, res)</span> -&gt;</span>
+        name = <span class="hljs-string">'upload_'</span> + req.body.index
+        name
+      <span class="hljs-attribute">changeDest</span>: <span class="hljs-function"><span class="hljs-params">(dest, req, res)</span> -&gt;</span>
+        newPath = dest + req.sessionID
+        fs.ensureDirSync newPath
+        newPath
+      <span class="hljs-attribute">onFileUploadComplete</span>: <span class="hljs-function"><span class="hljs-params">(file, req, res)</span> -&gt;</span>
+        Image = mongoose.model <span class="hljs-string">'Image'</span>
+        url = file.path.replace <span class="hljs-string">'public'</span>, <span class="hljs-string">''</span>
+
+        query =
+          <span class="hljs-attribute">sessionId</span>: req.sessionID
+          <span class="hljs-attribute">serverName</span>: file.name
+
+        image =
+          <span class="hljs-attribute">sessionId</span>: req.sessionID
+          <span class="hljs-attribute">serverName</span>: file.name
+          <span class="hljs-attribute">clientName</span>: file.originalname
+          <span class="hljs-attribute">size</span>: file.size
+          <span class="hljs-attribute">type</span>: file.mimetype
+          <span class="hljs-attribute">extension</span>: file.extension
+          <span class="hljs-attribute">url</span>: url
+          <span class="hljs-attribute">path</span>: file.path
+          <span class="hljs-attribute">index</span>: req.body.index
+
+        res.imageData = image
+
+        Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'Uploader'</span> <span class="hljs-keyword">if</span> err?
+
+    <span class="hljs-keyword">return</span> <span class="hljs-property">@multer</span></pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

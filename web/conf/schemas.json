@@ -24,7 +24,8 @@
           },
           "description": {
             "type": "string",
-            "minLength": 5
+            "minLength": 5,
+            "maxLength": 255
           },
           "url": {
             "format": "uri"
@@ -58,7 +59,7 @@
             "type": "object"
           },
           "image": {
-            "type": "uri"
+            "type": "string"
           },
           "highlighters": {
             "type": "array",

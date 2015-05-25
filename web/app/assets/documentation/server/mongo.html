@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Mongo</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="mongo">Mongo</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Mongo</strong> is responsible handling the mongoDB connection, its schemas and
+its interaction. It makes use of <a href="http://mongoosejs.com/">mongoose</a> for
+having a nicely representation of the stored documents.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span></pre></div>
+        
+      
+        
+        <p>Expose mongo</p>
+
+        
+          <div class='highlight'><pre>mongo = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Mongo</span></span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>constructor</strong></br>
+Open connection to mongoDB and register schemas</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function">-&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'Mongo'</span>
+    url = nconf.get <span class="hljs-string">'mongoDB:url'</span>
+    mongoose.connect <span class="hljs-string">"mongodb://<span class="hljs-subst">#{url}</span>"</span>
+    <span class="hljs-property">@db</span> = mongoose.connection
+    <span class="hljs-property">@Host</span> = <span class="hljs-built_in">require</span> <span class="hljs-string">'./models/host'</span>
+    <span class="hljs-property">@Algorithm</span> = <span class="hljs-built_in">require</span> <span class="hljs-string">'./models/algorithm'</span>
+    <span class="hljs-property">@Image</span> = <span class="hljs-built_in">require</span> <span class="hljs-string">'./models/image'</span>
+
+    <span class="hljs-property">@db</span>.once <span class="hljs-string">'open'</span>, <span class="hljs-function">-&gt;</span>
+      logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'mongoose db connection opened'</span>, <span class="hljs-string">'Mongo'</span>
+
+    <span class="hljs-property">@db</span>.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">"mongoose err=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Mongo'</span>
+
+    <span class="hljs-property">@db</span>.<span class="hljs-literal">on</span> <span class="hljs-string">'parseError'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">'mongoose parseError check mongodb log'</span>, <span class="hljs-string">'Mongo'</span>
+      setTimeout (<span class="hljs-function">-&gt;</span> process.exit(<span class="hljs-number">1</span>)), <span class="hljs-number">1000</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>getHosts</strong></br>
+Returns all hosts currently stored in mongoDB</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">getHosts</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    query = {}
+
+    fields =
+      <span class="hljs-attribute">host</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-literal">true</span>
+
+    <span class="hljs-property">@Host</span>.find query, fields, <span class="hljs-function"><span class="hljs-params">(err, hosts)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err?
+      callback <span class="hljs-literal">null</span>, hosts</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>getAlgorithm</strong></br>
+Returns the algorithm associated to the passed url</br>
+<code>params:</code></p>
+<ul>
+<li><em>url</em> <code>&lt;String&gt;</code> url to match against algorithms in mongoDB</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">getAlgorithm</span>: <span class="hljs-function"><span class="hljs-params">(url, callback)</span> =&gt;</span>
+    query =
+      <span class="hljs-attribute">url</span>: url
+
+    fields =
+      <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">host</span>: <span class="hljs-literal">true</span>
+
+    <span class="hljs-property">@Algorithm</span>.find query, fields, <span class="hljs-function"><span class="hljs-params">(err, algorithm)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err?
+      <span class="hljs-keyword">if</span> algorithm.length &gt; <span class="hljs-number">0</span>
+        callback <span class="hljs-literal">null</span>, algorithm[<span class="hljs-number">0</span>]
+      <span class="hljs-keyword">else</span>
+        callback()</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>getAlgorithms</strong></br>
+Returns all algorithms currently stored in mongoDB</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">getAlgorithms</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    query = {}
+
+    fields =
+      <span class="hljs-attribute">name</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">host</span>: <span class="hljs-literal">true</span>
+
+    <span class="hljs-property">@Algorithm</span>.find query, fields, <span class="hljs-function"><span class="hljs-params">(err, algorithms)</span> -&gt;</span>
+      <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err?
+      <span class="hljs-keyword">if</span> algorithms.length &gt; <span class="hljs-number">0</span>
+        callback <span class="hljs-literal">null</span>, algorithms
+      <span class="hljs-keyword">else</span>
+        callback()</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Dummy Backend Server</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="dummy-backend-server">Dummy Backend Server</h1>
+
+          
+        
+
+        
+      </div>
+
+      
+        
+        
+        
+      
+        
+        <p><strong>Dummy Backend Server</strong> is used for developing and testing. You can also use it as an API reference.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>express     = <span class="hljs-built_in">require</span> <span class="hljs-string">'express'</span>
+http        = <span class="hljs-built_in">require</span> <span class="hljs-string">'http'</span>
+sysPath     = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
+bodyParser  = <span class="hljs-built_in">require</span> <span class="hljs-string">'body-parser'</span>
+fs          = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span></pre></div>
+        
+      
+        
+        <p>Creates <code>./images</code> folder or empties it if it exists</p>
+
+        
+          <div class='highlight'><pre>fs.emptyDirSync <span class="hljs-string">'./images'</span></pre></div>
+        
+      
+        
+        <p>Seconds to wait before server sends response. <code>SERVER_TIMEOUT</code> must
+be smaller or equal to the server timeout specified in <code>./web/conf/server.[dev/prod].json</code></p>
+
+        
+          <div class='highlight'><pre>SERVER_TIMEOUT = <span class="hljs-number">1</span></pre></div>
+        
+      
+        
+        <p>Create server with <a href="http://expressjs.com/">Express</a> web framework</p>
+
+        
+          <div class='highlight'><pre>app = express()</pre></div>
+        
+      
+        
+        <p>Enable body parser for json content. <code>limit</code> must not be larger than specified in
+<code>./web/conf/server.[dev/prod].json</code></p>
+
+        
+          <div class='highlight'><pre>app.use bodyParser.json <span class="hljs-attribute">limit</span>: <span class="hljs-string">'10mb'</span></pre></div>
+        
+      
+        
+        <h2 id="root-entry-of-rest-server">Root entry of REST server</h2>
+
+        
+      
+        
+        <p>Must respond with an <code>array</code> of <code>objects</code> whereas each object must
+meet the following <a href="http://json-schema.org/">JSON Schema</a>.</p>
+<pre><code><span class="hljs-string">"algorithmSchema"</span>: {
+  <span class="hljs-string">"id"</span>: <span class="hljs-string">"algorithmSchema"</span>,
+  <span class="hljs-string">"$schema"</span>: <span class="hljs-string">"http://json-schema.org/schema#"</span>,
+  <span class="hljs-string">"description"</span>: <span class="hljs-string">"schema for an algorithm overview entry"</span>,
+  <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+  <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"description"</span>, <span class="hljs-string">"url"</span>],
+  <span class="hljs-string">"properties"</span>: {
+    <span class="hljs-string">"name"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">2</span>,
+      <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">50</span>
+    },
+    <span class="hljs-string">"description"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">5</span>,
+      <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">255</span>
+    },
+    <span class="hljs-string">"url"</span>: {
+      <span class="hljs-string">"format"</span>: <span class="hljs-string">"uri"</span>
+    }
+  },
+  <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+}
+</code></pre><p>Each entry will appear on the algorithms overview page. <code>url</code> must point to the
+algorithm uri. The response JSON file will be validated against the JSON-Schema
+described above. If any errors occure the involved algorithm will be skipped and
+be not available on the frontend.</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records = [
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'histogramenhancement'</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the histogramenhancement algorithm on your image. lets make a damn long description to test bootstrap behaviour'</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/histogramenhancement'</span>
+    }
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'multiscaleipd'</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the multiscaleipd algorithm on your image'</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/multiscaleipd'</span>
+    }
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'noise'</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the noise algorithm on your image'</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/noise'</span>
+    }
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'otsubinazrization'</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the otsubinazrization algorithm on your image'</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/otsubinazrization'</span>
+    }
+    {
+      <span class="hljs-attribute">name</span>: <span class="hljs-string">'sauvalabinarization'</span>
+      <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the sauvalabinarization algorithm on your image'</span>
+      <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/sauvalabinarization'</span>
+    }
+  ]
+
+  res.send records</pre></div>
+        
+      
+        
+        <h2 id="get-post-routes-for-each-algorithm">GET / POST routes for each algorithm</h2>
+
+        
+      
+        
+        <p>Each algorithm must provide a get and a post route. Calling get will return detailed
+information about that algorithm and also what kind of inputs it expects. The response
+must meet the following JSON-Schema.</p>
+<pre><code><span class="hljs-string">"algorithmSchema"</span>: {
+  <span class="hljs-string">"id"</span>: <span class="hljs-string">"algorithmSchema"</span>,
+  <span class="hljs-string">"$schema"</span>: <span class="hljs-string">"http://json-schema.org/schema#"</span>,
+  <span class="hljs-string">"description"</span>: <span class="hljs-string">"schema for an algorithm details view entry"</span>,
+  <span class="hljs-string">"definitions"</span>: {
+    <span class="hljs-string">"name"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">3</span>,
+      <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">25</span>
+    },
+    <span class="hljs-string">"highlighter"</span>: {
+      <span class="hljs-string">"enum"</span>: [<span class="hljs-string">"polygon"</span>, <span class="hljs-string">"rectangle"</span>]
+    },
+    <span class="hljs-string">"description"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">3</span>,
+      <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">255</span>
+    },
+    <span class="hljs-string">"number"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"options"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"name"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/name"</span>
+        },
+        <span class="hljs-string">"description"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/description"</span>
+        },
+        <span class="hljs-string">"options"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+          <span class="hljs-string">"required"</span>: [<span class="hljs-string">"required"</span>, <span class="hljs-string">"default"</span>],
+          <span class="hljs-string">"properties"</span>: {
+            <span class="hljs-string">"required"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"boolean"</span>
+            },
+            <span class="hljs-string">"default"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            },
+            <span class="hljs-string">"min"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            },
+            <span class="hljs-string">"max"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            },
+            <span class="hljs-string">"steps"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          },
+          <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    },
+    <span class="hljs-string">"text"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"options"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"name"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/name"</span>
+        },
+        <span class="hljs-string">"description"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/description"</span>
+        },
+        <span class="hljs-string">"options"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+          <span class="hljs-string">"required"</span>: [<span class="hljs-string">"required"</span>, <span class="hljs-string">"default"</span>],
+          <span class="hljs-string">"properties"</span>: {
+            <span class="hljs-string">"required"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"boolean"</span>
+            },
+            <span class="hljs-string">"default"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+            },
+            <span class="hljs-string">"min"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            },
+            <span class="hljs-string">"max"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          },
+          <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    },
+    <span class="hljs-string">"select"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"options"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"name"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/name"</span>
+        },
+        <span class="hljs-string">"description"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/description"</span>
+        },
+        <span class="hljs-string">"options"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+          <span class="hljs-string">"required"</span>: [<span class="hljs-string">"required"</span>, <span class="hljs-string">"values"</span>, <span class="hljs-string">"default"</span>],
+          <span class="hljs-string">"properties"</span>: {
+            <span class="hljs-string">"required"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"boolean"</span>
+            },
+            <span class="hljs-string">"values"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+              <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
+              <span class="hljs-string">"uniqueItems"</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-string">"items"</span>: {
+                <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+              },
+              <span class="hljs-string">"additionalItems"</span>: <span class="hljs-literal">false</span>
+            },
+            <span class="hljs-string">"default"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          },
+          <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    },
+    <span class="hljs-string">"checkbox"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"options"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"name"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/name"</span>
+        },
+        <span class="hljs-string">"description"</span>: {
+          <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/description"</span>
+        },
+        <span class="hljs-string">"options"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+          <span class="hljs-string">"required"</span>: [<span class="hljs-string">"required"</span>, <span class="hljs-string">"default"</span>],
+          <span class="hljs-string">"properties"</span>: {
+            <span class="hljs-string">"required"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"boolean"</span>
+            },
+            <span class="hljs-string">"default"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          },
+          <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    }
+  },
+  <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+  <span class="hljs-string">"required"</span>: [<span class="hljs-string">"name"</span>, <span class="hljs-string">"description"</span>, <span class="hljs-string">"url"</span>, <span class="hljs-string">"input"</span>],
+  <span class="hljs-string">"properties"</span>: {
+    <span class="hljs-string">"name"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">2</span>,
+      <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">50</span>
+    },
+    <span class="hljs-string">"description"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+      <span class="hljs-string">"minLength"</span>: <span class="hljs-number">5</span>
+    },
+    <span class="hljs-string">"url"</span>: {
+      <span class="hljs-string">"format"</span>: <span class="hljs-string">"uri"</span>
+    },
+    <span class="hljs-string">"input"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+      <span class="hljs-string">"items"</span>: {
+        <span class="hljs-string">"description"</span>: <span class="hljs-string">"Input types"</span>,
+        <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"highlighter"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/highlighter"</span>
+          },
+          <span class="hljs-string">"number"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/number"</span>
+          },
+          <span class="hljs-string">"text"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/text"</span>
+          },
+          <span class="hljs-string">"select"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/select"</span>
+          },
+          <span class="hljs-string">"checkbox"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/checkbox"</span>
+          }
+        },
+        <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+      },
+      <span class="hljs-string">"additionalItems"</span>: <span class="hljs-literal">false</span>
+    }
+  },
+  <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+}
+</code></pre><p>Call the post route of an algorithm to use it. The request’s body must contain the
+information which was provided by the get route and also the image to apply the
+algorithm on. The response of the post route must meet the following JSON-Schema.</p>
+<pre><code><span class="hljs-string">"responseSchema"</span>: {
+  <span class="hljs-string">"id"</span>: <span class="hljs-string">"responseSchema"</span>,
+  <span class="hljs-string">"$schema"</span>: <span class="hljs-string">"http://json-schema.org/schema#"</span>,
+  <span class="hljs-string">"description"</span>: <span class="hljs-string">"schema for response entry"</span>,
+  <span class="hljs-string">"definitions"</span>:  {
+    <span class="hljs-string">"segment"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+      <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-string">"items"</span>: {
+        <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+        <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-string">"items"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+        }
+      }
+    }
+  },
+  <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+  <span class="hljs-string">"properties"</span>: {
+    <span class="hljs-string">"output"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>
+    },
+    <span class="hljs-string">"image"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+    },
+    <span class="hljs-string">"highlighters"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+      <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-string">"items"</span>: {
+        <span class="hljs-string">"description"</span>: <span class="hljs-string">"Segments"</span>,
+        <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+        <span class="hljs-string">"required"</span>: [<span class="hljs-string">"segments"</span>],
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"segments"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/segment"</span>
+          }
+        },
+        <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+      }
+    }
+  },
+  <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+}
+</code></pre>
+        
+      
+        
+        <p><code>GET</code> route for <code>histogramenhancement</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/histogramenhancement'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records =
+    <span class="hljs-attribute">name</span>: <span class="hljs-string">'histogramenhancement'</span>
+    <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'</span>
+    <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/histogramenhancement'</span>
+    <span class="hljs-attribute">input</span>: [
+      {
+        <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'rectangle'</span>
+      }
+    ]
+
+  res.send records</pre></div>
+        
+      
+        
+        <p><code>POST</code> route for <code>histogramenhancement</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.post <span class="hljs-string">'/histogramenhancement'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  base64image = req.body.image
+  decodedImage = <span class="hljs-keyword">new</span> Buffer(base64image, <span class="hljs-string">'base64'</span>)
+  fs.writeFile <span class="hljs-string">'./images/histogramenhancement.png'</span>, decodedImage, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+    <span class="hljs-built_in">console</span>.log err <span class="hljs-keyword">if</span> err?
+
+    result =
+      <span class="hljs-attribute">output</span>:
+        <span class="hljs-attribute">field1</span>: <span class="hljs-string">'information field1'</span>
+        <span class="hljs-attribute">field2</span>: <span class="hljs-string">'information field2'</span>
+        <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
+
+    fs.readFile <span class="hljs-string">'./test.png'</span>, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> err?
+        result.image = img.toString(<span class="hljs-string">'base64'</span>)
+      random = Math.floor Math.random() * SERVER_TIMEOUT + <span class="hljs-number">1</span>
+      setTimeout (<span class="hljs-function">-&gt;</span> res.send result), random * <span class="hljs-number">1000</span></pre></div>
+        
+      
+        
+        <p><code>GET</code> route for <code>multiscaleipd</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/multiscaleipd'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records =
+    <span class="hljs-attribute">name</span>: <span class="hljs-string">'multiscaleipd'</span>
+    <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the multiscaleipd algorithm on your image'</span>
+    <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/multiscaleipd'</span>
+    <span class="hljs-attribute">input</span>: [
+      {
+        <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'polygon'</span>
+      }
+      {
+        <span class="hljs-attribute">select</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'detector'</span>
+          <span class="hljs-attribute">description</span>: <span class="hljs-string">'this is just a test description for a select'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">values</span>: [
+              <span class="hljs-string">'Harris'</span>
+              <span class="hljs-string">'Narris'</span>
+            ]
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">0</span>
+      }
+      {
+        <span class="hljs-attribute">number</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'blurSigma'</span>
+          <span class="hljs-attribute">description</span>: <span class="hljs-string">'this is just a test description for blugSigma'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">min</span>: <span class="hljs-number">0</span>
+            <span class="hljs-attribute">max</span>: <span class="hljs-number">5</span>
+            <span class="hljs-attribute">steps</span>: <span class="hljs-number">1</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">2</span>
+      }
+      {
+        <span class="hljs-attribute">number</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'numScales'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">1</span>
+      }
+      {
+        <span class="hljs-attribute">number</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'numOctaves'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">2</span>
+      }
+      {
+        <span class="hljs-attribute">number</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'threshold'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">false</span>
+            <span class="hljs-attribute">steps</span>: <span class="hljs-number">0.000001</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">0.000001</span>
+      }
+      {
+        <span class="hljs-attribute">number</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'maxFeaturesPerScale'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">3</span>
+      }
+      {
+        <span class="hljs-attribute">text</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'textInputTest'</span>
+          <span class="hljs-attribute">description</span>: <span class="hljs-string">'this is just a test description for a text input'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">min</span>: <span class="hljs-number">3</span>
+            <span class="hljs-attribute">max</span>: <span class="hljs-number">10</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-string">'test text'</span>
+      }
+      {
+        <span class="hljs-attribute">checkbox</span>:
+          <span class="hljs-attribute">name</span>: <span class="hljs-string">'testCheckbox'</span>
+          <span class="hljs-attribute">description</span>: <span class="hljs-string">'this is just a test description for a checkbox'</span>
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attribute">default</span>: <span class="hljs-number">1</span>
+      }
+    ]
+
+  res.send records</pre></div>
+        
+      
+        
+        <p><code>POST</code> route for <code>multiscaleipd</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.post <span class="hljs-string">'/multiscaleipd'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  base64image = req.body.image
+  decodedImage = <span class="hljs-keyword">new</span> Buffer(base64image, <span class="hljs-string">'base64'</span>)
+  fs.writeFile <span class="hljs-string">'./images/multiscaleipd.png'</span>, decodedImage, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+    <span class="hljs-built_in">console</span>.log err <span class="hljs-keyword">if</span> err?
+
+    result =
+      <span class="hljs-attribute">output</span>:
+        <span class="hljs-attribute">field1</span>: <span class="hljs-string">'information field1'</span>
+        <span class="hljs-attribute">field2</span>: <span class="hljs-string">'information field2'</span>
+        <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
+      <span class="hljs-attribute">highlighters</span>: [
+        {
+          <span class="hljs-attribute">segments</span>: [
+            [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
+            [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
+            [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
+            [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
+          ]
+        }
+        {
+          <span class="hljs-attribute">segments</span>: [
+            [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
+            [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
+            [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
+            [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
+          ]
+        }
+      ]
+
+    random = Math.floor Math.random() * SERVER_TIMEOUT + <span class="hljs-number">1</span>
+    setTimeout (<span class="hljs-function">-&gt;</span> res.send result), random * <span class="hljs-number">1000</span></pre></div>
+        
+      
+        
+        <p><code>GET</code> route for <code>noise</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/noise'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records =
+    <span class="hljs-attribute">name</span>: <span class="hljs-string">'noise'</span>
+    <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the noise algorithm on your image'</span>
+    <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/noise'</span>
+    <span class="hljs-attribute">input</span>: [
+      {
+        <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'rectangle'</span>
+      }
+    ]
+
+  res.send records</pre></div>
+        
+      
+        
+        <p><code>POST</code> route for <code>noise</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.post <span class="hljs-string">'/noise'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  base64image = req.body.image
+  decodedImage = <span class="hljs-keyword">new</span> Buffer(base64image, <span class="hljs-string">'base64'</span>)
+  fs.writeFile <span class="hljs-string">'./images/noise.png'</span>, decodedImage, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+    <span class="hljs-built_in">console</span>.log err <span class="hljs-keyword">if</span> err?
+
+    result =
+      <span class="hljs-attribute">output</span>:
+        <span class="hljs-attribute">field1</span>: <span class="hljs-string">'information field1'</span>
+        <span class="hljs-attribute">field2</span>: <span class="hljs-string">'information field2'</span>
+        <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
+
+    random = Math.floor Math.random() * SERVER_TIMEOUT + <span class="hljs-number">1</span>
+    setTimeout (<span class="hljs-function">-&gt;</span> res.send result), random * <span class="hljs-number">1000</span></pre></div>
+        
+      
+        
+        <p><code>GET</code> route for <code>otsubinazrization</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/otsubinazrization'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records =
+    <span class="hljs-attribute">name</span>: <span class="hljs-string">'otsubinazrization'</span>
+    <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the otsubinazrization algorithm on your image'</span>
+    <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/otsubinazrization'</span>
+    <span class="hljs-attribute">input</span>: []
+
+  res.send records</pre></div>
+        
+      
+        
+        <p><code>POST</code> route for <code>otsubinazrization</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.post <span class="hljs-string">'/otsubinazrization'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">400</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'no image provided'</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> req.body.image?
+  base64image = req.body.image
+  decodedImage = <span class="hljs-keyword">new</span> Buffer(base64image, <span class="hljs-string">'base64'</span>)
+  fs.writeFile <span class="hljs-string">'./images/otsubinazrization.png'</span>, decodedImage, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+    <span class="hljs-built_in">console</span>.log err <span class="hljs-keyword">if</span> err?
+
+    result =
+      <span class="hljs-attribute">output</span>:
+        <span class="hljs-attribute">field1</span>: <span class="hljs-string">'information field1'</span>
+        <span class="hljs-attribute">field2</span>: <span class="hljs-string">'information field2'</span>
+        <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
+      <span class="hljs-attribute">highlighters</span>: [
+        {
+          <span class="hljs-attribute">segments</span>: [
+            [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
+            [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
+            [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
+            [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
+          ]
+        }
+        {
+          <span class="hljs-attribute">segments</span>: [
+            [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
+            [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
+            [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
+            [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
+          ]
+        }
+      ]
+
+    fs.readFile <span class="hljs-string">'./test.png'</span>, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> err?
+        result.image = img.toString(<span class="hljs-string">'base64'</span>)
+      random = Math.floor Math.random() * SERVER_TIMEOUT + <span class="hljs-number">1</span>
+      setTimeout (<span class="hljs-function">-&gt;</span> res.send result), random * <span class="hljs-number">1000</span></pre></div>
+        
+      
+        
+        <p><code>GET</code> route for <code>sauvalabinarization</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.get <span class="hljs-string">'/sauvalabinarization'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  records =
+    <span class="hljs-attribute">name</span>: <span class="hljs-string">'sauvalabinarization'</span>
+    <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the sauvalabinarization algorithm on your image'</span>
+    <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/sauvalabinarization'</span>
+    <span class="hljs-attribute">input</span>: []
+
+  res.send records</pre></div>
+        
+      
+        
+        <p><code>POST</code> route for <code>sauvalabinarization</code> algorithm</p>
+
+        
+          <div class='highlight'><pre>app.post <span class="hljs-string">'/sauvalabinarization'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+  base64image = req.body.image
+  decodedImage = <span class="hljs-keyword">new</span> Buffer(base64image, <span class="hljs-string">'base64'</span>)
+  fs.writeFile <span class="hljs-string">'./images/sauvalabinarization.png'</span>, decodedImage, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+    <span class="hljs-built_in">console</span>.log err <span class="hljs-keyword">if</span> err?
+
+    result = {}
+
+    random = Math.floor Math.random() * SERVER_TIMEOUT + <span class="hljs-number">1</span>
+    setTimeout (<span class="hljs-function">-&gt;</span> res.send result), random * <span class="hljs-number">1000</span>
+
+app.use (err, req, res, next) -&gt;
+  res.status err.status <span class="hljs-keyword">or</span> <span class="hljs-number">500</span>
+  res.json err.statusText</pre></div>
+        
+      
+        
+        <p>Wrap express app with node.js server in order to have stuff like server.stop() etc.</p>
+
+        
+          <div class='highlight'><pre>server = http.createServer(app)
+server.timeout = <span class="hljs-number">12000</span></pre></div>
+        
+      
+        
+        <p>Start server on port 8081</p>
+
+        
+          <div class='highlight'><pre>server.listen <span class="hljs-number">8081</span>, <span class="hljs-function">-&gt;</span>
+  <span class="hljs-built_in">console</span>.log <span class="hljs-string">'Server listening on port 8081'</span></pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

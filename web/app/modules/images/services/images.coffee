@@ -8,7 +8,7 @@ angular.module('app.images').factory 'imagesService', [
       $http.get(url).then (res) ->
         res
 
-    post: (file, name) ->
+    put: (file, name) ->
       if not name
         name = 'undefined.png'
         index = 0
@@ -20,7 +20,7 @@ angular.module('app.images').factory 'imagesService', [
       formData.append('file', file)
       formData.append('processType', 'crop')
       formData.append('index', index)
-      $http.post('/upload', formData,
+      $http.put('/upload', formData,
         transformRequest: angular.identity
         headers:
           'Content-Type': undefined

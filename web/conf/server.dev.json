@@ -50,6 +50,7 @@
     }
   },
   "server": {
-    "timeout": 120000
+    "timeout": 120000,
+    "maxFileSize": 10485760
   }
 }

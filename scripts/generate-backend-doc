@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+echo 'parsing ...'
+./web/node_modules/docco/bin/docco -l linear -c ./scripts/custom.css -o ./web/app/assets/documentation/backend rest/*.coffee

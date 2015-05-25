@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Logger</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="logger">Logger</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Logger</strong> makes use of <a href="http://stritti.github.io/log4js/docu/users-guide.html">Log4js</a>
+to abstract the logging functionality.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>log4js      = <span class="hljs-built_in">require</span> <span class="hljs-string">'log4js'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span></pre></div>
+        
+      
+        
+        <p>Load loggers defined in <code>./web/conf/server.[dev/prod].json</code></p>
+
+        
+          <div class='highlight'><pre>log4js.configure <span class="hljs-attribute">appenders</span>: nconf.get <span class="hljs-string">'logger:appenders'</span>
+logger = log4js.getLogger <span class="hljs-string">'server'</span>
+logger.setLevel nconf.get <span class="hljs-string">'logger:level'</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>exports.log</strong></br>
+Expose log method</br>
+<code>params:</code></p>
+<ul>
+<li><em>level</em> <code>&lt;String&gt;</code> must be one of [fatal, error, warn, info, debug, trace, all]</li>
+<li><em>msg</em> <code>&lt;String&gt;</code> the message to log</li>
+<li><em>module</em> <code>&lt;String&gt;</code> (optional) which module sent the log message</li>
+</ul>
+
+        
+          <div class='highlight'><pre>exports.log = <span class="hljs-function"><span class="hljs-params">(level, msg, <span class="hljs-built_in">module</span>)</span> -&gt;</span>
+  level = level || <span class="hljs-string">'info'</span>
+
+  <span class="hljs-keyword">if</span> <span class="hljs-built_in">module</span>?
+    logger[level] msg + <span class="hljs-string">" [<span class="hljs-subst">#{<span class="hljs-built_in">module</span>}</span>]"</span>
+  <span class="hljs-keyword">else</span>
+    logger[level] msg</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

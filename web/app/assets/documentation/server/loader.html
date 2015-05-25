@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Loader</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="loader">Loader</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Loader</strong> encapsulates GET and POST requests to remote hosts. It makes use of
+nodeJS <code>request</code> module for handling requests. See docs at <code>https://github.com/request/request</code>
+for detailed information.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>request     = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
+async       = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span></pre></div>
+        
+      
+        
+        <p>Expose loader</p>
+
+        
+          <div class='highlight'><pre>loader = exports = <span class="hljs-built_in">module</span>.exports = {}</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>loader.get</strong></br>
+Make a GET request to a remote host</br>
+<code>params:</code></p>
+<ul>
+<li><em>settings</em> <code>&lt;Object&gt;</code> settings to apply on GET request. Defaults are stored in <code>./web/conf/server.[dev/prod].json</code></li>
+</ul>
+
+        
+          <div class='highlight'><pre>loader.get = <span class="hljs-function"><span class="hljs-params">(settings, callback)</span> -&gt;</span>
+  <span class="hljs-keyword">return</span> callback <span class="hljs-string">'please specify options in your settings'</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> settings?.options?
+
+  settings.options.timeout ||= nconf.get <span class="hljs-string">'server:timeout'</span>
+  settings.options.headers ||= {}
+  settings.retries ||= nconf.get <span class="hljs-string">'loader: retries'</span>
+  settings.counter = <span class="hljs-number">0</span>
+
+  async.retry settings.retries, <span class="hljs-function">(<span class="hljs-params">(next)</span> -&gt;</span>
+    settings.counter++
+    _load settings, next
+  ), <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
+    logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"<span class="hljs-subst">#{settings.retries}</span> attempts failed with error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Loader'</span> <span class="hljs-keyword">if</span> err?
+    callback err, result</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>loader.post</strong></br>
+Make a POST request to a remote host</br>
+<code>params:</code></p>
+<ul>
+<li><em>settings</em> <code>&lt;Object&gt;</code> settings to apply on POST request. Defaults are stored in <code>./web/conf/server.[dev/prod].json</code></li>
+<li><em>body</em> <code>&lt;Object&gt;</code> JSON object containing information to post to remote host</li>
+</ul>
+
+        
+          <div class='highlight'><pre>loader.post = <span class="hljs-function"><span class="hljs-params">(settings, body, callback)</span> -&gt;</span>
+  <span class="hljs-keyword">return</span> callback <span class="hljs-string">'please specify options in your settings'</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> settings?.options?
+  <span class="hljs-keyword">return</span> callback <span class="hljs-string">'please pass a json object as second parameter'</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> _.isObject(body)?
+
+  settings.options.timeout ||= nconf.get <span class="hljs-string">'server:timeout'</span>
+  settings.options.headers ||= {}
+  settings.options.method = <span class="hljs-string">'POST'</span>
+  settings.options.json = <span class="hljs-literal">true</span>
+  settings.options.body = body
+  settings.retries = <span class="hljs-number">1</span>
+  settings.counter = <span class="hljs-number">0</span>
+
+  _load settings, <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"post failed with error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Loader'</span> <span class="hljs-keyword">if</span> err?
+    callback err, result</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_load</strong></br>
+Execute the request with the given settings
+<code>params:</code></p>
+<ul>
+<li><em>settings</em> <code>&lt;Object&gt;</code> request settings</li>
+</ul>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">_load</span> = <span class="hljs-params">(settings, callback)</span> -&gt;</span>
+  options = _.clone settings.options
+
+  logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"[<span class="hljs-subst">#{settings.counter}</span>] load uri=<span class="hljs-subst">#{options.uri}</span>"</span>, <span class="hljs-string">'Loader'</span>
+
+  request options, <span class="hljs-function"><span class="hljs-params">(err, res, body)</span> -&gt;</span>
+    <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err?
+
+    <span class="hljs-keyword">if</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
+      <span class="hljs-keyword">return</span> callback res.statusCode
+
+    callback <span class="hljs-literal">null</span>, body</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

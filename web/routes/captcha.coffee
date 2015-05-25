@@ -1,5 +1,15 @@
+# Captcha
+# =======
+#
+# **Captcha** exposes all routes needed for captcha creation and validation.
+# See docs at [visualCaptcha](http://visualcaptcha.net/) for detailed information.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 nconf       = require 'nconf'
 
+# Expose captcha routes
 captcha = exports = module.exports = (router) ->
 
   router.get '/captcha/audio', (req, res, next) ->

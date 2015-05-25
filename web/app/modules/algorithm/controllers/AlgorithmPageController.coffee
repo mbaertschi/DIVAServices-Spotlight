@@ -30,24 +30,17 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       $scope.id = $stateParams.id
 
       algorithmService.fetch($scope.id).then (res) ->
-        algorithm = null
-        try
-          algorithm = JSON.parse res.data
-        catch e
-          toastr.error 'Could not parse algorithm information', 'Error'
-        finally
-          if algorithm
-            $scope.algorithm = algorithm
-            angular.forEach algorithm.input, (entry) ->
-              key = Object.keys(entry)[0]
-              if key is 'highlighter'
-                $scope.highlighter = entry.highlighter
-              else
-                $scope.inputs.push entry
-                if key is 'select'
-                  $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
-                else
-                  $scope.model[entry[key].name] = entry[key].options.default or null
+        $scope.algorithm = res.data
+        angular.forEach $scope.algorithm.input, (entry) ->
+          key = Object.keys(entry)[0]
+          if key is 'highlighter'
+            $scope.highlighter = entry.highlighter
+          else
+            $scope.inputs.push entry
+            if key is 'select'
+              $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
+            else
+              $scope.model[entry[key].name] = entry[key].options.default or null
       , (err) ->
         toastr.error 'Could not load algorithm', 'Error'
 

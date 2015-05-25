@@ -8,8 +8,8 @@ function header {
   echo ""
 }
 
+header 'Generating backend documentation ...'
+source ./scripts/generate-backend-doc
+
 header 'Generating server documentation ...'
 source ./scripts/generate-server-doc
-
-header 'Generating client documentation ...'
-source ./scripts/generate-client-doc
