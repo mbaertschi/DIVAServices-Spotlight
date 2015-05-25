@@ -11,9 +11,9 @@ angular.module('app.results').directive 'diaTableInputs', [
       paperInput = canvas = path = null
       strokeColor = 'red'
       strokeWidth = null
-      scope.highlighter = scope.inputData?.input.highlighter
-      scope.inputs = scope.inputData?.input.inputs
-      scope.image = scope.inputData?.image
+      scope.highlighter = scope.inputData?.input.highlighter or null
+      scope.inputs = scope.inputData?.input.inputs or null
+      scope.image = scope.inputData?.image or null
 
       initializeCanvas = (callback) ->
         img = new Image
@@ -39,10 +39,10 @@ angular.module('app.results').directive 'diaTableInputs', [
 
       asyncLoadCanvas = ->
         canvas = element.find('#input-canvas')
+        if path
+          path.remove()
+          path = null
         if canvas.length
-          if path
-            path.remove()
-            path = null
           if paperInput
             paperInput.paper.clear()
           canvas = canvas[0]

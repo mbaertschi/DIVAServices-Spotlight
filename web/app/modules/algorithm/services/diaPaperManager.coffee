@@ -43,7 +43,6 @@ angular.module('app.algorithm').factory 'diaPaperManager', [
       scope.setHighlighterStatus true
       image = scope.selectedImage
       canvas = element[0]
-      diaHighlighterManager.reset()
       diaHighlighterManager.type = scope.highlighter
       if path
         path.remove()

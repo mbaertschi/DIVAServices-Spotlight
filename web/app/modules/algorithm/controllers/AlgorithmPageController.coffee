@@ -97,6 +97,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
       $scope.invalidForm = status
 
     $scope.setSelectedImage = (image) ->
+      diaHighlighterManager.reset()
       $scope.state = 'highlight'
       $scope.selectedImage = image
       $scope.submitted = false
