@@ -1,3 +1,9 @@
+###
+Controller GalleryPageController
+
+* loads and prepars all images for active session
+* handles edit / delete event for selected image in gallery
+###
 angular.module('app.images').controller 'GalleryPageController', [
   '$scope'
   '$state'

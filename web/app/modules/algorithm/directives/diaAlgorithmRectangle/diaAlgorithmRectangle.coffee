@@ -1,3 +1,12 @@
+###
+Directive diaAlgorithmRectangle
+
+* manages rectangle selection for selectedImage
+* uses diaPaperManager for setting up paperJS
+* uses diaHighlighterManager for storing information about currently
+  selected rectangle
+* handles mouseDown, mouseUp and mouseDrag events
+###
 angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
   'diaHighlighterManager'
   'diaPaperManager'
@@ -11,6 +20,8 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
       fillColor = new paper.Color 1, 0, 0, 0.1
       scope.strokeWidth = 5
 
+      # tell diaPaperManager to re-initialize paperJS. This is executed
+      # everytime the algorithm changes (but not when selectedImage changes)
       diaPaperManager.reset()
 
       scope.mouseDown = (event) ->
@@ -51,6 +62,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
         x = event.delta.x
         y = event.delta.y
         switch handle
+          # expand rectangle
           when 'top-left'
             path.segments[0].point.x += x
             path.segments[0].point.y += y
@@ -88,7 +100,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
             path.segments[2].point.y += event.delta.y
             path.segments[3].point.x += event.delta.x
 
-
+      # update paper settings if selectedImage has changed
       scope.$watch 'selectedImage', ->
         diaPaperManager.setup scope, element
 

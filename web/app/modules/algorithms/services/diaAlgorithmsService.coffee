@@ -1,3 +1,8 @@
+###
+Factory diaAlgorithmsService
+
+* loads information for all available algorithms
+###
 angular.module('app.algorithms').factory 'diaAlgorithmsService', [
   '$http'
 

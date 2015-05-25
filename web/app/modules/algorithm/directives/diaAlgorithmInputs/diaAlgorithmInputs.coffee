@@ -1,3 +1,8 @@
+###
+Directive diaAlgorithmInputs
+
+* watches input form for valid / invalid state and informs parent scope
+###
 angular.module('app.algorithm').directive 'diaAlgorithmInputs', [
 
   ->
@@ -6,6 +11,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmInputs', [
 
     link: (scope, element, attrs) ->
 
+      # set formValidity in parent scope to valid / invalid
       scope.$watch 'inputForm.$invalid', (value) ->
         scope.setFormValidity value
 ]

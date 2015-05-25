@@ -1,3 +1,8 @@
+###
+Factory diaSocket
+
+* global service to forward socket.io messages on the specified channels
+###
 angular.module('app').factory 'diaSocket', [
   'socketFactory'
 

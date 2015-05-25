@@ -1,3 +1,10 @@
+###
+Directive diaTableInputs
+
+* renders inputs fields for all processed algorithms from diaProcessingQueue results
+* if the input has a highlighter field, paperJS will be initialized and the
+  path will be drawn on the canvas
+###
 angular.module('app.results').directive 'diaTableInputs', [
   '$timeout'
 

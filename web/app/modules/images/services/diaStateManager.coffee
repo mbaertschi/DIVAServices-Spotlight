@@ -1,3 +1,9 @@
+###
+Factory diaStateManager
+
+* maintains an internal about which processing state (cropping / filtering)
+  and which image is active
+###
 angular.module('app.images').factory 'diaStateManager', [
   '$rootScope'
 

@@ -1,3 +1,8 @@
+###
+Controller UploadPageController
+
+* handles state transitions for image uploading and manipulating
+###
 angular.module('app.images').controller 'UploadPageController', [
   '$scope'
   'diaStateManager'

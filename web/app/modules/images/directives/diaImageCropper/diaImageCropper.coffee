@@ -1,3 +1,9 @@
+###
+Directive diaImageCropper
+
+* handles image croppy and rotating
+* sends updated images to server
+###
 angular.module('app.images').directive 'diaImageCropper', [
   'toastr'
   'diaStateManager'

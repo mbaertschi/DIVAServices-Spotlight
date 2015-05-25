@@ -1,3 +1,10 @@
+###
+Factory diaAlgorithmService
+
+* loads information for currently selected algorithm
+* loads all images for active session
+* handles captcha requests
+###
 angular.module('app.algorithm').factory 'diaAlgorithmService', [
   '$http'
 
@@ -11,6 +18,7 @@ angular.module('app.algorithm').factory 'diaAlgorithmService', [
     fetchImages: ->
       $http.get('/upload').then (res) ->
         angular.forEach res.data, (image) ->
+          # add date to image urls so angularJS triggers change
           image.thumbUrl = image.thumbUrl + '?' + new Date().getTime()
           image.url = image.url + '?' + new Date().getTime()
         res

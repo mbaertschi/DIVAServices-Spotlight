@@ -1,3 +1,12 @@
+###
+Directive diaAlgorithmPolygon
+
+* manages polygon selection for selectedImage
+* uses diaPaperManager for setting up paperJS
+* uses diaHighlighterManager for storing information about currently
+  selected polygon
+* handles mouseDown, mouseUp and mouseDrag events
+###
 angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
   'diaHighlighterManager'
   'diaPaperManager'
@@ -11,6 +20,8 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
       fillColor = new paper.Color 1, 0, 0, 0.1
       scope.strokeWidth = 5
 
+      # tell diaPaperManager to re-initialize paperJS. This is executed
+      # everytime the algorithm changes (but not when selectedImage changes)
       diaPaperManager.reset()
 
       scope.mouseDown = (event) ->
@@ -72,6 +83,7 @@ angular.module('app.algorithm').directive 'diaAlgorithmPolygon', [
             path.segments[segmentIndex].point.x += x
             path.segments[segmentIndex].point.y += y
 
+      # update paper settings if selectedImage has changed
       scope.$watch 'selectedImage', ->
         diaPaperManager.setup scope, element
 ]

@@ -1,3 +1,10 @@
+###
+Factory diaImagesService
+
+* loads images for Dropzone
+* loads images for Gallery
+* sends images from cropping / filtering page to server
+###
 angular.module('app.images').factory 'diaImagesService', [
   '$http'
 

@@ -1,3 +1,10 @@
+###
+Factory diaPaperManager
+
+* common service for setting up paperJS for given scope and element
+* handles image and canvas scaling based on currently selected image
+* this must be called by every highlighter
+###
 angular.module('app.algorithm').factory 'diaPaperManager', [
   'diaHighlighterManager'
 

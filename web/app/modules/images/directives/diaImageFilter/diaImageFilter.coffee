@@ -1,3 +1,9 @@
+###
+Directive diaImageFilter
+
+* handles filters on filter page with camanJS
+* updated images are stored on server
+###
 angular.module('app.images').directive 'diaImageFilter', [
   '$state'
   'diaStateManager'

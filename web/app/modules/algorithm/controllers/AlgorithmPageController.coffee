@@ -1,3 +1,11 @@
+###
+Controller AlgorithmPageController
+
+* loads all images for this session into gallery
+* loads information for this algorithm and processes inputs to be displayed
+* handles validation states for highlighter and inputs
+* handles socket.io messages if the given algorithm has changed
+###
 angular.module('app.algorithm').controller 'AlgorithmPageController', [
   '$scope'
   '$stateParams'
@@ -25,16 +33,21 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
     $scope.state = 'select'
     $scope.id = null
 
+    # load algorithm information
     requestAlgorithm = ->
       $scope.id = $stateParams.id
 
       diaAlgorithmService.fetch($scope.id).then (res) ->
         $scope.algorithm = res.data
+
+        # prepare input information
         angular.forEach $scope.algorithm.input, (entry) ->
           key = Object.keys(entry)[0]
           if key is 'highlighter'
+            # setup highlighter if there is one
             $scope.highlighter = entry.highlighter
           else
+            # setup inputs
             $scope.inputs.push entry
             if key is 'select'
               $scope.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
@@ -45,6 +58,7 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
     requestAlgorithm()
 
+    # load all images for this session
     requestImages = ->
       diaAlgorithmService.fetchImages().then (res) ->
         $scope.images = res.data
@@ -53,9 +67,12 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
 
     requestImages()
 
+    # handle checkbox interactions
     $scope.toggleCheckbox = (name) ->
       if $scope.model[name] then $scope.model[name] = 0 else $scope.model[name] = 1
 
+    # handle submit. If there are already 3 algorithms in process, abort and notify
+    # user. If captcha is activated, check for valid input.
     $scope.submit = ->
       if $scope.tasks >= 3
         toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
@@ -70,7 +87,6 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
               inputs: $scope.model
               highlighter: diaHighlighterManager.get()
             item.algorithm.id = $scope.id
-            # toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
             diaProcessingQueue.push item
             $scope.captcha.refresh()
           , (err) ->
@@ -86,16 +102,20 @@ angular.module('app.algorithm').controller 'AlgorithmPageController', [
           inputs: $scope.model
           highlighter: diaHighlighterManager.get()
         item.algorithm.id = $scope.id
-        # toastr.info "Added #{$scope.algorithm.name} to processing queue", 'Success'
         diaProcessingQueue.push item
 
+    # set the highlighter status to valid / invalid. This will be called
+    # from child scopes
     $scope.setHighlighterStatus = (status) ->
       $scope.safeApply ->
         $scope.invalidHighlighter = status
 
+    # set the form status to valid / invalid. This will be called from
+    # child scopes
     $scope.setFormValidity = (status) ->
       $scope.invalidForm = status
 
+    # set selected image
     $scope.setSelectedImage = (image) ->
       diaHighlighterManager.reset()
       $scope.state = 'highlight'

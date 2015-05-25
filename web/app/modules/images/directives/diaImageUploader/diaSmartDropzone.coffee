@@ -1,3 +1,10 @@
+###
+Directive diaSmartDropzone
+
+* handles functionality for uploading images with Dropzone.js
+* loads stored images from server (for active session) on page reload
+* loads Dropzone settings from server
+###
 angular.module('app.images').directive 'diaSmartDropzone', [
   '$http'
   'diaSettings'
@@ -20,12 +27,15 @@ angular.module('app.images').directive 'diaSmartDropzone', [
         config =
           init: ->
             self = @
+            # load images for active session if there are any
             diaImagesService.fetchUpload().then (res) ->
               scope.safeApply ->
                 angular.forEach res.data, (image) ->
+                  # add them as thumbnail
                   self.emit 'addedfile', image.mockFile
                   self.emit 'thumbnail', image.mockFile, image.thumbUrl
                   self.emit 'success', image.mockFile
+                  # and handle index and maxFiles changes
                   index = availableIndexes.indexOf image.index
                   if index >= 0
                     availableIndexes.splice index, 1
@@ -45,6 +55,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
 
           success: (file, res) ->
             if res
+              # new uploaded image
               uploadedImages.push
                 name: file.name
                 serverName: res.serverName
@@ -54,6 +65,7 @@ angular.module('app.images').directive 'diaSmartDropzone', [
                 name: res.serverName
               @.emit 'thumbnail', file, res.thumbUrl + '?' + new Date().getTime()
             else
+              # image was loaded from server after page refresh
               image =
                 src: file.src
                 name: file.name
