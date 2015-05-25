@@ -1,3 +1,8 @@
+###
+Directive diaBootstrapSlider
+
+* handles slider elements on filter page
+###
 angular.module('app.images').directive 'diaBootstrapSlider', [
   ->
     restrict: 'A'

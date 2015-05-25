@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>UploadManager</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="uploadmanager">UploadManager</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>UploadManager</strong> exposes all routes need for image handling. Images which are
+uploaded by <a href="http://www.dropzonejs.com/">Dropzone</a> are first handled by
+<code>multer</code> middleware and then passed on to <code>UploadManager</code></p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>mongoose  = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+fs        = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
+logger    = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span>
+async     = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+utils     = <span class="hljs-built_in">require</span> <span class="hljs-string">'./utils'</span></pre></div>
+        
+      
+        
+        <p>Expose uploadManager routes</p>
+
+        
+          <div class='highlight'><pre>uploadManager = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(router)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.get</strong> <code>/upload</code></p>
+<ul>
+<li>method: GET</li>
+<li>params: none</li>
+<li>return: All images assigned to the requests sessionId</li>
+</ul>
+<p>If there are any images in mongoDB which do not exists
+on disk anymore, they will be removed from mongoDB</p>
+
+        
+          <div class='highlight'><pre>  router.get <span class="hljs-string">'/upload'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    Image = mongoose.model <span class="hljs-string">'Image'</span>
+    validImages =[]
+    invalidImages = []
+<span class="hljs-function">
+    <span class="hljs-title">removeInvalidImages</span> = -&gt;</span>
+      async.each invalidImages, <span class="hljs-function"><span class="hljs-params">(image, next)</span> -&gt;</span>
+        query =
+          <span class="hljs-attribute">path</span>: image.path
+        Image.remove query, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          next err
+      , <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warning'</span>, <span class="hljs-string">"could not remove invalid images error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'UploadManager'</span>
+
+    params =
+      <span class="hljs-attribute">sessionId</span>: req.sessionID
+
+    Image.find params, <span class="hljs-function"><span class="hljs-params">(err, images)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not load images'</span>, <span class="hljs-string">'UploadManager'</span>
+        res.status(<span class="hljs-number">404</span>).json <span class="hljs-string">'Error'</span>: <span class="hljs-string">'Could not load images'</span>
+      <span class="hljs-keyword">else</span>
+        async.each images, <span class="hljs-function"><span class="hljs-params">(image, next)</span> -&gt;</span>
+          fs.stat image.path, <span class="hljs-function"><span class="hljs-params">(err, stats)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> err?
+              logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"skipping image=<span class="hljs-subst">#{image.path}</span> reason=missing"</span>, <span class="hljs-string">'UploadManager'</span>
+              invalidImages.push image
+            <span class="hljs-keyword">else</span>
+              validImages.push image
+            next()
+        , <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warning'</span>, <span class="hljs-string">"could not ensure that images exists error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'UploadManager'</span>
+          res.status(<span class="hljs-number">200</span>).json validImages
+          removeInvalidImages()</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.post</strong> <code>/upload</code></p>
+<ul>
+<li>method: POST</li>
+<li>params: none</li>
+<li>return: The uploaded image information from mongoDB</li>
+</ul>
+<p>This is a special route which gets called when an image is uploaded by <code>Dropzone</code>. In
+this case, the image was preprocessed by <code>multer</code> middleware and all the mandatory
+data is passed on in <code>res.imageData</code> field. This method postprocesses the image with
+the following steps:</p>
+<ol>
+<li>Orientate image (only for .jpeg images which have exif-metadata)</li>
+<li>Resize image</li>
+<li>Convert image to .png</li>
+<li>Create a thumbnail for that image</li>
+</ol>
+
+        
+          <div class='highlight'><pre>  router.post <span class="hljs-string">'/upload'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    query =
+      <span class="hljs-attribute">sessionId</span>: res.imageData.sessionId
+      <span class="hljs-attribute">serverName</span>: res.imageData.serverName
+    utils.orientateJpegImage res.imageData, <span class="hljs-function">-&gt;</span>
+      utils.convertToPng res.imageData, <span class="hljs-function"><span class="hljs-params">(err, image)</span> -&gt;</span>
+        utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
+          image.thumbPath = thumbPath
+          image.thumbUrl = thumbUrl
+          Image = mongoose.model <span class="hljs-string">'Image'</span>
+          Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"could not store image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'UploadManager'</span>
+            res.imageData = image
+            res.status(<span class="hljs-number">200</span>).json res.imageData</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.put</strong> <code>/upload</code></p>
+<ul>
+<li>method: PUT</li>
+<li>params:<ul>
+<li><em>serverName</em> <code>&lt;String&gt;</code> the images name associated on the server</li>
+<li><em>file</em> <code>&lt;String&gt;</code> base64 image</li>
+</ul>
+</li>
+<li>return: updated image information from mongoDB</li>
+</ul>
+<p>Updates the given image and its thumbnail</p>
+
+        
+          <div class='highlight'><pre>  router.put <span class="hljs-string">'/upload'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    serverName = req.body.filename
+    Image = mongoose.model <span class="hljs-string">'Image'</span>
+
+    query =
+      <span class="hljs-attribute">sessionId</span>: req.sessionID
+      <span class="hljs-attribute">serverName</span>: serverName
+
+    Image.find query, <span class="hljs-function"><span class="hljs-params">(err, images)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not load image'</span>, <span class="hljs-string">'Uploader'</span>
+        res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">Error</span>: <span class="hljs-string">'Could not load image'</span>
+      <span class="hljs-keyword">else</span>
+        image = images[<span class="hljs-number">0</span>]
+
+        utils.writeImage image, req.body.file, <span class="hljs-function"><span class="hljs-params">(err, size)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">Error</span>: err
+          <span class="hljs-keyword">else</span>
+            utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
+              image.thumbPath = thumbPath
+              image.thumbUrl = thumbUrl
+              image.size = size
+
+              res.imageData = image
+
+              Image.update query, image.toObject(), <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+                <span class="hljs-keyword">if</span> err?
+                  logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'Uploader'</span>
+                  res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">Error</span>: <span class="hljs-string">'Could not save image'</span>
+                <span class="hljs-keyword">else</span>
+                  res.status(<span class="hljs-number">200</span>).json res.imageData</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.delete</strong> <code>/upload</code></p>
+<ul>
+<li>method: DELETE</li>
+<li>params:<ul>
+<li><em>serverName</em> <code>&lt;String&gt;</code> the images name associated on the server</li>
+</ul>
+</li>
+<li>return: none</li>
+</ul>
+<p>Removes the given image and its thumbnail from disk and deletes the mongoDB entry</p>
+
+        
+          <div class='highlight'><pre>  router.<span class="hljs-keyword">delete</span> <span class="hljs-string">'/upload'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> req.query.serverName? <span class="hljs-keyword">and</span> req.sessionID?
+      Image = mongoose.model <span class="hljs-string">'Image'</span>
+
+      query =
+        <span class="hljs-attribute">sessionId</span>: req.sessionID
+        <span class="hljs-attribute">serverName</span>: req.query.serverName
+
+      Image.find query, <span class="hljs-function"><span class="hljs-params">(err, images)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err?
+          res.send(<span class="hljs-number">404</span>).json <span class="hljs-string">'Error'</span>: <span class="hljs-string">'Could not delete image'</span>
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-keyword">for</span> image <span class="hljs-keyword">in</span> images
+            fs.removeSync image.path
+            <span class="hljs-keyword">if</span> image.thumbPath <span class="hljs-keyword">and</span> (image.path <span class="hljs-keyword">isnt</span> image.thumbPath)
+              fs.removeSync image.thumbPath
+          Image.remove(query).exec()
+          res.sendStatus(<span class="hljs-number">200</span>)
+    <span class="hljs-keyword">else</span>
+      res.sendStatus(<span class="hljs-number">200</span>)</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

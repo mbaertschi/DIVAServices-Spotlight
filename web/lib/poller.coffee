@@ -1,3 +1,15 @@
+# Poller
+# ======
+#
+# **Poller** is responsible for polling information from hosts stored in mongoDB.
+# The polling interval is specified in `./web/conf/server.[dev/prod].json`. Each
+# polling iteration fetches all information which are then passed to parser for
+# validation. Valid algorithms are stored or updated in mongoDB. Invalid algorithms
+# are removed. All changes are passed on to clients by the pusher.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 logger      = require './logger'
 async       = require 'async'
 nconf       = require 'nconf'
@@ -7,19 +19,38 @@ _           = require 'lodash'
 mongoose    = require 'mongoose'
 moment      = require 'moment'
 
+# Expose poller
 poller = exports = module.exports = class Poller
 
+  # ---
+  # **constructor**</br>
+  # Assign mongoDB and pusher</br>
+  # `params:`
+  #   * *db* `<Mongoose>` the mongoose instance to store information in
+  #   * *pusher* `<Pusher>` the pusher instance to use for realtime communication
   constructor: (db, pusher) ->
     logger.log 'info', 'initializing', 'Poller'
     @db = db
     @Algorithm = mongoose.model 'Algorithm'
     if (nconf.get 'pusher:run') then @pusher = pusher
 
+  # ---
+  # **run**</br>
+  # Start poller
   run: =>
     async.forever @_nextIteration, (err) ->
       logger.log 'error', "something went wrong... going to shutdown! #{err}", 'Poller'
       setTimeout (-> process.exit(0)), 2000
 
+  # ---
+  # **_nextIteration**</br>
+  # Main entrance for polling ceycle. Interval is specified in `./web/conf/server.[dev/prod].json`.
+  # Following tasks are executed in every iteration:</br>
+  # 1. *load hosts* stored in mongoDB
+  # 2. *load algorithms* iterate over all hosts and load all algorithms for the currently processed host
+  # 3. *compare and store* all algorithms fetched from hosts
+  # 4. *remove* all invalid algorithms
+  # 5. *push* all changes to clients
   _nextIteration: (callback) =>
     logger.log 'info', 'next iteration', 'Poller'
     async.waterfall [(next) =>
@@ -50,6 +81,9 @@ poller = exports = module.exports = class Poller
         @_logPause (interval) ->
           setTimeout (-> callback()), interval
 
+  # ---
+  # **_loadHosts**</br>
+  # Loads and callbacks all hosts stored in mongoDB
   _loadHosts: (callback) =>
     @db.getHosts (err, hosts) =>
       if err?
@@ -59,6 +93,11 @@ poller = exports = module.exports = class Poller
         if not hosts.length then logger.log 'info', 'there are no hosts available', 'Poller'
         callback null, hosts
 
+  # ---
+  # **_loadAlgorithms**</br>
+  # Loads and parses all algorithms for each host. Valid algorithms are called back in an `Array`</br>
+  # `params:`
+  #   * *hosts* `<Array>` of hosts to poll
   _loadAlgorithms: (hosts, callback) =>
     algorithms = []
     async.each hosts, (host, next) ->
@@ -100,6 +139,16 @@ poller = exports = module.exports = class Poller
       else
         callback null, algorithms
 
+  # ---
+  # **_compareAndStoreAlgorithms**</br>
+  # Iterates over all algorithms and compares them to algorithms stored in mongoDB.
+  #   * New algorithms are stored in `addedAlgorithms`
+  #   * Updated algorithms are stored in `changedAlgorithms`
+  #   * Removed algorithms are stored in `removedAlgorithms`</br>
+  #
+  # Returns those three arrays</br>
+  # `params:`
+  #   * *algorithms* `<Array>` of algorithms to process
   _compareAndStoreAlgorithms: (algorithms, callback) =>
     changedAlgorithms = []
     addedAlgorithms = []
@@ -143,6 +192,12 @@ poller = exports = module.exports = class Poller
       logger.log 'info', 'there are no algorithms available', 'Poller'
       callback null, algorithms, changedAlgorithms, addedAlgorithms
 
+  # ---
+  # **_removeInvalidAlgorithms**</br>
+  # Removes algorithms from mongoDB wich did not pass the previousely steps (either because they are not available anymore or
+  # because they have changed and are not valid anymore)</br>
+  # `params:`
+  #   * *algorithms* `<Array>` of all valid algorithms
   _removeInvalidAlgorithms: (algorithms, callback) =>
     removedAlgorithms = []
     @db.getAlgorithms (err, dbAlgorithms) =>
@@ -164,6 +219,9 @@ poller = exports = module.exports = class Poller
       else
         callback null, removedAlgorithms
 
+  # ---
+  # **_logPause**</br>
+  # Helper function to log pause duration before next iteration starts
   _logPause: (callback) =>
     interval = parseInt nconf.get 'poller:interval'
     switch

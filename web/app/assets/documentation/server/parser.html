@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Parser</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="parser">Parser</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Parser</strong> is responsible for validating JSON objects we receive by polling
+the REST-Servers. It makes use of <a href="http://json-schema.org/">JSON-Schema</a> for
+easily validating JSON objects.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+async       = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+loader      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./loader'</span>
+Validator   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonschema'</span>).Validator
+validator   = <span class="hljs-keyword">new</span> Validator</pre></div>
+        
+      
+        
+        <p>Expose parser</p>
+
+        
+          <div class='highlight'><pre>parser = exports = <span class="hljs-built_in">module</span>.exports = {}</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>parser.parseRoot</strong></br>
+Parses the structure of the root entry (www.xyz.com/) for the currently polled
+host. If the structure passes the validation against the <code>hostSchema</code> specified
+in <code>./web/conf/server.[dev/prod].json</code>, then all its entries are validated against
+the <code>algorithmSchema</code>. Each algorithm which is valid, will be stored in mongoDB
+for that host</br>
+<code>params:</code></p>
+<ul>
+<li><em>structure</em> <code>&lt;Object&gt;</code> the JSON object which we received from the currently
+polled host</li>
+</ul>
+
+        
+          <div class='highlight'><pre>parser.parseRoot = <span class="hljs-function"><span class="hljs-params">(structure, callback)</span> -&gt;</span>
+  <span class="hljs-keyword">try</span>
+    structure = JSON.parse structure
+    valid = <span class="hljs-literal">true</span>
+  <span class="hljs-keyword">catch</span> e
+    valid = <span class="hljs-literal">false</span>
+  <span class="hljs-keyword">finally</span>
+    <span class="hljs-keyword">if</span> valid
+      hostErrors = validator.validate(structure, nconf.get(<span class="hljs-string">'parser:root:hostSchema'</span>)).errors
+      <span class="hljs-keyword">if</span> hostErrors.length
+        callback hostErrors[<span class="hljs-number">0</span>].message
+      <span class="hljs-keyword">else</span>
+        _structure =
+          <span class="hljs-attribute">records</span>: []
+        async.each structure, <span class="hljs-function"><span class="hljs-params">(algorithm, next)</span> -&gt;</span>
+          algorithmErrors = validator.validate(algorithm, nconf.get(<span class="hljs-string">'parser:root:algorithmSchema'</span>)).errors
+          <span class="hljs-keyword">if</span> algorithmErrors.length
+            logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"skipping algorithm=<span class="hljs-subst">#{algorithm.name}</span> error=<span class="hljs-subst">#{algorithmErrors[<span class="hljs-number">0</span>].message}</span> view=root view"</span>, <span class="hljs-string">'Parser'</span>
+            next()
+          <span class="hljs-keyword">else</span>
+            parser.parseDetails algorithm, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+              <span class="hljs-keyword">if</span> err?
+                logger.log <span class="hljs-string">'info'</span>, err, <span class="hljs-string">'Parser'</span>
+                next()
+              <span class="hljs-keyword">else</span>
+                _structure.records.push algorithm
+                next()
+        , <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"could not parse algorithm error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Parser'</span>
+          callback <span class="hljs-literal">null</span>, _structure
+    <span class="hljs-keyword">else</span>
+      callback <span class="hljs-string">"not a valid JSON format"</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>parser.parseDetails</strong></br>
+Parses the detailed information of an algorithm which we receive by calling its url.
+The information is validated against the <code>algorithmSchema</code> specified in
+<code>./web/conf/server.[dev/prod].json</code></br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithm</em> <code>&lt;Object&gt;</code> JSON object received by calling the algorithms url</li>
+</ul>
+
+        
+          <div class='highlight'><pre>parser.parseDetails = <span class="hljs-function"><span class="hljs-params">(algorithm, callback)</span> -&gt;</span>
+
+  settings =
+    <span class="hljs-attribute">options</span>:
+      <span class="hljs-attribute">uri</span>: algorithm.url
+      <span class="hljs-attribute">timeout</span>: <span class="hljs-number">8000</span>
+      <span class="hljs-attribute">headers</span>: {}
+    <span class="hljs-attribute">retries</span>: nconf.get <span class="hljs-string">'loader:retries'</span>
+
+  loader.get settings, <span class="hljs-function"><span class="hljs-params">(err, details)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> err?
+      callback <span class="hljs-string">"skipping algorithm=<span class="hljs-subst">#{algorithm.name}</span> error=<span class="hljs-subst">#{err}</span>"</span>
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-keyword">try</span>
+        details = JSON.parse details
+        valid = <span class="hljs-literal">true</span>
+      <span class="hljs-keyword">catch</span> e
+        valid = <span class="hljs-literal">false</span>
+      <span class="hljs-keyword">finally</span>
+        <span class="hljs-keyword">if</span> valid
+          algorithmErrors = validator.validate(details, nconf.get(<span class="hljs-string">'parser:details:algorithmSchema'</span>)).errors
+          <span class="hljs-keyword">if</span> algorithmErrors.length
+            values = algorithmErrors[<span class="hljs-number">0</span>].stack.split(<span class="hljs-string">'.'</span>)
+            errorMessage = values[values.length-<span class="hljs-number">1</span>]
+            callback <span class="hljs-string">"skipping algorithm=<span class="hljs-subst">#{algorithm.name}</span> error=<span class="hljs-subst">#{errorMessage}</span> view=details view"</span>
+          <span class="hljs-keyword">else</span>
+            callback()
+        <span class="hljs-keyword">else</span>
+          callback <span class="hljs-string">"skipping algorithm=<span class="hljs-subst">#{algorithm.name}</span>, error=not a valid JSON format"</span></pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

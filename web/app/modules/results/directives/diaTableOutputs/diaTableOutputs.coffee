@@ -1,3 +1,10 @@
+###
+Directive diaTableOutputs
+
+* renders output fields for all processed algorithms from diaProcessingQueue results
+* if the output has a highlighters field, paperJS will be initialized and the
+  path(s) will be drawn on the canvas
+###
 angular.module('app.results').directive 'diaTableOutputs', [
   '$timeout'
 

@@ -1,30 +1,32 @@
+###
+Controller AlgorithmsPageController
+
+* displays information about all available algorithms
+* handles socket.io messages if any algorithms have changed
+###
 angular.module('app.algorithms').controller 'AlgorithmsPageController', [
   '$scope'
-  'toastr'
-  'algorithmsService'
-  'mySocket'
   '$state'
-  'mySettings'
+  'diaSocket'
+  'diaSettings'
+  'diaAlgorithmsService'
+  'toastr'
 
-  ($scope, toastr, algorithmsService, mySocket, $state, mySettings) ->
+  ($scope, $state, diaSocket, diaSettings, diaAlgorithmsService, toastr) ->
     $scope.algorithms = []
 
-    retrieveLinks = ->
-      algorithmsService.fetch().then (res) ->
+    retrieveAlgorithms = ->
+      diaAlgorithmsService.fetch().then (res) ->
         $scope.algorithms = res.data
-      , (err) ->
-        notificationService.add
-          title: 'Request failed'
-          content: err.data
-          type: 'danger'
-          timeout: 5000
+      , (err) -> toastr.error err.statusText, 'Request failed'
 
-    retrieveLinks()
+    retrieveAlgorithms()
 
+    # switch to algorithm page for this algorithm
     $scope.thisAlgorithm = (algorithm) ->
       $state.go 'algorithm', {id: algorithm._id}
 
-    mySettings.fetch('socket').then (socket) ->
+    diaSettings.fetch('socket').then (socket) ->
       if socket.run?
         $scope.$on 'socket:update algorithms', (ev, algorithms) ->
           angular.forEach algorithms, (algorithm) ->

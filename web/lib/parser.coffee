@@ -1,3 +1,13 @@
+# Parser
+# ======
+#
+# **Parser** is responsible for validating JSON objects we receive by polling
+# the REST-Servers. It makes use of [JSON-Schema](http://json-schema.org/) for
+# easily validating JSON objects.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 logger      = require './logger'
 nconf       = require 'nconf'
 async       = require 'async'
@@ -6,8 +16,19 @@ loader      = require './loader'
 Validator   = require('jsonschema').Validator
 validator   = new Validator
 
+# Expose parser
 parser = exports = module.exports = {}
 
+# ---
+# **parser.parseRoot**</br>
+# Parses the structure of the root entry (www.xyz.com/) for the currently polled
+# host. If the structure passes the validation against the `hostSchema` specified
+# in `./web/conf/server.[dev/prod].json`, then all its entries are validated against
+# the `algorithmSchema`. Each algorithm which is valid, will be stored in mongoDB
+# for that host</br>
+# `params:`
+#   * *structure* `<Object>` the JSON object which we received from the currently
+#   polled host
 parser.parseRoot = (structure, callback) ->
   try
     structure = JSON.parse structure
@@ -42,6 +63,13 @@ parser.parseRoot = (structure, callback) ->
     else
       callback "not a valid JSON format"
 
+# ---
+# **parser.parseDetails**</br>
+# Parses the detailed information of an algorithm which we receive by calling its url.
+# The information is validated against the `algorithmSchema` specified in
+# `./web/conf/server.[dev/prod].json`</br>
+# `params:`
+#   * *algorithm* `<Object>` JSON object received by calling the algorithms url
 parser.parseDetails = (algorithm, callback) ->
 
   settings =

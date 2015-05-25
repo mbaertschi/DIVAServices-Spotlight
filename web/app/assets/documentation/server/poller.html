@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Poller</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="public/stylesheets/normalize.css" />
+  <link rel="stylesheet" media="all" href="custom.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="page">
+
+      <div class="header">
+        
+          
+          <h1 id="poller">Poller</h1>
+
+          
+        
+
+        
+          <div class="toc">
+            <h3>Table of Contents</h3>
+            <ol>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="connectMongo.html">
+                    connectMongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="loader.html">
+                    loader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="logger.html">
+                    logger.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="algorithm.html">
+                    algorithm.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="host.html">
+                    host.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="image.html">
+                    image.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="mongo.html">
+                    mongo.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="parser.html">
+                    parser.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="poller.html">
+                    poller.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="pusher.html">
+                    pusher.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="sessionStore.html">
+                    sessionStore.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="api.html">
+                    api.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="captcha.html">
+                    captcha.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="router.html">
+                    router.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploadManager.html">
+                    uploadManager.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="uploader.html">
+                    uploader.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="utils.html">
+                    utils.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="config.html">
+                    config.coffee
+                  </a>
+                </li>
+              
+                
+                <li>
+                  <a class="source" href="server.html">
+                    server.coffee
+                  </a>
+                </li>
+              
+            </ol>
+          </div>
+        
+      </div>
+
+      
+        
+        <p><strong>Poller</strong> is responsible for polling information from hosts stored in mongoDB.
+The polling interval is specified in <code>./web/conf/server.[dev/prod].json</code>. Each
+polling iteration fetches all information which are then passed to parser for
+validation. Valid algorithms are stored or updated in mongoDB. Invalid algorithms
+are removed. All changes are passed on to clients by the pusher.</p>
+<p>Copyright &copy; Michael Bärtschi, MIT Licensed.</p>
+
+        
+      
+        
+        <p>Module dependencies</p>
+
+        
+          <div class='highlight'><pre>logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+async       = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+loader      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./loader'</span>
+parser      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./parser'</span>
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+moment      = <span class="hljs-built_in">require</span> <span class="hljs-string">'moment'</span></pre></div>
+        
+      
+        
+        <p>Expose poller</p>
+
+        
+          <div class='highlight'><pre>poller = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Poller</span></span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>constructor</strong></br>
+Assign mongoDB and pusher</br>
+<code>params:</code></p>
+<ul>
+<li><em>db</em> <code>&lt;Mongoose&gt;</code> the mongoose instance to store information in</li>
+<li><em>pusher</em> <code>&lt;Pusher&gt;</code> the pusher instance to use for realtime communication</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(db, pusher)</span> -&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'Poller'</span>
+    <span class="hljs-property">@db</span> = db
+    <span class="hljs-property">@Algorithm</span> = mongoose.model <span class="hljs-string">'Algorithm'</span>
+    <span class="hljs-keyword">if</span> (nconf.get <span class="hljs-string">'pusher:run'</span>) <span class="hljs-keyword">then</span> <span class="hljs-property">@pusher</span> = pusher</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>run</strong></br>
+Start poller</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">run</span>: <span class="hljs-function">=&gt;</span>
+    async.forever <span class="hljs-property">@_nextIteration</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">"something went wrong... going to shutdown! <span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Poller'</span>
+      setTimeout (<span class="hljs-function">-&gt;</span> process.exit(<span class="hljs-number">0</span>)), <span class="hljs-number">2000</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_nextIteration</strong></br>
+Main entrance for polling ceycle. Interval is specified in <code>./web/conf/server.[dev/prod].json</code>.
+Following tasks are executed in every iteration:</br></p>
+<ol>
+<li><em>load hosts</em> stored in mongoDB</li>
+<li><em>load algorithms</em> iterate over all hosts and load all algorithms for the currently processed host</li>
+<li><em>compare and store</em> all algorithms fetched from hosts</li>
+<li><em>remove</em> all invalid algorithms</li>
+<li><em>push</em> all changes to clients</li>
+</ol>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_nextIteration</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'next iteration'</span>, <span class="hljs-string">'Poller'</span>
+    async.waterfall [(next) =&gt;
+        <span class="hljs-property">@_loadHosts</span> next
+      , <span class="hljs-function"><span class="hljs-params">(hosts, next)</span> =&gt;</span>
+        <span class="hljs-property">@_loadAlgorithms</span> hosts, next
+      , <span class="hljs-function"><span class="hljs-params">(algorithms, next)</span> =&gt;</span>
+        <span class="hljs-property">@_compareAndStoreAlgorithms</span> algorithms, next
+      , <span class="hljs-function"><span class="hljs-params">(algorithms, changedAlgorithms, addedAlgorithms, next)</span> =&gt;</span>
+        <span class="hljs-property">@_removeInvalidAlgorithms</span> algorithms, <span class="hljs-function"><span class="hljs-params">(err, removedAlgorithms)</span> =&gt;</span>
+          next err, changedAlgorithms, addedAlgorithms, removedAlgorithms
+    ], <span class="hljs-function"><span class="hljs-params">(err, changedAlgorithms, addedAlgorithms, removedAlgorithms)</span> =&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">"iteration status=failed with error=<span class="hljs-subst">#{err}</span>"</span>
+        <span class="hljs-property">@_logPause</span> (interval) -&gt;
+          setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-property">@pusher</span>
+          <span class="hljs-keyword">if</span> changedAlgorithms.length &gt; <span class="hljs-number">0</span>
+            <span class="hljs-property">@pusher</span>.update changedAlgorithms
+          <span class="hljs-keyword">if</span> addedAlgorithms.length &gt; <span class="hljs-number">0</span>
+            <span class="hljs-property">@pusher</span>.add addedAlgorithms
+          <span class="hljs-keyword">if</span> removedAlgorithms.length &gt; <span class="hljs-number">0</span>
+            <span class="hljs-property">@pusher</span>.<span class="hljs-keyword">delete</span> removedAlgorithms
+        <span class="hljs-keyword">if</span> changedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> addedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> removedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+          logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'no changes to apply'</span>, <span class="hljs-string">'Poller'</span>
+        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'iteration status=succeeded'</span>, <span class="hljs-string">'Poller'</span>
+        <span class="hljs-property">@_logPause</span> (interval) -&gt;
+          setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_loadHosts</strong></br>
+Loads and callbacks all hosts stored in mongoDB</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_loadHosts</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    <span class="hljs-property">@db</span>.getHosts (err, hosts) =&gt;
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">'mongoose error could not load hosts from mongoDB'</span>, <span class="hljs-string">'Poller'</span>
+        <span class="hljs-keyword">return</span> callback err
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> hosts.length <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'there are no hosts available'</span>, <span class="hljs-string">'Poller'</span>
+        callback <span class="hljs-literal">null</span>, hosts</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_loadAlgorithms</strong></br>
+Loads and parses all algorithms for each host. Valid algorithms are called back in an <code>Array</code></br>
+<code>params:</code></p>
+<ul>
+<li><em>hosts</em> <code>&lt;Array&gt;</code> of hosts to poll</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_loadAlgorithms</span>: <span class="hljs-function"><span class="hljs-params">(hosts, callback)</span> =&gt;</span>
+    algorithms = []
+    async.each hosts, <span class="hljs-function"><span class="hljs-params">(host, next)</span> -&gt;</span>
+      hostname = host.host <span class="hljs-keyword">or</span> <span class="hljs-string">'undefined'</span>
+      <span class="hljs-keyword">if</span> host.url?
+        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to load algorithms for <span class="hljs-subst">#{hostname}</span>"</span>, <span class="hljs-string">'Poller'</span>
+
+        settings =
+          <span class="hljs-attribute">options</span>:
+            <span class="hljs-attribute">uri</span>: host.url
+            <span class="hljs-attribute">timeout</span>: <span class="hljs-number">8000</span>
+            <span class="hljs-attribute">headers</span>: {}
+          <span class="hljs-attribute">retries</span>: nconf.get <span class="hljs-string">'loader:retries'</span>
+
+        loader.get settings, <span class="hljs-function"><span class="hljs-params">(err, res)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">"loading status=failed for host=<span class="hljs-subst">#{hostname}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Poller'</span>
+            next()
+          <span class="hljs-keyword">else</span>
+            parser.parseRoot res, <span class="hljs-function"><span class="hljs-params">(err, structure)</span> -&gt;</span>
+              <span class="hljs-keyword">if</span> err?
+                logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"could not parse structure and no changes were applied for host=<span class="hljs-subst">#{hostname}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Poller'</span>
+                next()
+              <span class="hljs-keyword">else</span>
+                <span class="hljs-keyword">if</span> (structure?.records?.length &gt; <span class="hljs-number">0</span>)
+                  _.each structure.records, <span class="hljs-function"><span class="hljs-params">(algorithm)</span> -&gt;</span>
+                    algorithm.host = hostname
+                    algorithms.push algorithm
+                <span class="hljs-keyword">else</span>
+                  logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"no algorithms available for host=<span class="hljs-subst">#{hostname}</span>"</span>, <span class="hljs-string">'Poller'</span>
+                next()
+      <span class="hljs-keyword">else</span>
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"<span class="hljs-subst">#{hostname}</span> does not provide an url. Skipping..."</span>, <span class="hljs-string">'Poller'</span>
+        next()
+    , <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"loading algorithms status=failed for host=<span class="hljs-subst">#{hostname}</span>"</span>, <span class="hljs-string">'Poller'</span>
+        callback <span class="hljs-literal">null</span>
+      <span class="hljs-keyword">else</span>
+        callback <span class="hljs-literal">null</span>, algorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_compareAndStoreAlgorithms</strong></br>
+Iterates over all algorithms and compares them to algorithms stored in mongoDB.</p>
+<ul>
+<li>New algorithms are stored in <code>addedAlgorithms</code></li>
+<li>Updated algorithms are stored in <code>changedAlgorithms</code></li>
+<li>Removed algorithms are stored in <code>removedAlgorithms</code></br></li>
+</ul>
+<p>Returns those three arrays</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithms</em> <code>&lt;Array&gt;</code> of algorithms to process</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_compareAndStoreAlgorithms</span>: <span class="hljs-function"><span class="hljs-params">(algorithms, callback)</span> =&gt;</span>
+    changedAlgorithms = []
+    addedAlgorithms = []
+    removedAlgorithms = []
+    <span class="hljs-keyword">if</span> algorithms?.length &gt; <span class="hljs-number">0</span>
+      async.each algorithms, <span class="hljs-function"><span class="hljs-params">(algorithm, next)</span> =&gt;</span>
+        <span class="hljs-property">@db</span>.getAlgorithm algorithm.url, <span class="hljs-function"><span class="hljs-params">(err, dbAlgorithm)</span> =&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while loading one of the algorithms from the mongoDB. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
+            next()
+          <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">if</span> dbAlgorithm?
+              dbAlgorithm.compareAndSave algorithm, <span class="hljs-function"><span class="hljs-params">(err, changes)</span> -&gt;</span>
+                <span class="hljs-keyword">if</span> err?
+                  logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while comparing algorithms. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
+                  next()
+                <span class="hljs-keyword">else</span>
+                  <span class="hljs-keyword">if</span> changes?.length &gt; <span class="hljs-number">0</span>
+                    logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"algorithm=<span class="hljs-subst">#{algorithm.url}</span> for host=<span class="hljs-subst">#{algorithm.host}</span> has changed"</span>, <span class="hljs-string">'Poller'</span>
+                    async.each changes, <span class="hljs-function"><span class="hljs-params">(change, nextChange)</span> -&gt;</span>
+                      logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"type=<span class="hljs-subst">#{change.type}</span>, attr=<span class="hljs-subst">#{change.attr}</span>, old=<span class="hljs-subst">#{change.old}</span>, new=<span class="hljs-subst">#{change.<span class="hljs-keyword">new</span>}</span>"</span>, <span class="hljs-string">'Poller'</span>
+                      nextChange()
+                    , <span class="hljs-function">-&gt;</span>
+                      changedAlgorithms.push algorithm
+                      next()
+                  <span class="hljs-keyword">else</span>
+                    logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"no changes to apply for host=<span class="hljs-subst">#{algorithm.host}</span>, algorithm=<span class="hljs-subst">#{algorithm.url}</span>"</span>, <span class="hljs-string">'Poller'</span>
+                    next()
+            <span class="hljs-keyword">else</span>
+              alg = <span class="hljs-keyword">new</span> <span class="hljs-property">@Algorithm</span> algorithm
+              alg.save (err, algorithm) -&gt;
+                <span class="hljs-keyword">if</span> err?
+                  logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while storing one of the algorithms. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
+                <span class="hljs-keyword">else</span>
+                  logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"stored new algorithm=<span class="hljs-subst">#{algorithm.name}</span>"</span>, <span class="hljs-string">'Poller'</span>
+                  addedAlgorithms.push algorithm
+                next()
+      , <span class="hljs-function"><span class="hljs-params">(err)</span> =&gt;</span>
+        callback err, algorithms, changedAlgorithms, addedAlgorithms
+    <span class="hljs-keyword">else</span>
+      logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'there are no algorithms available'</span>, <span class="hljs-string">'Poller'</span>
+      callback <span class="hljs-literal">null</span>, algorithms, changedAlgorithms, addedAlgorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_removeInvalidAlgorithms</strong></br>
+Removes algorithms from mongoDB wich did not pass the previousely steps (either because they are not available anymore or
+because they have changed and are not valid anymore)</br>
+<code>params:</code></p>
+<ul>
+<li><em>algorithms</em> <code>&lt;Array&gt;</code> of all valid algorithms</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_removeInvalidAlgorithms</span>: <span class="hljs-function"><span class="hljs-params">(algorithms, callback)</span> =&gt;</span>
+    removedAlgorithms = []
+    <span class="hljs-property">@db</span>.getAlgorithms (err, dbAlgorithms) =&gt;
+      <span class="hljs-keyword">if</span> err?
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while loading the algorithms form the mongoDB. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
+        callback <span class="hljs-literal">null</span>, removedAlgorithms
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> dbAlgorithms?
+        async.each dbAlgorithms, <span class="hljs-function"><span class="hljs-params">(dbAlgorithm, next)</span> =&gt;</span>
+          index = _.findIndex algorithms, <span class="hljs-string">'url'</span>: dbAlgorithm.url
+          <span class="hljs-keyword">if</span> index &lt; <span class="hljs-number">0</span>
+            logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"removed algorithm host=<span class="hljs-subst">#{dbAlgorithm.host}</span>, algorithm=<span class="hljs-subst">#{dbAlgorithm.url}</span>"</span>, <span class="hljs-string">'Poller'</span>
+            removedAlgorithms.push dbAlgorithm
+            <span class="hljs-property">@Algorithm</span>.find(<span class="hljs-attribute">url</span>: dbAlgorithm.url).remove().exec()
+          next()
+        , <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while deleting one of the algorithms from the mongoDB. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
+          callback <span class="hljs-literal">null</span>, removedAlgorithms
+      <span class="hljs-keyword">else</span>
+        callback <span class="hljs-literal">null</span>, removedAlgorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>_logPause</strong></br>
+Helper function to log pause duration before next iteration starts</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">_logPause</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    interval = parseInt nconf.get <span class="hljs-string">'poller:interval'</span>
+    <span class="hljs-keyword">switch</span>
+      <span class="hljs-keyword">when</span> moment.duration(interval).asYears() &gt;= <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).years()}</span> years"</span>, <span class="hljs-string">'Poller'</span>
+      <span class="hljs-keyword">when</span> moment.duration(interval).asMonths() &gt;= <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).months()}</span> months"</span>, <span class="hljs-string">'Poller'</span>
+      <span class="hljs-keyword">when</span> moment.duration(interval).asDays() &gt;= <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).days()}</span> days"</span>, <span class="hljs-string">'Poller'</span>
+      <span class="hljs-keyword">when</span> moment.duration(interval).asHours() &gt;= <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).hours()}</span> hours"</span>, <span class="hljs-string">'Poller'</span>
+      <span class="hljs-keyword">when</span> moment.duration(interval).asMinutes() &gt;= <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).minutes()}</span> minutes"</span>, <span class="hljs-string">'Poller'</span>
+      <span class="hljs-keyword">else</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"going to wait <span class="hljs-subst">#{moment.duration(interval).seconds()}</span> seconds"</span>, <span class="hljs-string">'Poller'</span>
+
+    callback interval</pre></div>
+        
+      
+      <div class="fleur">h</div>
+    </div>
+  </div>
+</body>
+</html>

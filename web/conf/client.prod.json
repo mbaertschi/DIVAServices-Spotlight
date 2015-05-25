@@ -1,0 +1,15 @@
+{
+  "web": {
+    "socket": {
+      "run": true
+    },
+    "uploader": {
+      "destination": "./public/uploads/"
+    },
+    "dropzone": {
+      "addRemoveLinks" : true,
+      "maxFilesize": 4,
+      "maxFiles": 10
+    }
+  }
+}

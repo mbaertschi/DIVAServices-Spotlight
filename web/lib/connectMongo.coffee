@@ -1,3 +1,15 @@
+# ConnectMongo
+# ============
+#
+# **ConnectMongo** is basically the same implementation of a SessionStore as
+# `connect-mongo`. The only difference is, that we hook into the session destroy
+# method in order to be able to handle image deletion from disk and from mongoDB.
+# Therefore we don't give any further information about the implementation. See
+# docs at `https://github.com/kcbanner/connect-mongo` for detailed information.
+#
+# Copyright &copy; Michael Bärtschi, MIT Licensed.
+
+# Module dependencies
 _           = require 'lodash'
 util        = require 'util'
 nconf       = require 'nconf'
@@ -24,6 +36,11 @@ module.exports = (connect) ->
       self.emit newState
       return
 
+    # ---
+    # **removeImageFolder**</br>
+    # Remove all images associated to that sessionId from disk</br>
+    # `params:`
+    #   * *sessionId* `<String>` destroyed session id
     removeImageFolder = (sessionId) ->
       dir = nconf.get('web:uploader:destination') + sessionId
       fs.exists dir, (exists) ->
@@ -35,6 +52,11 @@ module.exports = (connect) ->
               logger.log 'debug', "removed directory #{dir}", 'ConnectMongo'
               fs.rmdir dir
 
+    # ---
+    # **removeImagesFromDb**</br>
+    # Remove all images associated to that sessionId from mongoDB</br>
+    # `params:`
+    #   * *sessionId* `<String>` destroyed session id
     removeImagesFromDb = (sessionId) ->
       Image = mongoose.model 'Image'
       query =
@@ -42,6 +64,7 @@ module.exports = (connect) ->
       Image.remove query, (err) ->
         if err? then logger.log 'warn', "images for session=#{sessionId} were not removed error=#{err}", 'ConnectMongo'
 
+    #
     connectionReady = (err) ->
       if err
         logger.log 'debug', 'not able to connect to the database', 'ConnectMongo'
@@ -49,6 +72,7 @@ module.exports = (connect) ->
         throw err
 
       self.collection = self.db.collection(options.collection)
+      # Hook into session destroy method for handling image deletion
       setInterval (->
         self.collection.find(expires: $lt: new Date).toArray (err, sessions) ->
           if err
@@ -134,7 +158,6 @@ module.exports = (connect) ->
     if !callback
       callback = _.noop
     sid = @getSessionId(sid)
-    # removing the lastModified prop from the session object before update
     if @options.touchAfter > 0 and session and session.lastModified
       delete session.lastModified
     s = undefined

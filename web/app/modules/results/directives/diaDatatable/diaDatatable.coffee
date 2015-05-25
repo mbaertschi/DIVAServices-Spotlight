@@ -1,3 +1,8 @@
+###
+Directive diaDatatable
+
+* loads and setups the datatable used for displaying algorithm results
+###
 angular.module('app.results').directive 'diaDatatable', [
   '$compile'
 
