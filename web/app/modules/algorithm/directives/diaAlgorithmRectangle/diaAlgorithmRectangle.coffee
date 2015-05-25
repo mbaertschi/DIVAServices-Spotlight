@@ -1,68 +1,19 @@
 angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
   'diaHighlighterManager'
+  'diaPaperManager'
 
-  (diaHighlighterManager) ->
+  (diaHighlighterManager, diaPaperManager) ->
     restrict: 'AE'
 
     link: (scope, element, attrs) ->
-      image = canvas = raster = path = handle = null
-      initialized = false
+      path = handle = null
       strokeColor = 'red'
-      strokeWidth = 5
       fillColor = new paper.Color 1, 0, 0, 0.1
+      scope.strokeWidth = 5
 
-      scope.$watch 'selectedImage', ->
-        scope.setHighlighterStatus true
-        image = scope.selectedImage
-        canvas = element[0]
-        diaHighlighterManager.reset()
-        diaHighlighterManager.type = scope.highlighter
-        if path
-          path.remove()
-          path = null
-        initializeCanvas ->
-          if initialized
-            view.viewSize = new Size canvas.width, canvas.height
-            view.zoom = 1
-            view.update()
-          else
-            initPaper()
-          drawRaster()
+      diaPaperManager.reset()
 
-      initializeCanvas = (callback) ->
-        img = new Image()
-        img.src = image.url
-        $(img).bind 'load', ->
-          width = $('.canvas-wrapper')[0].clientWidth
-          height = img.height * (width/img.width)
-          canvas.width = width
-          canvas.height = height
-          callback()
-
-      drawRaster = ->
-        if project.layers[0]?
-          project.layers[0].removeChildren()
-        raster = new Raster
-          source: image.url
-          position: view.center
-        raster.on 'load', ->
-          scale = view.size.width / @.bounds.width
-          inverseScale = @.bounds.width / view.size.width
-          strokeWidth = 5 * inverseScale
-          view.zoom = scale
-          view.update()
-
-      initPaper = ->
-        paper.install window
-        paper.setup canvas
-        toolRectangle = new Tool()
-        toolRectangle.onMouseDown = mouseDown
-        toolRectangle.onMouseUp = mouseUp
-        toolRectangle.onMouseDrag = mouseDrag
-        toolRectangle.activate()
-        initialized = true
-
-      mouseDown = (event) ->
+      scope.mouseDown = (event) ->
         handle = null
         point = event.point
         if path
@@ -81,22 +32,22 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
             scope.setHighlighterStatus true
             path = new Path.Rectangle from: point, to: point
             path.strokeColor = strokeColor
-            path.strokeWidth = strokeWidth
+            path.strokeWidth = scope.strokeWidth
             path.fillColor = fillColor
         else
           diaHighlighterManager.path = null
           scope.setHighlighterStatus true
           path = new Path.Rectangle from: point, to: point
           path.strokeColor = strokeColor
-          path.strokeWidth = strokeWidth
+          path.strokeWidth = scope.strokeWidth
           path.fillColor = fillColor
 
-      mouseUp = (event) ->
+      scope.mouseUp = (event) ->
         path.fullySelected = true
         scope.setHighlighterStatus false
         diaHighlighterManager.path = path
 
-      mouseDrag = (event) ->
+      scope.mouseDrag = (event) ->
         x = event.delta.x
         y = event.delta.y
         switch handle
@@ -136,4 +87,9 @@ angular.module('app.algorithm').directive 'diaAlgorithmRectangle', [
             path.segments[2].point.x += event.delta.x
             path.segments[2].point.y += event.delta.y
             path.segments[3].point.x += event.delta.x
+
+
+      scope.$watch 'selectedImage', ->
+        diaPaperManager.setup scope, element
+
   ]
