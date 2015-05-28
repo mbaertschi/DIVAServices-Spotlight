@@ -51,8 +51,6 @@ api = exports = module.exports = (router) ->
     Algorithm.find {}, fields, (err, algorithms) ->
       if err?
         res.status(404).json error: 'There was an error while loading the algorithms'
-      else if algorithms.length is 0
-        res.status(404).json error: 'Not found'
       else
         res.status(200).json algorithms
 

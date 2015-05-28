@@ -35,14 +35,14 @@ Unified repository for both, dummy rest server and client components for the DIA
     $ npm install
     ```
   6. Create the folder logs under /web/
-  7. Add dummy backend host to ``hosts`` collection in ``dia`` database
+  7. Add dummy backend host to ``hosts`` collection in ``dia_dev`` database
 
     ```bash
     $ mongo
-    > use dia
+    > use dia_dev
     > db.hosts.insert({"host": "Dummby Backend Host", "url": "http://localhost:8081"})
     ```
-  8. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 11 in ``Procfile``)
+  8. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 6 in ``Procfile.dev``)
 
     Assuming you are in the root folder
     ```bash
@@ -64,7 +64,7 @@ The DIA-Distributed application can be started within two environments.
   ```bash
   $ export NODE_ENV=prod
   ```
-  This configuration is used for production. (Not yet implemented)
+  This configuration is used for production.
 
 ## Tests
 Assuming you are in the root folder. Execute the following scripts:

@@ -25,7 +25,7 @@
     "run": true
   },
   "mongoDB": {
-    "url": "localhost:27017/dia?auto_reconnect"
+    "url": "localhost:27017/dia_dev?auto_reconnect"
   },
   "session": {
     "secret": "Psst don't tell others",

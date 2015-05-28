@@ -2,6 +2,7 @@
   big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithms', 'Get your work done']", icon='tasks')
 
 .row.algorithms-page
+  .col-xs-12.text-muted(ng-if='!algorithms.length') We are sorry. There are no algorihtms available
   .col-xs-12.col-sm-6.col-md-6.col-lg-4(ng-repeat='algorithm in algorithms')
     panel.algorithms-overview(heading='{{algorithm.name}}', icon='info-circle', height='400')
       .col-md-12.entry
