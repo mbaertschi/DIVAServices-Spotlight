@@ -94,7 +94,7 @@ If you want to run the tests with npm:
 To start and stop dummy rest server and web client with one command:
 
 ```bash
-$ nf -j Procfile.dev start
+$ nf -j Procfile.dev -e dev.env start
 ```
 
 For manually starting backend server
@@ -107,6 +107,7 @@ $ forever -m 5 --minUptime 1000 --spinSleepTime 5000 --watch -c coffee server.co
 For manually starting web client
 
 ```bash
+$ export NODE_ENV=dev
 $ cd web
 $ brunch w -s
 ```
@@ -118,8 +119,7 @@ Then go to [localhost:3000](http://localhost:3000)
 To run DIA-Distributed in production mode follow those steps:
 
 ```bash
-$ export NODE_ENV=prod
 $ cd web && brunch b -P
 $ cd ..
-$ nf start
+$ nf -e prod.env start
 ```
