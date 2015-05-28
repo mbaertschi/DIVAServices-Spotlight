@@ -1,7 +1,13 @@
 exports.config = {
 
+  // Order is important. Always put images before algorithms and
+  // algorithms before results
   specs: [
-    './e2e/specs/**/*.coffee'
+    './e2e/specs/dashboard.coffee',
+    './e2e/specs/documents.coffee',
+    './e2e/specs/images.coffee',
+    './e2e/specs/algorithms.coffee',
+    './e2e/specs/results.coffee'
   ],
 
   // Start these browsers, currently available:

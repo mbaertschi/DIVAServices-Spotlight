@@ -94,3 +94,7 @@ server.startServer = (port, path, callback) ->
 
   # Start server on port specified in configuration file
   app.server.listen port, callback
+
+# On production mode start server without brunch
+if process.env.NODE_ENV is 'prod'
+  server.startServer nconf.get('server:port'), nconf.get('server:path'), ->

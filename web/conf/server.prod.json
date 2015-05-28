@@ -1,28 +1,58 @@
 {
-  "logger": [
-    {
-      "type": "file",
-      "filename": "logs/server.log",
-      "maxLogSize": 10485760,
-      "backups": 5
-    },
-    {
-      "type": "console"
-    }
-  ],
+  "logger": {
+    "appenders": [
+      {
+        "type": "file",
+        "filename": "logs/server.log",
+        "maxLogSize": 2048000,
+        "backups": 5
+      },
+      {
+        "type": "console"
+      }
+    ],
+    "level": "INFO"
+  },
   "poller": {
     "run": true,
-    "interval": 60000,
-    "rootUrl": "http://localhost:8081",
-    "retries": 7
+    "interval": 3600000,
+    "rootUrl": "http://localhost:8081"
   },
-  "parser": {
-    "mandatoryFields": ["name", "url"]
+  "loader": {
+    "retries": 7
   },
   "pusher": {
     "run": true
   },
   "mongoDB": {
     "url": "localhost:27017/dia?auto_reconnect"
+  },
+  "session": {
+    "secret": "Psst don't tell others",
+    "resave": false,
+    "saveUninitialized": true,
+    "rolling": true,
+    "maxAge": 1800000
+  },
+  "mongoStore": {
+    "defaultOptions": {
+      "host": "127.0.0.1",
+      "port": 27017,
+      "autoReconnect": true,
+      "ssl": false,
+      "w": 1,
+      "collection": "sessions",
+      "stringify": true,
+      "hash": false,
+      "ttl": 60000,
+      "autoRemove": "interval",
+      "autoRemoveInterval": 600000
+    }
+  },
+  "server": {
+    "port": 3000,
+    "path": "public",
+    "timeout": 120000,
+    "maxFileSize": 10485760
   }
 }

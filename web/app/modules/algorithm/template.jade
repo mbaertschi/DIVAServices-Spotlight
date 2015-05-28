@@ -8,7 +8,7 @@
         a#link(ui-sref='algorithms') here
         | to go back to algorithms page.
     .col-md-12(ng-if='algorithm')
-      panel(heading='{{algorithm.name}}', icon='info', go-to='goBack()', go-to-text='Go back')
+      panel(heading='{{algorithm.name}}', icon='info-circle', go-to='goBack()', go-to-text='Go back')
         .text-muted Description:
           = ' '
           span.text-normal {{algorithm.description}}

@@ -8,7 +8,7 @@ export NODE_ENV=dev
 # start server
 function start_server {
   printf "Starting testserver ... "
-  nf -j Procfile.test start > /dev/null 2>&1 &
+  nf -j Procfile.dev -e dev.env start > /dev/null 2>&1 &
   SERVER_PID=$!
   sleep 10 # wait for server
   printf "OK (PID $SERVER_PID)\n"
@@ -31,9 +31,6 @@ trap 'stop_server' SIGINT SIGTERM EXIT
 start_server
 
 cd tests/frontend
-
-echo 'Installing dependencies ...'
-npm install
 
 echo 'Running tests ...'
 npm run e2e

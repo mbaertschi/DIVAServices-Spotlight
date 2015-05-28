@@ -36,7 +36,7 @@ module.config [
 
     $stateProvider.state 'docs.api.backend',
       parent: 'main'
-      url: 'docs/api/backend'
+      url: '/docs/api/backend'
       templateUrl: 'modules/docs/views/backend.html'
       controller: 'BackendPageController'
       data:
@@ -44,7 +44,7 @@ module.config [
 
     $stateProvider.state 'docs.api.server',
       parent: 'main'
-      url: 'docs/api/server'
+      url: '/docs/api/server'
       templateUrl: 'modules/docs/views/server.html'
       controller: 'ServerPageController'
       data:

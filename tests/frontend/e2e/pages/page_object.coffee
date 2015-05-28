@@ -30,6 +30,6 @@ class PageObject
   visitPage: ->
     # this is more stable and faster than browser.get() because it
     # doesn't reload the page. does't reset the apps state, though.
-    $("*[href='#{@url}']").click()
+    element.all(@by.css("*[href='#{@url}']")).first().click()
 
 module.exports = PageObject

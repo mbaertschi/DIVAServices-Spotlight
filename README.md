@@ -14,7 +14,7 @@ Unified repository for both, dummy rest server and client components for the DIA
     * [Bower](http://bower.io/) ``npm install -g bower``
     * [Node Foreman](https://github.com/strongloop/node-foreman) ``npm install -g  foreman``
     * [forever](https://github.com/foreverjs/forever) ``npm install -g forever``
-    * [karma-cli](https://www.npmjs.com/package/karma-cli) ``npm install -g karma-cli``
+
   3. Change to the ``rest`` directory and let NPM install the necessary libraries:
 
     ```bash
@@ -35,14 +35,14 @@ Unified repository for both, dummy rest server and client components for the DIA
     $ npm install
     ```
   6. Create the folder logs under /web/
-  7. Add dummy backend host to ``hosts`` collection in ``dia`` database
+  7. Add dummy backend host to ``hosts`` collection in ``dia_dev`` database
 
     ```bash
     $ mongo
-    > use dia
+    > use dia_dev
     > db.hosts.insert({"host": "Dummby Backend Host", "url": "http://localhost:8081"})
     ```
-  8. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 11 in ``Procfile``)
+  8. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 6 in ``Procfile.dev``)
 
     Assuming you are in the root folder
     ```bash
@@ -64,29 +64,23 @@ The DIA-Distributed application can be started within two environments.
   ```bash
   $ export NODE_ENV=prod
   ```
-  This configuration is used for production. (Not yet implemented)
+  This configuration is used for production.
 
 ## Tests
 Assuming you are in the root folder. Execute the following scripts:
 ```bash
 $ ./scripts/run-tests (runs all the tests)
 $ ./scripts/run-e2e-tests (runs the e2e tests with protractor)
-$ ./scripts/run-unit-tests (runs the karma-jasmine unit tests)
 ```
 If you want to run the tests with npm:
   1. e2e
 
-  ```bash
-  $ cd /
-  $ nf -j Procfile.test start
-  $ cd tests/frontend
-  $ npm run e2e
-  ```
-  2. unit
+  In root folder:
 
   ```bash
-  $ cd /tests/frontend
-  $ npm run unit
+  $ nf -j Procfile.dev -e dev.env start
+  $ cd tests/frontend
+  $ npm run e2e
   ```
 
 ## Developing
@@ -94,7 +88,7 @@ If you want to run the tests with npm:
 To start and stop dummy rest server and web client with one command:
 
 ```bash
-$ nf start
+$ nf -j Procfile.dev -e dev.env start
 ```
 
 For manually starting backend server
@@ -107,6 +101,7 @@ $ forever -m 5 --minUptime 1000 --spinSleepTime 5000 --watch -c coffee server.co
 For manually starting web client
 
 ```bash
+$ export NODE_ENV=dev
 $ cd web
 $ brunch w -s
 ```
@@ -115,4 +110,10 @@ Then go to [localhost:3000](http://localhost:3000)
 
 ## Production
 
-Coming soon
+To run DIA-Distributed in production mode follow those steps:
+
+```bash
+$ cd web && brunch b -P
+$ cd ..
+$ nf -e prod.env start
+```

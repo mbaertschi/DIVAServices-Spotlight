@@ -4,3 +4,30 @@
   .row
     .col-md-12
       panel(heading='Frequently asked questions', icon='question-circle')
+        .faq-question.first
+          h4 Why are large images not uploading?
+          p.text-muted There is a size limit for files beeing uploaded with Dropzone. If your image exceeds this limit, it is refused.
+        .faq-question
+          h4 Why are my images not displayed correctly after manipulating them?
+          p.text-muted There is also a size limit for files beeing sent to the server. If you apply filters on your image, the upadetd image will be sent as base64 encoded image to the server. Depending on what combination of filters you applied on your image, the base64 string might exceed this limit and the server will not receive the full image stream.
+        .faq-question
+          h4 The quality of my images seems to be lower after uploading has finished. Why is this so?
+          p.text-muted The server stores images with a MAX_WIDTH or MAX_HEIGHT value for pixel width / height of your image. If your image exceeds those values, it will be resized automatically.
+        .faq-question
+          h4 I uploaded a .jpg image. Now it is .png formatted???
+          p.text-muted All your images are automatically converted to a .png image. This makes it easier for us to handle image manipulations.
+        .faq-question
+          h4 How can I abort an algorithm in process?
+          p.text-muted On top of the page you can see the PROCESSING QUEUE and the number of algorithms in process. Expand this tab and click on the red cross to abort an algorithm in process.
+        .faq-question
+          h4 I like your interface and want to use it too. What do I have to consider when implementing my REST-Server?
+          p.text-muted Please refer to the
+            a#link(ui-sref='docs.howto') HowTo
+            | section for detailed description about the API specifications. Or have a look at our
+            a#link(ui-sref='docs.api.backend') Dummy Backend Implementation
+            | .
+        .faq-question
+          h4 OK, my REST-Server should be fine. How can I integrate it in your interface?
+          p.text-muted Please
+            a#link(href='mailto:michi.baertschi@bluewin.ch') send
+            | us an Email with your REST-Server information.

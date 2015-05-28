@@ -10,6 +10,3 @@ function header {
 
 header 'Running e2e tests ...'
 source ./scripts/run-e2e-tests
-
-header 'Running unit tests ...'
-source ./scripts/run-unit-tests
