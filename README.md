@@ -14,7 +14,7 @@ Unified repository for both, dummy rest server and client components for the DIA
     * [Bower](http://bower.io/) ``npm install -g bower``
     * [Node Foreman](https://github.com/strongloop/node-foreman) ``npm install -g  foreman``
     * [forever](https://github.com/foreverjs/forever) ``npm install -g forever``
-    * [karma-cli](https://www.npmjs.com/package/karma-cli) ``npm install -g karma-cli``
+
   3. Change to the ``rest`` directory and let NPM install the necessary libraries:
 
     ```bash
@@ -71,22 +71,16 @@ Assuming you are in the root folder. Execute the following scripts:
 ```bash
 $ ./scripts/run-tests (runs all the tests)
 $ ./scripts/run-e2e-tests (runs the e2e tests with protractor)
-$ ./scripts/run-unit-tests (runs the karma-jasmine unit tests)
 ```
 If you want to run the tests with npm:
   1. e2e
 
-  ```bash
-  $ cd /
-  $ nf -j Procfile.dev start
-  $ cd tests/frontend
-  $ npm run e2e
-  ```
-  2. unit
+  In root folder:
 
   ```bash
-  $ cd /tests/frontend
-  $ npm run unit
+  $ nf -j Procfile.dev -e dev.env start
+  $ cd tests/frontend
+  $ npm run e2e
   ```
 
 ## Developing
