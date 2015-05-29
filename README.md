@@ -6,9 +6,11 @@ Unified repository for both, dummy rest server and client components for the DIA
 
   1. Checkout the repository
   2. Install the mandatory dependencies:
-    * [mongoDB](http://www.mongodb.org/)
-    * [Node.js](https://nodejs.org/)
-    * [npm](https://www.npmjs.com/)
+    * [mongoDB](http://docs.mongodb.org/manual/installation/) and start mongo daemon
+    * [Node.js](https://docs.npmjs.com/getting-started/installing-node) and update npm
+
+    Following packages must be installed globally. If you use `install` script, you can omit this and all the following sections from *Install*.
+
     * [CoffeeScript](http://coffeescript.org/) ``npm install -g coffee-script``
     * [Brunch](http://brunch.io/) ``npm install -g brunch``
     * [Bower](http://bower.io/) ``npm install -g bower``
@@ -40,7 +42,7 @@ Unified repository for both, dummy rest server and client components for the DIA
     ```bash
     $ mongo
     > use dia_dev
-    > db.hosts.insert({"host": "Dummby Backend Host", "url": "http://localhost:8081"})
+    > db.hosts.insert({"host": "Dummy Backend Host", "url": "http://localhost:8081"})
     ```
   8. Configure mongo-express if you intend to use it. (Per default it is disabled. To enable it, uncomment line 6 in ``Procfile.dev``)
 
