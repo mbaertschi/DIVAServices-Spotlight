@@ -110,6 +110,10 @@ header "Setting up dia_dev database"
 mongo localhost:27017/dia_dev ./scripts/setup-database.js
 echo "done"
 
+header "Generating documentation"
+source ./scripts/generate-docs
+echo "done"
+
 header "Running tests"
 source ./scripts/run-tests
 
