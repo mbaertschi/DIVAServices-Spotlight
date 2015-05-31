@@ -30,10 +30,10 @@ Unified repository for both, dummy rest server and client components for the DIA
     $ npm install
     $ bower install
     ```
-  5. Change to the ``tests`` directory and install the required Node.js modules:
+  5. Change to the ``test`` directory and install the required Node.js modules:
 
     ```bash
-    $ cd tests/frontend
+    $ cd test/frontend
     $ npm install
     ```
   6. Create the folder logs under /web/
@@ -81,7 +81,7 @@ If you want to run the tests with npm:
 
   ```bash
   $ nf -j Procfile.dev -e dev.env start
-  $ cd tests/frontend
+  $ cd test/frontend
   $ npm run e2e
   ```
 

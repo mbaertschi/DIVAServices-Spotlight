@@ -30,7 +30,7 @@ trap 'stop_server' SIGINT SIGTERM EXIT
 # start server
 start_server
 
-cd tests/frontend
+cd test/frontend
 
 echo 'Running tests ...'
 npm run e2e
