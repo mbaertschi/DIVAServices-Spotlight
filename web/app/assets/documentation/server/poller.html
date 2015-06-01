@@ -394,7 +394,6 @@ Iterates over all algorithms and compares them to algorithms stored in mongoDB.<
           <div class='highlight'><pre>  <span class="hljs-attribute">_compareAndStoreAlgorithms</span>: <span class="hljs-function"><span class="hljs-params">(algorithms, callback)</span> =&gt;</span>
     changedAlgorithms = []
     addedAlgorithms = []
-    removedAlgorithms = []
     <span class="hljs-keyword">if</span> algorithms?.length &gt; <span class="hljs-number">0</span>
       async.each algorithms, <span class="hljs-function"><span class="hljs-params">(algorithm, next)</span> =&gt;</span>
         <span class="hljs-property">@db</span>.getAlgorithm algorithm.url, <span class="hljs-function"><span class="hljs-params">(err, dbAlgorithm)</span> =&gt;</span>

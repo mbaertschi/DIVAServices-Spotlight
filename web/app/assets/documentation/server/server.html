@@ -349,6 +349,14 @@ method and handle image deletion (on disk and in mongoDB)</p>
           <div class='highlight'><pre>  app.server.listen port, callback</pre></div>
         
       
+        
+        <p>On production mode start server without brunch</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-keyword">if</span> process.env.NODE_ENV <span class="hljs-keyword">is</span> <span class="hljs-string">'prod'</span>
+  server.startServer nconf.get(<span class="hljs-string">'server:port'</span>), nconf.get(<span class="hljs-string">'server:path'</span>), <span class="hljs-function">-&gt;</span></pre></div>
+        
+      
       <div class="fleur">h</div>
     </div>
   </div>

@@ -13,7 +13,7 @@ class ImagesPage extends PageObject
     super
 
   uploadTestImage: ->
-    image = './test.png'
+    image = '../../../../test.png'
     absolutePath = path.resolve(__dirname, image)
     element.all(@by.css('input[type="file"]')).first().sendKeys(absolutePath)
     browser.sleep(1000)

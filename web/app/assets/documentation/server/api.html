@@ -258,8 +258,6 @@ client settings specified in <code>./web/conf/client.[dev/prod].json</code></li>
     Algorithm.find {}, fields, <span class="hljs-function"><span class="hljs-params">(err, algorithms)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> err?
         res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'There was an error while loading the algorithms'</span>
-      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> algorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
-        res.status(<span class="hljs-number">404</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'Not found'</span>
       <span class="hljs-keyword">else</span>
         res.status(<span class="hljs-number">200</span>).json algorithms</pre></div>
         

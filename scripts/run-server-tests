@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -e # exit on errors
+
+SERVER_PID=0
+
+# start dummy backend server
+function start_server {
+  printf "Starting dummy backend server ... "
+  coffee ./rest/server.coffee > /dev/null 2>&1 &
+  SERVER_PID=$!
+  printf "OK (PID $SERVER_PID)\n"
+}
+
+# callback to stop server on exit
+function stop_server {
+  if ps -p $SERVER_PID > /dev/null; then
+    printf "Stopping dummy backend server (PID $SERVER_PID) ..."
+    kill -SIGINT $SERVER_PID
+    sleep 2
+    kill 0
+  fi
+  
+}
+
+# stop server on exit and signals
+trap 'stop_server' SIGINT SIGTERM EXIT
+
+# start server
+start_server
+
+echo 'Running tests ...'
+./test/node_modules/.bin/mocha

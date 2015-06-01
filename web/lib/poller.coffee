@@ -152,7 +152,6 @@ poller = exports = module.exports = class Poller
   _compareAndStoreAlgorithms: (algorithms, callback) =>
     changedAlgorithms = []
     addedAlgorithms = []
-    removedAlgorithms = []
     if algorithms?.length > 0
       async.each algorithms, (algorithm, next) =>
         @db.getAlgorithm algorithm.url, (err, dbAlgorithm) =>

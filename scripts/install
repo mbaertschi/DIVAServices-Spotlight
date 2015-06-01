@@ -88,7 +88,7 @@ cd rest && npm install && cd ..
 echo "done"
 
 header "Installing local npm packages for tests"
-cd tests/frontend && npm install && cd ../..
+cd test && npm install && cd ..
 echo "done"
 
 header "Installing local npm packages for DIA-Distributed"

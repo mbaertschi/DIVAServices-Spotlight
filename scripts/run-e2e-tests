@@ -2,23 +2,23 @@
 
 set -e # exit on errors
 
-SERVER_PID=0
+TSERVER_PID=0
 export NODE_ENV=dev
 
 # start server
 function start_server {
   printf "Starting testserver ... "
   nf -j Procfile.dev -e dev.env start > /dev/null 2>&1 &
-  SERVER_PID=$!
+  TSERVER_PID=$!
   sleep 10 # wait for server
-  printf "OK (PID $SERVER_PID)\n"
+  printf "OK (PID $TSERVER_PID)\n"
 }
 
 # callback to stop server on exit
 function stop_server {
-  if ps -p $SERVER_PID > /dev/null; then
-    printf "Stopping testserver (PID $SERVER_PID) ..."
-    kill -SIGINT $SERVER_PID
+  if ps -p $TSERVER_PID > /dev/null; then
+    printf "Stopping testserver (PID $TSERVER_PID) ..."
+    kill -SIGINT $TSERVER_PID
     sleep 2
     kill 0
   fi
@@ -30,9 +30,9 @@ trap 'stop_server' SIGINT SIGTERM EXIT
 # start server
 start_server
 
-cd test/frontend
+cd test
 
 echo 'Running tests ...'
 npm run e2e
 
-cd ../..
+cd ..
