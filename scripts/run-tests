@@ -8,5 +8,12 @@ function header {
   echo ""
 }
 
+header 'Running server tests ...'
+source ./scripts/run-server-tests
+
 header 'Running e2e tests ...'
 source ./scripts/run-e2e-tests
+
+header 'Cleaning up'
+rm -rf ./images
+echo 'done'

@@ -1,0 +1,22 @@
+{
+  "logger": {
+    "appenders": []
+  },
+  "poller": {
+    "run": true,
+    "interval": 0
+  },
+  "loader": {
+    "retries": 1
+  },
+  "pusher": {
+    "run": true
+  },
+  "mongoDB": {
+    "url": "localhost:27017/dia_dev?auto_reconnect"
+  },
+  "server": {
+    "timeout": 120000,
+    "maxFileSize": 10485760
+  }
+}

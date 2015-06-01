@@ -30,10 +30,10 @@ Unified repository for both, dummy rest server and client components for the DIA
     $ npm install
     $ bower install
     ```
-  5. Change to the ``tests`` directory and install the required Node.js modules:
+  5. Change to the ``test`` directory and install the required Node.js modules:
 
     ```bash
-    $ cd tests/frontend
+    $ cd test
     $ npm install
     ```
   6. Create the folder logs under /web/
@@ -72,19 +72,32 @@ The DIA-Distributed application can be started within two environments.
 Assuming you are in the root folder. Execute the following scripts:
 ```bash
 $ ./scripts/run-tests (runs all the tests)
-$ ./scripts/run-e2e-tests (runs the e2e tests with protractor)
 ```
-If you want to run the tests with npm:
+If you want to run the tests manually:
   1. e2e
 
   In root folder:
 
   ```bash
+  Shell 1
   $ nf -j Procfile.dev -e dev.env start
-  $ cd tests/frontend
+
+  Shell 2
+  $ cd test
   $ npm run e2e
   ```
 
+  2. server
+
+  In root folder:
+
+  ```bash
+  Shell 1
+  coffee rest/server.coffee
+
+  Shell 2
+  $ ./test/node_modules/.bin/mocha
+  ```
 ## Developing
 
 To start and stop dummy rest server and web client with one command:

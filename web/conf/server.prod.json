@@ -15,8 +15,7 @@
   },
   "poller": {
     "run": true,
-    "interval": 3600000,
-    "rootUrl": "http://localhost:8081"
+    "interval": 3600000
   },
   "loader": {
     "retries": 7

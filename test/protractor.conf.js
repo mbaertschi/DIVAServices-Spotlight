@@ -3,11 +3,11 @@ exports.config = {
   // Order is important. Always put images before algorithms and
   // algorithms before results
   specs: [
-    './e2e/specs/dashboard.coffee',
-    './e2e/specs/documents.coffee',
-    './e2e/specs/images.coffee',
-    './e2e/specs/algorithms.coffee',
-    './e2e/specs/results.coffee'
+    './frontend/e2e/specs/dashboard.coffee',
+    './frontend/e2e/specs/documents.coffee',
+    './frontend/e2e/specs/images.coffee',
+    './frontend/e2e/specs/algorithms.coffee',
+    './frontend/e2e/specs/results.coffee'
   ],
 
   // Start these browsers, currently available:
@@ -37,10 +37,10 @@ exports.config = {
     console.log('Loading root URL ...');
     browser.get('/');
 
-    var consoleHelper = require('./e2e/helpers/console');
+    var consoleHelper = require('./frontend/e2e/helpers/console');
     afterEach(consoleHelper.expectEmptyConsole);
   },
 
-  resultJsonOutputFile: './e2e/results.json'
+  resultJsonOutputFile: './frontend/e2e/results.json'
 
 };
