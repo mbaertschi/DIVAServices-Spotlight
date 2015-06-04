@@ -1,0 +1,10 @@
+.row
+  big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['My Images', 'Manage your images here']", icon='image')
+
+.row.images-gallery(ng-controller='GalleryPageController as vm')
+  .col-md-12
+    panel(heading='Gallery', icon='list-alt')
+      .text-muted(ng-if='!vm.images.length') You currently have no images uploaded. Please
+        a.upload-link(ui-sref='images.upload') upload
+        | some images
+      superbox.as-superbox(superbox-model='vm.images', superbox-actions='vm.actions')

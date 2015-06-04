@@ -10,7 +10,7 @@ class AlgorithmView extends PageObject
     @element.all @by.repeater('entry in inputs')
 
   @has 'success', ->
-    @element(@by.css('.panel[heading="Apply Algorithm on Image"]')).element(@by.css('[ng-click="submit()"]')).click()
+    @element(@by.css('.panel[heading="Apply Algorithm on Image"]')).element(@by.css('[ng-click="vm.submit()"]')).click()
     browser.sleep(3000)
     @element(@by.css('.toast-info')).isPresent()
 

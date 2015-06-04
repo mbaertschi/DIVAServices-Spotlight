@@ -1,0 +1,13 @@
+h1 Output
+canvas#output-canvas(ng-if='vm.highlighters')
+.image-wrapper(ng-if='!vm.highlighters && vm.image')
+  img(ng-src='{{vm.image}}')
+.table-responsive.output-values(ng-if='vm.output')
+  table.table.table-bordered
+    thead
+      th Selector
+      th Value
+    tbody
+      tr(ng-repeat='(key, value) in vm.output')
+        td {{key}}
+        td {{value}}
