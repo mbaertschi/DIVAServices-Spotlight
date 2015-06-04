@@ -1,0 +1,40 @@
+.algorithm-view(ng-controller='AlgorithmPageController as vm')
+  .row
+    big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Algorithm', 'Do it']", icon='tasks')
+
+  .row
+    #content.span(ng-if='!vm.algorithm')
+      .text-muted This algorithm seems to be outdated. Click
+        a#link(ui-sref='algorithms') here
+        | to go back to algorithms page.
+    .col-md-12(ng-if='vm.algorithm')
+      panel(heading='{{vm.algorithm.name}}', icon='info-circle', go-to='vm.goBack()', go-to-text='Go back')
+        .text-muted Description:
+          = ' '
+          span.text-normal {{vm.algorithm.description}}
+      panel(heading='Image Gallery', icon='image')
+        dia-algorithm-images-gallery(data-images='vm.images', set-selected-image='vm.setSelectedImage(image)')
+      panel(heading='Apply Algorithm on Image', icon='image', ng-if='vm.selectedImage && vm.state=="highlight"')
+        .col-xs-12.col-lg-6
+          .canvas-wrapper(ng-if='vm.highlighter')
+            span(ng-if='vm.highlighter=="rectangle"')
+              i.help.fa.fa-question-circle(tooltip-placement="right", tooltip-html-unsafe='{{vm.rectangleDescription}}')
+              = ' '
+              | Rectangle Selection
+            canvas#rectangle(ng-if='vm.highlighter=="rectangle"', dia-algorithm-rectangle, data-selected-image='vm.selectedImage', set-highlighter-status='vm.setHighlighterStatus(status)')
+            span(ng-if='vm.highlighter=="polygon"')
+              i.help.fa.fa-question-circle(ng-if='vm.highlighter=="polygon"', tooltip-placement="right", tooltip-html-unsafe='{{vm.polygonDescription}}')
+              = ' '
+              | Polygon Selection
+            canvas#polygon(ng-if='vm.highlighter=="polygon"', dia-algorithm-polygon, data-selected-image='vm.selectedImage', set-highlighter-status='vm.setHighlighterStatus(status)')
+          .selected-image(ng-if='!vm.highlighter')
+            img#image(ng-src='{{vm.selectedImage.url}}')
+        .col-xs-12.col-lg-6(ng-if='vm.inputs.length')
+          dia-algorithm-inputs(data-model='vm.model', data-inputs='vm.inputs', set-form-validity='vm.setFormValidity(status)')
+        .col-xs-12.col-sm-12.col-md-12.col-lg-6
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6(ng-if='vm.captchaEnabled')
+            div(captcha='', options='vm.captchaOptions')
+          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+            .pull-right
+              span.error(ng-if='vm.invalidHighlighter') Please select a {{vm.highlighter}}
+              button.btn.btn-primary(ng-click='vm.submit()', ng-disabled='vm.invalidForm || vm.invalidHighlighter') Submit

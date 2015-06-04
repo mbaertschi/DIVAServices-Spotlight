@@ -98,6 +98,7 @@ If you want to run the tests manually:
   Shell 2
   $ ./test/node_modules/.bin/mocha
   ```
+  
 ## Developing
 
 To start and stop dummy rest server and web client with one command:

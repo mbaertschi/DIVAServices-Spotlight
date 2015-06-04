@@ -210,7 +210,7 @@ See docs at <code>https://github.com/brunch/brunch/blob/stable/docs/config.md</c
         <span class="hljs-string">'javascripts/vendor.js'</span>: <span class="hljs-regexp">/^(vendor|bower_components)/</span>
       <span class="hljs-attribute">order</span>:
         <span class="hljs-attribute">before</span>: [
-          <span class="hljs-string">'app/**/module.coffee'</span>
+          <span class="hljs-string">'app/**/*module.coffee'</span>
         ]
         <span class="hljs-attribute">after</span>: [
           <span class="hljs-string">'vendor/plugins/datatables-colvis/js/dataTables.colVis.js'</span>
@@ -253,6 +253,12 @@ See docs at <code>https://github.com/brunch/brunch/blob/stable/docs/config.md</c
       <span class="hljs-attribute">staticPatterns</span>: <span class="hljs-regexp">/^app\/(.+)\.jade$/</span>
       <span class="hljs-attribute">jade</span>:
         <span class="hljs-attribute">pretty</span>: <span class="hljs-literal">yes</span>
+
+    <span class="hljs-attribute">uglify</span>:
+      <span class="hljs-attribute">mangle</span>: <span class="hljs-literal">false</span>
+      <span class="hljs-attribute">compress</span>:
+        <span class="hljs-attribute">global_defs</span>:
+          <span class="hljs-attribute">DEBUG</span>: <span class="hljs-literal">false</span>
 
   <span class="hljs-attribute">server</span>:
     <span class="hljs-attribute">path</span>: <span class="hljs-string">'server.coffee'</span>
