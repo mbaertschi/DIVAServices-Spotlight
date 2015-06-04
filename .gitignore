@@ -22,3 +22,6 @@ bower_components
 
 # Project files
 data/
+
+# images folder from tests
+images/

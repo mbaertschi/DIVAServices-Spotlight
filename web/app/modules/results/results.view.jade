@@ -1,0 +1,25 @@
+.results-view(ng-controller='ResultsPageController as vm')
+  .row
+    big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Results', 'Check it out']", icon='list-ul')
+  .row
+    .col-xs-12
+      panel(heading='Finished tasks', icon='info')
+        .text-muted(ng-if='!vm.results.length') You currently have no results. Click
+          a#link(ui-sref='algorithms') here
+          | to go to algorithms page.
+        table.display.projects-table.table.table-striped.table-bordered.table-hover(ng-if='vm.results.length', dia-datatable='', data-table-options='vm.tableOptions', cellspacing='0', width='100%')
+          thead
+            tr
+              th
+              th Algorithm
+              th Description
+              th Image
+              th Started
+              th Ended
+              th Duration
+          caption.smart-datatable-child-format(data-child-control='td.details-control')
+            .wrapper
+              .col-xs-12.col-lg-6(ng-controller='DiaTableOutputsController as vm')
+                .table-inputs(dia-table-inputs='', data-input-data='d')
+              .col-xs-12.col-lg-6(ng-controller='DiaTableOutputsController as vm')
+                .table-outputs(dia-table-outputs='', data-output-data='d.output')

@@ -25,7 +25,7 @@ brunchSettings.config =
         'javascripts/vendor.js': /^(vendor|bower_components)/
       order:
         before: [
-          'app/**/module.coffee'
+          'app/**/*module.coffee'
         ]
         after: [
           'vendor/plugins/datatables-colvis/js/dataTables.colVis.js'
@@ -68,6 +68,12 @@ brunchSettings.config =
       staticPatterns: /^app\/(.+)\.jade$/
       jade:
         pretty: yes
+
+    uglify:
+      mangle: false
+      compress:
+        global_defs:
+          DEBUG: false
 
   server:
     path: 'server.coffee'

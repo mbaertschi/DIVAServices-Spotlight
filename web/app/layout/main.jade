@@ -1,0 +1,25 @@
+// HEADER
+header#header(ng-include="'layout/header.html'")
+
+// Left panel : Navigation area
+// Note: This width of the aside area can be adjusted through LESS variables
+aside#left-panel
+  span(ng-include="'layout/left-panel.html'")
+
+// MAIN PANEL
+#main(role='main')
+  // RIBBON
+  #ribbon(ng-include="'layout/ribbon.html'")
+
+  // ALERTS
+  .alert-wrapper
+    alert(ng-repeat='alert in alerts', type='{{alert.type}}', close='alert.close()')
+      span.alert-type {{ alert.type }}:
+      span.alert-message {{ alert.msg }}
+
+    // MAIN CONTENT
+  #content.view-animate(ui-view='')
+
+// PAGE FOOTER
+.page-footer
+  span(ng-include="'layout/footer.html'")
