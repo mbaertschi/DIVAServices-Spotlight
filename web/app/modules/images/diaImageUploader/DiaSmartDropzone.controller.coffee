@@ -20,7 +20,8 @@ do ->
           initDropzone config
 
     loadOptions = (callback) ->
-      diaSettings.fetch('dropzone').then (settings) ->
+      diaSettings.fetch('dropzone').then (res) ->
+        settings = res.settings
         max = (settings.maxFiles-1)
         vm.availableIndexes = (index for index in [0..max])
 
@@ -28,9 +29,9 @@ do ->
           init: ->
             self = @
             # load images for active session if there are any
-            diaImagesService.fetchUpload().then (res) ->
+            diaImagesService.fetchImagesUpload().then (res) ->
               $scope.safeApply ->
-                angular.forEach res.data, (image) ->
+                angular.forEach res.images, (image) ->
                   # add them as thumbnail
                   self.emit 'addedfile', image.mockFile
                   self.emit 'thumbnail', image.mockFile, image.thumbUrl
@@ -40,7 +41,6 @@ do ->
                   if index >= 0
                     vm.availableIndexes.splice index, 1
                   self.options.maxFiles -= 1
-            , (err) -> toastr.error 'Could not load images', err.status
           addRemoveLinks : settings.addRemoveLinks
           maxFilesize: settings.maxFilesize
           maxFiles: settings.maxFiles
@@ -112,4 +112,10 @@ do ->
   angular.module('app.images')
     .controller 'DiaSmartDropzoneController', DiaSmartDropzoneController
 
-  DiaSmartDropzoneController.$inject = ['$scope', 'diaSettings', 'diaStateManager', 'diaImagesService', 'toastr']
+  DiaSmartDropzoneController.$inject = [
+    '$scope'
+    'diaSettings'
+    'diaStateManager'
+    'diaImagesService'
+    'toastr'
+  ]

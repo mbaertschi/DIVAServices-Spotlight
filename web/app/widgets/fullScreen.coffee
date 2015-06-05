@@ -3,6 +3,10 @@ do ->
 
   fullScreen = ->
 
+    directive = ->
+      restrict: 'A'
+      link: link
+
     link = (scope, element) ->
       $body = $('body')
 
@@ -28,8 +32,7 @@ do ->
 
       element.on 'click', toggleFullSceen
 
-    restrict: 'A'
-    link: link
+    directive()
 
   angular.module('app.widgets')
     .directive 'fullScreen', fullScreen

@@ -3,6 +3,13 @@ do ->
 
   navigation = ->
 
+    directive = ->
+      restrict: 'AE'
+      transclude: true
+      replace: true
+      template: '<nav><ul ng-transclude></ul></nav>'
+      link: link
+
     link = (scope, element, attrs) ->
       $(element[0]).jarvismenu
         accordion: true
@@ -11,11 +18,7 @@ do ->
         openedSign: '<em class="fa fa-minus-square-o"></em>'
       scope.getElement = -> element
 
-    restrict: 'AE'
-    transclude: true
-    replace: true
-    template: '<nav><ul ng-transclude></ul></nav>'
-    link: link
+    directive()
 
   angular.module('app.widgets')
     .directive 'navigation', navigation

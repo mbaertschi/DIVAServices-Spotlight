@@ -9,54 +9,22 @@ Controller AlgorithmPageController
 do ->
   'use strict'
 
-  AlgorithmPageController = ($scope, $stateParams, $state, $window, $sce, diaSocket, diaSettings, diaAlgorithmService, diaHighlighterManager, diaProcessingQueue, toastr) ->
+  AlgorithmPageController = ($scope, $state, $window, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaHighlighterManager, diaProcessingQueue, diaCaptchaService, toastr) ->
     vm = @
-    vm.algorithm = null
-    vm.images = []
+    vm.algorithm = algorithmsPrepService.data.algorithm
+    vm.highlighter = algorithmsPrepService.data.highlighter
+    vm.inputs = algorithmsPrepService.data.inputs
+    vm.model = algorithmsPrepService.data.model
+    vm.id = algorithmsPrepService.data.id
+    vm.images = imagesPrepService.images
     vm.selectedImage = null
-    vm.highlighter = null
     vm.invalidHighlighter = false
-    vm.captchaEnabled = false
     vm.invalideCaptcha = true
     vm.invalidForm = false
-    vm.inputs = []
-    vm.model = {}
     vm.state = 'select'
-    vm.id = null
 
-    # load algorithm information
-    requestAlgorithm = ->
-      vm.id = $stateParams.id
-
-      diaAlgorithmService.fetch(vm.id).then (res) ->
-        vm.algorithm = res.data
-
-        # prepare input information
-        angular.forEach vm.algorithm.input, (entry) ->
-          key = Object.keys(entry)[0]
-          if key is 'highlighter'
-            # setup highlighter if there is one
-            vm.highlighter = entry.highlighter
-          else
-            # setup inputs
-            vm.inputs.push entry
-            if key is 'select'
-              vm.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
-            else
-              vm.model[entry[key].name] = entry[key].options.default or null
-      , (err) ->
-        toastr.error 'Could not load algorithm', 'Error'
-
-    requestAlgorithm()
-
-    # load all images for this session
-    requestImages = ->
-      diaAlgorithmService.fetchImages().then (res) ->
-        vm.images = res.data
-      , (err) ->
-        toastr.err err.statusText, err.status
-
-    requestImages()
+    # enabled / disabled captcha
+    vm.captchaEnabled = false
 
     # handle checkbox interactions
     vm.toggleCheckbox = (name) ->
@@ -65,19 +33,19 @@ do ->
     # handle submit. If there are already 3 algorithms in process, abort and notify
     # user. If captcha is activated, check for valid input.
     vm.submit = ->
-      if vm.tasks >= 3
+      item =
+        algorithm: vm.algorithm
+        image: vm.selectedImage
+        inputs: vm.model
+        highlighter: diaHighlighterManager.get()
+
+      if diaProcessingQueue.getQueue().length >= 3
         toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
       else if vm.captchaEnabled
         if not vm.captcha.getCaptchaData().valid
           toastr.warning 'Please fill in captcha', 'Captcha Warning'
         else
-          algorithmService.checkCaptcha(vm.captcha.getCaptchaData()).then (res) ->
-            item =
-              algorithm: vm.algorithm
-              image: vm.selectedImage
-              inputs: vm.model
-              highlighter: diaHighlighterManager.get()
-            item.algorithm.id = vm.id
+          diaCaptchaService.checkCaptcha(vm.captcha.getCaptchaData()).then (res) ->
             diaProcessingQueue.push item
             vm.captcha.refresh()
           , (err) ->
@@ -87,12 +55,6 @@ do ->
             else
               toastr.error 'Captcha validation failed. Please try again', err.status
       else
-        item =
-          algorithm: vm.algorithm
-          image: vm.selectedImage
-          inputs: vm.model
-          highlighter: diaHighlighterManager.get()
-        item.algorithm.id = vm.id
         diaProcessingQueue.push item
 
     # set the highlighter status to valid / invalid. This will be called
@@ -147,25 +109,38 @@ do ->
       """
     )
 
-    diaSettings.fetch('socket').then (socket) ->
-      if socket.run?
-        $scope.$on 'socket:update algorithms', (ev, algorithms) ->
-          angular.forEach algorithms, (algorithm) ->
-            if vm.algorithm?.url is algorithm.url
-              toastr.warning 'This algorithm has been updated. Reloading the page in 5 seconds', 'Warning'
-              $timeout (-> $window.location.reload()), 5000
+    if socketPrepService.settings.run
+      $scope.$on 'socket:update algorithms', (ev, algorithms) ->
+        angular.forEach algorithms, (algorithm) ->
+          if vm.algorithm?.url is algorithm.url
+            toastr.warning 'This algorithm has been updated. Reloading the page in 5 seconds', 'Warning'
+            $timeout (-> $window.location.reload()), 5000
 
-        $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
-          angular.forEach algorithms, (algorithm) ->
-            if algorithm.url is vm.algorithm.url
-              toastr.warning 'This algorithm has been removed. Going back to algorithms page in 5 seconds', 'Sorry'
-              $timeout (-> $state.go 'algorithms'), 5000
+      $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
+        angular.forEach algorithms, (algorithm) ->
+          if algorithm.url is vm.algorithm.url
+            toastr.warning 'This algorithm has been removed. Going back to algorithms page in 5 seconds', 'Sorry'
+            $timeout (-> $state.go 'algorithms'), 5000
 
-        $scope.$on 'socket:error', (ev, data) ->
-          toastr.error 'There was an error while fetching algorithms', 'Error'
-          $state.go 'dashboard'
+      $scope.$on 'socket:error', (ev, data) ->
+        toastr.error 'There was an error while fetching algorithms', 'Error'
+        $state.go 'dashboard'
+
+    vm
 
   angular.module('app.algorithm')
     .controller 'AlgorithmPageController', AlgorithmPageController
 
-  AlgorithmPageController.$inject = ['$scope', '$stateParams', '$state', '$window', '$sce', 'diaSocket', 'diaSettings', 'diaAlgorithmService', 'diaHighlighterManager', 'diaProcessingQueue', 'toastr']
+  AlgorithmPageController.$inject = [
+    '$scope'
+    '$state'
+    '$window'
+    '$sce'
+    'socketPrepService'
+    'imagesPrepService'
+    'algorithmsPrepService'
+    'diaHighlighterManager'
+    'diaProcessingQueue'
+    'diaCaptchaService'
+    'toastr'
+  ]

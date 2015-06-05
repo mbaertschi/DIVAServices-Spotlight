@@ -9,8 +9,11 @@ do ->
   BackendPageController = ($sce) ->
     vm = @
     vm.currentFile = $sce.trustAsResourceUrl 'documentation/backend/server.html'
+    vm
 
   angular.module('app.docs')
     .controller 'BackendPageController', BackendPageController
 
-  BackendPageController.$inject = ['$sce']
+  BackendPageController.$inject = [
+    '$sce'
+  ]

@@ -10,16 +10,19 @@ do ->
 
   diaTableInputs = ->
 
+    directive = ->
+      restrict: 'A'
+      templateUrl: 'modules/results/diaTableInputs/diaTableInputs.view.html'
+      scope: inputData: '='
+      link: link
+      controller: 'DiaTableInputsController'
+      controllerAs: 'vm'
+      bindToController: true
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'A'
-    templateUrl: 'modules/results/diaTableInputs/diaTableInputs.view.html'
-    scope: inputData: '='
-    link: link
-    controller: 'DiaTableInputsController'
-    controllerAs: 'vm'
-    bindToController: true
+    directive()
 
   angular.module('app.results')
     .directive 'diaTableInputs', diaTableInputs

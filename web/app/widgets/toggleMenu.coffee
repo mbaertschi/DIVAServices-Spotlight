@@ -3,9 +3,12 @@ do ->
 
   toggleMenu = ->
 
+    directive = ->
+      restrict: 'A'
+      link: link
+
     link = (scope, element) ->
       $body = $('body')
-
       toggleMenu = ->
         if !$body.hasClass('menu-on-top')
           $('html').toggleClass 'hidden-menu-mobile-lock'
@@ -15,13 +18,11 @@ do ->
           $('html').toggleClass 'hidden-menu-mobile-lock'
           $body.toggleClass 'hidden-menu'
           $body.removeClass 'minified'
-
       element.on 'click', toggleMenu
       scope.$on 'requestToggleMenu', ->
         toggleMenu()
 
-    restrict: 'A'
-    link: link
+    directive()
 
   angular.module('app.widgets')
     .directive 'toggleMenu', toggleMenu

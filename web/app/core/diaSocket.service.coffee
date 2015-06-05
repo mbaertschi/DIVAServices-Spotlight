@@ -17,4 +17,6 @@ do ->
   angular.module('app.core')
     .factory 'diaSocket', diaSocket
 
-  diaSocket.$inject = ['socketFactory']
+  diaSocket.$inject = [
+    'socketFactory'
+  ]

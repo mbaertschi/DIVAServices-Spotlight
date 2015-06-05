@@ -9,13 +9,18 @@ do ->
 
   diaSettings = ($http) ->
 
+    factory = ->
+      fetch: fetch
+
     fetch = (type) ->
       $http.get('/api/settings', params: type: type).then (res) ->
-        res.data
+        settings: res.data
 
-    fetch: fetch
+    factory()
 
   angular.module('app.core')
     .factory 'diaSettings', diaSettings
 
-  diaSettings.$inject = ['$http']
+  diaSettings.$inject = [
+    '$http'
+  ]

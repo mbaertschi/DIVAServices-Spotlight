@@ -9,15 +9,18 @@ do ->
 
   diaImageCropper = ->
 
+    directive = ->
+      restrict: 'AE'
+      templateUrl: 'modules/images/diaImageCropper/diaImageCropper.view.html'
+      link: link
+      controller: 'DiaImageCropperController'
+      controllerAs: 'vm'
+      bindToController: true
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'AE'
-    templateUrl: 'modules/images/diaImageCropper/diaImageCropper.view.html'
-    link: link
-    controller: 'DiaImageCropperController'
-    controllerAs: 'vm'
-    bindToController: true
+    directive()
 
   angular.module('app.images')
     .directive 'diaImageCropper', diaImageCropper

@@ -9,7 +9,7 @@ do ->
 
   ResultsPageController = (diaProcessingQueue) ->
     vm = @
-    vm.results = diaProcessingQueue.results()
+    vm.results = diaProcessingQueue.getResults()
 
     vm.tableOptions =
       data: vm.results
@@ -30,7 +30,11 @@ do ->
       ]
       order: [[5, 'dsc']]
 
+    vm
+
   angular.module('app.results')
     .controller 'ResultsPageController', ResultsPageController
 
-  ResultsPageController.$inject = ['diaProcessingQueue']
+  ResultsPageController.$inject = [
+    'diaProcessingQueue'
+  ]

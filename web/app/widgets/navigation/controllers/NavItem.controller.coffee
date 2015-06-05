@@ -22,4 +22,7 @@ do ->
   angular.module('app.widgets')
     .controller 'NavItemController', NavItemController
 
-  NavItemController.$injector = ['$scope', '$location']
+  NavItemController.$injector = [
+    '$scope'
+    '$location'
+  ]

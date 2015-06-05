@@ -42,4 +42,7 @@ do ->
   angular.module('app.widgets')
     .controller 'BreadcrumbsController', BreadcrumbsController
 
-  BreadcrumbsController.$injector = ['$rootScope', '$state']
+  BreadcrumbsController.$injector = [
+    '$rootScope'
+    '$state'
+  ]

@@ -24,6 +24,7 @@ do ->
 
       # update paper settings if selectedImage has changed
       $scope.$parent.$watch 'vm.selectedImage', ->
+        vm.strokeWidth = 5
         diaPaperManager.setup vm, vm.element
 
     setupMouseEvents = ->
@@ -58,7 +59,7 @@ do ->
           else if vm.path.closed
             vm.path.remove()
             vm.path = null
-            diaHighlighterManager.path = null
+            diaHighlighterManager.reset()
             vm.setHighlighterStatus status: true
 
       vm.mouseUp = (event) ->
@@ -71,7 +72,7 @@ do ->
         if not vm.path.closed and vm.handle isnt 'segment'
           vm.path.add point
         vm.segmentIndex = null
-        diaHighlighterManager.path = vm.path
+        diaHighlighterManager.set vm.path
 
       vm.mouseDrag = (event) ->
         x = event.delta.x
@@ -90,4 +91,8 @@ do ->
   angular.module('app.algorithm')
     .controller 'DiaAlgorithmPolygonController', DiaAlgorithmPolygonController
 
-  DiaAlgorithmPolygonController.$inject = ['$scope', 'diaHighlighterManager', 'diaPaperManager']
+  DiaAlgorithmPolygonController.$inject = [
+    '$scope'
+    'diaHighlighterManager'
+    'diaPaperManager'
+  ]

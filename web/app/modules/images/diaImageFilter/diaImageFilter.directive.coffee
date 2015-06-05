@@ -9,13 +9,16 @@ do ->
 
   diaImageFilter = ->
 
+    directive = ->
+      restrict: 'AE'
+      templateUrl: 'modules/images/diaImageFilter/diaImageFilter.view.html'
+      link: link
+      controller: 'DiaImageFilterController'
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'AE'
-    templateUrl: 'modules/images/diaImageFilter/diaImageFilter.view.html'
-    link: link
-    controller: 'DiaImageFilterController'
+    directive()
 
   angular.module('app.images')
     .directive 'diaImageFilter', diaImageFilter

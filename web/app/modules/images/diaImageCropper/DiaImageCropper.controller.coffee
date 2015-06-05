@@ -59,4 +59,9 @@ do ->
   angular.module('app.images')
     .controller 'DiaImageCropperController', DiaImageCropperController
 
-  DiaImageCropperController.$inject = ['$scope', 'diaStateManager', 'diaImagesService', 'toastr']
+  DiaImageCropperController.$inject = [
+    '$scope'
+    'diaStateManager'
+    'diaImagesService'
+    'toastr'
+  ]

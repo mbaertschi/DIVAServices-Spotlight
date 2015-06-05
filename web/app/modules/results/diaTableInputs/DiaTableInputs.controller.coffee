@@ -65,4 +65,6 @@ do ->
   angular.module('app.results')
     .controller 'DiaTableInputsController', DiaTableInputsController
 
-  DiaTableInputsController.$inject = ['$timeout']
+  DiaTableInputsController.$inject = [
+    '$timeout'
+  ]

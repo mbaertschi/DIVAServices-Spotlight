@@ -26,6 +26,7 @@ brunchSettings.config =
       order:
         before: [
           'app/**/*module.coffee'
+          'app/**/*config.coffee'
         ]
         after: [
           'vendor/plugins/datatables-colvis/js/dataTables.colVis.js'

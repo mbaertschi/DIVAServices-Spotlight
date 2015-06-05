@@ -12,17 +12,20 @@ do ->
 
   diaAlgorithmPolygon = ->
 
+    directive = ->
+      restrict: 'AE'
+      link: link
+      scope:
+        selectedImage: '='
+        setHighlighterStatus: '&'
+      controller: 'DiaAlgorithmPolygonController'
+      controllerAs: 'vm'
+      bindToController: true
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'AE'
-    link: link
-    scope:
-      selectedImage: '='
-      setHighlighterStatus: '&'
-    controller: 'DiaAlgorithmPolygonController'
-    controllerAs: 'vm'
-    bindToController: true
+    directive()
 
   angular.module('app.algorithm')
     .directive 'diaAlgorithmPolygon', diaAlgorithmPolygon

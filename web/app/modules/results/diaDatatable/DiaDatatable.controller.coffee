@@ -60,4 +60,7 @@ do ->
   angular.module('app.results')
     .controller 'DiaDatatableController', DiaDatatableController
 
-  DiaDatatableController.$inject = ['$scope', '$compile']
+  DiaDatatableController.$inject = [
+    '$scope'
+    '$compile'
+  ]
