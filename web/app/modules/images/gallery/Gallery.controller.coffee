@@ -7,9 +7,11 @@ Controller GalleryPageController
 do ->
   'use strict'
 
-  GalleryPageController = ($state, diaStateManager, diaImagesService, toastr) ->
+  GalleryPageController = ($state, diaStateManager, diaImagesService, imagesPrepService, toastr) ->
     vm = @
-    vm.images = []
+    vm.images = imagesPrepService.images
+
+    diaStateManager.reset()
 
     editEntry = (entry) ->
       image =
@@ -21,9 +23,9 @@ do ->
     deleteEntry = (entry) ->
       diaImagesService.delete(entry.serverName).then (res) ->
         toastr.info "Deleted image #{entry.clientName}", res.data
-        requestImages()
-      , (err) ->
-        toastr.error "Could not delete image #{entry.clientName}", 'err.status'
+        diaImagesService.fetchImagesGallery().then (res) ->
+          vm.images = res.images
+      , (err) -> toastr.error 'Could not delete image', err.status
 
     vm.actions = [
       {
@@ -36,18 +38,15 @@ do ->
       }
     ]
 
-    diaStateManager.reset()
-
-    requestImages = ->
-      diaImagesService.fetchGallery().then (res) ->
-        vm.images = res.data
-      , (err) ->
-        toastr.err err.statusText, err.status
-      vm.loaded = true
-
-    requestImages()
+    vm
 
   angular.module('app.images')
     .controller 'GalleryPageController', GalleryPageController
 
-  GalleryPageController.$inject = ['$state', 'diaStateManager', 'diaImagesService', 'toastr']
+  GalleryPageController.$inject = [
+    '$state'
+    'diaStateManager'
+    'diaImagesService'
+    'imagesPrepService'
+    'toastr'
+  ]

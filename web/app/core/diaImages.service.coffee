@@ -1,30 +1,42 @@
-###
-Factory diaImagesService
-
-* loads images for Dropzone
-* loads images for Gallery
-* sends images from cropping / filtering page to server
-###
 do ->
   'use strict'
 
-  diaImagesService = ($http) ->
+  diaImagesService = ($http, toastr) ->
 
-    fetchUpload: ->
+    factory = ->
+      fetchImagesAlgorithmGallery: fetchImagesAlgorithmGallery
+      fetchImagesUpload: fetchImagesUpload
+      fetchImagesGallery: fetchImagesGallery
+      put: updateImage
+      delete: deleteImage
+
+    fetch = ->
       $http.get('/upload').then (res) ->
         angular.forEach res.data, (image) ->
+          # add date to image urls so angularJS triggers change
           image.url = image.url + '?' + new Date().getTime()
           image.thumbUrl = image.thumbUrl + '?' + new Date().getTime()
+        res
+
+    fetchImagesAlgorithmGallery = ->
+      fetch().then (res) ->
+        images: res.data
+      , (err) -> toastr.error 'There was an error while fetching images', err.status
+
+    fetchImagesUpload = ->
+      fetch().then (res) ->
+        angular.forEach res.data, (image) ->
           image.mockFile =
             name: image.serverName
             size: image.size
             type: image.type
             index: image.index
             src: image.url
-        res
+        images: res.data
+      , (err) -> toastr.error 'There was an error while fetching images', err.status
 
-    fetchGallery: ->
-      $http.get('/upload').then (res) ->
+    fetchImagesGallery = ->
+      fetch().then (res) ->
         angular.forEach res.data, (image) ->
           img =
             title: image.clientName.replace('.png', '')
@@ -35,9 +47,10 @@ do ->
             serverName: image.serverName
             clientName: image.clientName
           angular.copy img, image
-        res
+        images: res.data
+      , (err) -> toastr.error 'There was an error while fetching images', err.status
 
-    put: (file, name) ->
+    updateImage = (file, name) ->
       if not name
         name = 'undefined.png'
         index = 0
@@ -57,11 +70,16 @@ do ->
       $http.put('/upload', formData, data).then (res) ->
         res
 
-    delete: (serverName) ->
+    deleteImage = (serverName) ->
       $http.delete('/upload', params: serverName: serverName).then (res) ->
         res
 
-  angular.module('app.images')
+    factory()
+
+  angular.module('app.core')
     .factory 'diaImagesService', diaImagesService
 
-  diaImagesService.$inject = ['$http']
+  diaImagesService.$inject = [
+    '$http'
+    'toastr'
+  ]

@@ -12,17 +12,20 @@ do ->
 
   diaAlgorithmRectangle = ->
 
+    directive = ->
+      restrict: 'AE'
+      link: link
+      scope:
+        selectedImage: '='
+        setHighlighterStatus: '&'
+      controller: 'DiaAlgorithmRectangleController'
+      controllerAs: 'vm'
+      bindToController: true
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'AE'
-    link: link
-    scope:
-      selectedImage: '='
-      setHighlighterStatus: '&'
-    controller: 'DiaAlgorithmRectangleController'
-    controllerAs: 'vm'
-    bindToController: true
+    directive()
 
   angular.module('app.algorithm')
     .directive 'diaAlgorithmRectangle', diaAlgorithmRectangle

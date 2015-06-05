@@ -24,4 +24,4 @@ bower_components
 data/
 
 # images folder from tests
-images/
+./images/

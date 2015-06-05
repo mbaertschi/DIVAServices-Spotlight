@@ -1,4 +1,4 @@
-.results-view(ng-controller='ResultsPageController as vm')
+.results-view
   .row
     big-breadcrumbs.col-xs-12.col-sm-7.col-md-7.col-lg-4(items="['Results', 'Check it out']", icon='list-ul')
   .row
@@ -19,7 +19,7 @@
               th Duration
           caption.smart-datatable-child-format(data-child-control='td.details-control')
             .wrapper
-              .col-xs-12.col-lg-6(ng-controller='DiaTableOutputsController as vm')
+              .col-xs-12.col-lg-6
                 .table-inputs(dia-table-inputs='', data-input-data='d')
-              .col-xs-12.col-lg-6(ng-controller='DiaTableOutputsController as vm')
+              .col-xs-12.col-lg-6
                 .table-outputs(dia-table-outputs='', data-output-data='d.output')

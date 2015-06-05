@@ -8,12 +8,14 @@ do ->
   'use strict'
 
   diaStateManager = ($rootScope) ->
+    @state = null
+    @image = null
 
-    stateManager =
-      state: null
-      image: null
+    factory = ->
+      switchState: switchState
+      reset: reset
 
-    stateManager.switchState = (state, image) ->
+    switchState = (state, image) ->
       @state = state
       if image?
         $rootScope.safeApply =>
@@ -22,18 +24,17 @@ do ->
       else
         $rootScope.safeApply =>
           @image.src = @image.src + '?' + new Date().getTime()
-      @stateChange()
-
-    stateManager.stateChange = ->
       $rootScope.$broadcast 'stateChange'
 
-    stateManager.reset = ->
+    reset = ->
       @state = null
       @image = null
 
-    stateManager
+    factory()
 
   angular.module('app.images')
     .factory 'diaStateManager', diaStateManager
 
-  diaStateManager.$inject = ['$rootScope']
+  diaStateManager.$inject = [
+    '$rootScope'
+  ]

@@ -88,4 +88,11 @@ do ->
   angular.module('app.images')
     .controller 'DiaImageFilterController', DiaImageFilterController
 
-  DiaImageFilterController.$inject = ['$scope', '$state', 'diaStateManager', 'diaImagesService', 'toastr', '_']
+  DiaImageFilterController.$inject = [
+    '$scope'
+    '$state'
+    'diaStateManager'
+    'diaImagesService'
+    'toastr'
+    '_'
+  ]

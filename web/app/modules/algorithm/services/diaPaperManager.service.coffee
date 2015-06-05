@@ -8,9 +8,13 @@ Factory diaPaperManager
 do ->
   'use strict'
 
-  diaPaperManager = (diaHighlighterManager) ->
+  diaPaperManager = ->
     image = canvas = raster = path = null
     initialized = false
+
+    factory = ->
+      setup: setup
+      reset: reset
 
     initializeCanvas = (callback) ->
       img = new Image()
@@ -45,13 +49,12 @@ do ->
       tool.activate()
       initialized = true
 
-    setup: (vm) ->
-      # set highlighter status to invalid
+    setup = (vm) ->
       element = vm.element
+      # set highlighter status to invalid
       vm.setHighlighterStatus status: true
       image = vm.selectedImage
       canvas = element[0]
-      diaHighlighterManager.type = vm.highlighter
       if path
         path.remove()
         path = null
@@ -64,10 +67,10 @@ do ->
           initPaper vm
         drawRaster vm
 
-    reset: ->
+    reset = ->
       initialized = false
+
+    factory()
 
   angular.module('app.algorithm')
     .factory 'diaPaperManager', diaPaperManager
-
-  diaPaperManager.$inject = ['diaHighlighterManager']

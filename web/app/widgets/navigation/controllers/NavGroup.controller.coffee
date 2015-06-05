@@ -12,4 +12,6 @@ do ->
   angular.module('app.widgets')
     .controller 'NavGroupController', NavGroupController
 
-  NavGroupController.$injector = ['$scope']
+  NavGroupController.$injector = [
+    '$scope'
+  ]

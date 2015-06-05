@@ -9,17 +9,18 @@ do ->
   'use strict'
 
   diaHighlighterManager = ->
+    @path = null
 
-    highlighterManager =
-      type: null
-      path: null
+    factory = ->
+      get: get
+      set: set
+      reset: reset
 
-    highlighterManager.reset = ->
-      @type = null
+    reset = ->
       @path = null
 
     # we want to send only certain information to server
-    highlighterManager.get = ->
+    get = ->
       if @path?.view?
         highlighter =
           strokeWidth: @path.strokeWidth
@@ -39,7 +40,10 @@ do ->
       else
         {}
 
-    highlighterManager
+    set = (path) ->
+      @path = path
+
+    factory()
 
   angular.module('app.algorithm')
     .factory 'diaHighlighterManager', diaHighlighterManager

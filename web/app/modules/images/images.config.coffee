@@ -19,6 +19,8 @@ do ->
       controllerAs: 'vm'
       data:
         title: 'Gallery'
+      resolve:
+        imagesPrepService: imagesPrepService
 
     $stateProvider.state 'images.upload',
       parent: 'main'
@@ -28,5 +30,8 @@ do ->
       controllerAs: 'vm'
       data:
         title: 'Upload'
+
+  imagesPrepService = (diaImagesService) ->
+    diaImagesService.fetchImagesGallery()
 
   results.config stateProvider

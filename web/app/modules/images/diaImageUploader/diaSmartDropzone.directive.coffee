@@ -10,14 +10,17 @@ do ->
 
   diaSmartDropzone = ->
 
+    directive = ->
+      restrict: 'AE'
+      link: link
+      controller: 'DiaSmartDropzoneController'
+      controllerAs: 'vm'
+      bindToController: true
+
     link = (scope, element, attrs, ctrl) ->
       ctrl.init element
 
-    restrict: 'AE'
-    link: link
-    controller: 'DiaSmartDropzoneController'
-    controllerAs: 'vm'
-    bindToController: true
+    directive()
 
   angular.module('app.images')
     .directive 'diaSmartDropzone', diaSmartDropzone

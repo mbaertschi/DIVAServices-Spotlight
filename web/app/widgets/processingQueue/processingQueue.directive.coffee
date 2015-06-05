@@ -9,17 +9,21 @@ do ->
 
   diaProcessingAlgorithms = (diaProcessingQueue) ->
 
-    link = (scope, element, attrs) ->
-      scope.entries = diaProcessingQueue.queue()
+    directive = ->
+      restrict: 'EA'
+      templateUrl: 'widgets/processingQueue/processingQueue.view.html'
+      link: link
 
+    link = (scope, element, attrs) ->
+      scope.entries = diaProcessingQueue.getQueue()
       scope.cancel = (entry) ->
         diaProcessingQueue.abort entry
 
-    restrict: 'EA'
-    templateUrl: 'widgets/processingQueue/processingQueue.view.html'
-    link: link
+    directive()
 
   angular.module('app.widgets')
     .directive 'diaProcessingAlgorithms', diaProcessingAlgorithms
 
-  diaProcessingAlgorithms.$inject = ['diaProcessingQueue']
+  diaProcessingAlgorithms.$inject = [
+    'diaProcessingQueue'
+  ]

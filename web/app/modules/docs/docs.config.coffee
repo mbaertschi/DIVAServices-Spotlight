@@ -14,14 +14,14 @@ do ->
     $stateProvider.state 'docs.howto',
       parent: 'main'
       url: '/docs/howto'
-      templateUrl: 'modules/docs/howto.view.html'
+      templateUrl: '/modules/docs/howto.view.html'
       data:
         title: 'HowTo'
 
     $stateProvider.state 'docs.faq',
       parent: 'main'
       url: '/docs/faq'
-      templateUrl: 'modules/docs/faq.view.html'
+      templateUrl: '/modules/docs/faq.view.html'
       data:
         title: 'FAQ'
 
@@ -35,7 +35,7 @@ do ->
     $stateProvider.state 'docs.api.backend',
       parent: 'main'
       url: '/docs/api/backend'
-      templateUrl: 'modules/docs/backend.view.html'
+      templateUrl: '/modules/docs/backend.view.html'
       controller: 'BackendPageController'
       controllerAs: 'vm'
       data:
@@ -44,7 +44,7 @@ do ->
     $stateProvider.state 'docs.api.server',
       parent: 'main'
       url: '/docs/api/server'
-      templateUrl: 'modules/docs/server.view.html'
+      templateUrl: '/modules/docs/server.view.html'
       controller: 'ServerPageController'
       controllerAs: 'vm'
       data:

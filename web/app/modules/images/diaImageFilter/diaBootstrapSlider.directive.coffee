@@ -8,6 +8,10 @@ do ->
 
   diaBootstrapSlider = ->
 
+    directive = ->
+      restrict: 'A'
+      link: link
+
     link = (scope, element, attrs) ->
       scope.value = attrs.sliderValue
       element.removeAttr 'dia-bootstrap-slider data-dia-bootstrap-slider'
@@ -28,8 +32,7 @@ do ->
         scope.safeApply -> scope.value = event.value
         scope.filter attrs.targetFilter, event.value
 
-    restrict: 'A'
-    link: link
+    directive()
 
   angular.module('app.images')
     .directive 'diaBootstrapSlider', diaBootstrapSlider

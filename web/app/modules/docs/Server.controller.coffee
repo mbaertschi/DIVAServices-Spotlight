@@ -9,8 +9,11 @@ do ->
   ServerPageController = ($sce) ->
     vm = @
     vm.currentFile = $sce.trustAsResourceUrl 'documentation/server/server.html'
+    vm
 
   angular.module('app.docs')
     .controller 'ServerPageController', ServerPageController
 
-  ServerPageController.$inject = ['$sce']
+  ServerPageController.$inject = [
+    '$sce'
+  ]

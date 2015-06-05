@@ -23,6 +23,7 @@ do ->
 
       # update paper settings if selectedImage has changed
       $scope.$parent.$watch 'vm.selectedImage', ->
+        vm.strokeWidth = 5
         diaPaperManager.setup vm, vm.element
 
     setupMouseEvents = ->
@@ -42,14 +43,14 @@ do ->
               else vm.handle = null
           else
             vm.path.remove()
-            diaHighlighterManager.path = null
+            diaHighlighterManager.reset()
             vm.setHighlighterStatus status: true
             vm.path = new Path.Rectangle from: point, to: point
             vm.path.strokeColor = vm.strokeColor
             vm.path.strokeWidth = vm.strokeWidth
             vm.path.fillColor = vm.fillColor
         else
-          diaHighlighterManager.path = null
+          diaHighlighterManager.reset()
           vm.setHighlighterStatus status: true
           vm.path = new Path.Rectangle from: point, to: point
           vm.path.strokeColor = vm.strokeColor
@@ -59,7 +60,7 @@ do ->
       vm.mouseUp = (event) ->
         vm.path.fullySelected = true
         vm.setHighlighterStatus status: false
-        diaHighlighterManager.path = vm.path
+        diaHighlighterManager.set vm.path
 
       vm.mouseDrag = (event) ->
         x = event.delta.x
@@ -106,4 +107,8 @@ do ->
   angular.module('app.algorithm')
     .controller 'DiaAlgorithmRectangleController', DiaAlgorithmRectangleController
 
-  DiaAlgorithmRectangleController.$inject = ['$scope', 'diaHighlighterManager', 'diaPaperManager']
+  DiaAlgorithmRectangleController.$inject = [
+    '$scope'
+    'diaHighlighterManager'
+    'diaPaperManager'
+  ]
