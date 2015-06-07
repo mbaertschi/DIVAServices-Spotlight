@@ -1,7 +1,7 @@
 do ->
   'use strict'
 
-  DiaSmartDropzoneController = ($scope, diaSettings, diaStateManager, diaImagesService, toastr) ->
+  DiaSmartDropzoneController = ($timeout, diaSettings, diaStateManager, diaImagesService, toastr) ->
     vm = @
     vm.availableIndexes = null
     vm.dropzone = null
@@ -11,8 +11,7 @@ do ->
     @init = (element) ->
       vm.element = element
       vm.uploadedImages = []
-      $scope.safeApply ->
-        dropzone = undefined
+      vm.dropzone = undefined
       loadOptions (err, config) ->
         if err
           toastr.err 'Could not load Dropzone configurations', err.status
@@ -28,19 +27,18 @@ do ->
         config =
           init: ->
             self = @
-            # load images for active session if there are any
-            diaImagesService.fetchImagesUpload().then (res) ->
-              $scope.safeApply ->
-                angular.forEach res.images, (image) ->
-                  # add them as thumbnail
-                  self.emit 'addedfile', image.mockFile
-                  self.emit 'thumbnail', image.mockFile, image.thumbUrl
-                  self.emit 'success', image.mockFile
-                  # and handle index and maxFiles changes
-                  index = vm.availableIndexes.indexOf image.index
-                  if index >= 0
-                    vm.availableIndexes.splice index, 1
-                  self.options.maxFiles -= 1
+            # load images for active session if there are any (wait for elements to be loaded)
+            $timeout ->
+              angular.forEach vm.images, (image) ->
+                # add them as thumbnail
+                self.emit 'addedfile', image.mockFile
+                self.emit 'thumbnail', image.mockFile, image.thumbUrl
+                self.emit 'success', image.mockFile
+                # and handle index and maxFiles changes
+                index = vm.availableIndexes.indexOf image.index
+                if index >= 0
+                  vm.availableIndexes.splice index, 1
+                self.options.maxFiles -= 1
           addRemoveLinks : settings.addRemoveLinks
           maxFilesize: settings.maxFilesize
           maxFiles: settings.maxFiles
@@ -56,8 +54,7 @@ do ->
     initDropzone = (config) ->
       eventHandlers =
         sending: (file, xhr, formData) ->
-          $scope.safeApply ->
-            formData.append 'index', vm.availableIndexes.shift()
+          formData.append 'index', vm.availableIndexes.shift()
 
         success: (file, res) ->
           if res
@@ -113,7 +110,7 @@ do ->
     .controller 'DiaSmartDropzoneController', DiaSmartDropzoneController
 
   DiaSmartDropzoneController.$inject = [
-    '$scope'
+    '$timeout'
     'diaSettings'
     'diaStateManager'
     'diaImagesService'

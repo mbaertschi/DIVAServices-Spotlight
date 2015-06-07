@@ -13,6 +13,8 @@ do ->
     directive = ->
       restrict: 'AE'
       link: link
+      scope:
+        images: '='
       controller: 'DiaSmartDropzoneController'
       controllerAs: 'vm'
       bindToController: true

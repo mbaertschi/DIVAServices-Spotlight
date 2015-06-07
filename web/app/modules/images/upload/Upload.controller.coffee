@@ -6,10 +6,11 @@ Controller UploadPageController
 do ->
   'use strict'
 
-  UploadPageController = ($scope, diaStateManager) ->
+  UploadPageController = ($scope, diaStateManager, imagesPrepServiceUpload) ->
     vm = @
     vm.state = 'upload'
     vm.currentImage = null
+    vm.images = imagesPrepServiceUpload.images
 
     # if we come from gallery view, change to state cropping
     if diaStateManager.state
@@ -36,4 +37,5 @@ do ->
   UploadPageController.$inject = [
     '$scope'
     'diaStateManager'
+    'imagesPrepServiceUpload'
   ]

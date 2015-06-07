@@ -24,6 +24,7 @@ do ->
     diaAlgorithmsService.fetchAlgorithm $stateParams.id
 
   imagesPrepService = (diaImagesService) ->
-    diaImagesService.fetchImagesAlgorithmGallery()
+    diaImagesService.fetch().then (res) ->
+      images: res.data
 
   algorithm.config stateProvider

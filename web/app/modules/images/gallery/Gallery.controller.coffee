@@ -7,9 +7,9 @@ Controller GalleryPageController
 do ->
   'use strict'
 
-  GalleryPageController = ($state, diaStateManager, diaImagesService, imagesPrepService, toastr) ->
+  GalleryPageController = ($state, diaStateManager, diaImagesService, imagesPrepServiceGallery, toastr) ->
     vm = @
-    vm.images = imagesPrepService.images
+    vm.images = imagesPrepServiceGallery.images
 
     diaStateManager.reset()
 
@@ -22,9 +22,9 @@ do ->
 
     deleteEntry = (entry) ->
       diaImagesService.delete(entry.serverName).then (res) ->
+        angular.forEach vm.images, (image, index) ->
+          if image.id is entry.id then vm.images.splice index, 1
         toastr.info "Deleted image #{entry.clientName}", res.data
-        diaImagesService.fetchImagesGallery().then (res) ->
-          vm.images = res.images
       , (err) -> toastr.error 'Could not delete image', err.status
 
     vm.actions = [
@@ -47,6 +47,6 @@ do ->
     '$state'
     'diaStateManager'
     'diaImagesService'
-    'imagesPrepService'
+    'imagesPrepServiceGallery'
     'toastr'
   ]

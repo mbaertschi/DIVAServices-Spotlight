@@ -6,7 +6,7 @@
     panel(heading='Upload images', icon='cloud-upload', ng-if='vm.state=="upload"')
       .text-muted Upload your images here. Maximum amount of images is 10. To edit an image, click on it. To delete it, click on remove.
       br
-      form.dropzone(action='/upload', data-dia-smart-dropzone='dropzoneConfig')
+      form.dropzone(action='/upload', data-dia-smart-dropzone='', data-images='vm.images')
     panel(heading='Cropping', icon='crop', go-to='goToState("upload")', go-to-text='Back to Upload', ng-if='vm.state=="cropping"')
       .text-muted Crop and rotate your image here. Once you are done, click on save to go to next state. Click on reset to undo all changes or click on clear to remove cropper.
       br

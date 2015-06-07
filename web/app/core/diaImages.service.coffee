@@ -4,9 +4,7 @@ do ->
   diaImagesService = ($http, toastr) ->
 
     factory = ->
-      fetchImagesAlgorithmGallery: fetchImagesAlgorithmGallery
-      fetchImagesUpload: fetchImagesUpload
-      fetchImagesGallery: fetchImagesGallery
+      fetch: fetch
       put: updateImage
       delete: deleteImage
 
@@ -17,38 +15,6 @@ do ->
           image.url = image.url + '?' + new Date().getTime()
           image.thumbUrl = image.thumbUrl + '?' + new Date().getTime()
         res
-
-    fetchImagesAlgorithmGallery = ->
-      fetch().then (res) ->
-        images: res.data
-      , (err) -> toastr.error 'There was an error while fetching images', err.status
-
-    fetchImagesUpload = ->
-      fetch().then (res) ->
-        angular.forEach res.data, (image) ->
-          image.mockFile =
-            name: image.serverName
-            size: image.size
-            type: image.type
-            index: image.index
-            src: image.url
-        images: res.data
-      , (err) -> toastr.error 'There was an error while fetching images', err.status
-
-    fetchImagesGallery = ->
-      fetch().then (res) ->
-        angular.forEach res.data, (image) ->
-          img =
-            title: image.clientName.replace('.png', '')
-            description: 'Image size: ' + (image.size / 1000000).toFixed(2) + 'MB'
-            alt: 'Alt'
-            img_thumb: image.thumbUrl + '?' + new Date().getTime()
-            img_full: image.url + '?' + new Date().getTime()
-            serverName: image.serverName
-            clientName: image.clientName
-          angular.copy img, image
-        images: res.data
-      , (err) -> toastr.error 'There was an error while fetching images', err.status
 
     updateImage = (file, name) ->
       if not name
