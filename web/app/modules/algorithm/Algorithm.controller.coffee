@@ -39,8 +39,8 @@ do ->
           toastr.warning 'Please fill in captcha', 'Captcha Warning'
         else
           diaCaptchaService.checkCaptcha(vm.captcha.getCaptchaData()).then (res) ->
-            item = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
-            diaProcessingQueue.push item
+            model = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
+            diaProcessingQueue.push model.item
             vm.captcha.refresh()
           , (err) ->
             vm.captcha.refresh()
@@ -49,8 +49,8 @@ do ->
             else
               toastr.error 'Captcha validation failed. Please try again', err.status
       else
-        item = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
-        diaProcessingQueue.push item
+        model = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
+        diaProcessingQueue.push model.item
 
     # set the highlighter status to valid / invalid. This will be called
     # from child scopes

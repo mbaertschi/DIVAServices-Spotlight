@@ -65,7 +65,7 @@ do ->
           @.push [x, y]
         , item.highlighter.segments
 
-      item
+      item: item
 
     # prepare algorithm input and output data to be displayed in datatable under results page
     prepareResultForDatatable = (input, output) ->
@@ -89,7 +89,7 @@ do ->
       if angular.equals {}, result.input.inputs then result.input.inputs = null
       if angular.equals {}, result.input.highlighter then result.input.highlighter = null
 
-      result
+      result: result
 
 
     factory()

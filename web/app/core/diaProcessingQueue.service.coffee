@@ -76,7 +76,7 @@ do ->
         item.duration = duration.toFixed(2)
         $rootScope.finished++
         toastr.info "Algorithm #{item.algorithm.name} is done", 'Info'
-        results.push diaModelBuilder.prepareResultForDatatable item, res.data
+        results.push diaModelBuilder.prepareResultForDatatable(item, res.data).result
       , (err) ->
         if err.config? then toastr.error "Post request for #{err.config.data.algorithm.name} failed", err.data.code
 
