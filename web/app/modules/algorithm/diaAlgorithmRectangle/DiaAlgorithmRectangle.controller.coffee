@@ -1,15 +1,14 @@
 do ->
   'use strict'
 
-  DiaAlgorithmRectangleController = ($scope, diaHighlighterManager, diaPaperManager) ->
+  DiaAlgorithmRectangleController = ($scope, diaPaperManager) ->
     vm = @
     vm.element = null
-    vm.fillColor = new paper.Color 1, 0, 0, 0.1
     vm.handle = null
     vm.path = null
     vm.strokeColor = 'red'
-    vm.strokeWidth = 5
-    vm.mouseDown = vm.mouseUp = vm.mouseDrag = null
+    vm.fillColor = new paper.Color 1, 0, 0, 0.1
+    vm.tools = {}
 
     @init = (element) ->
       vm.element = element
@@ -23,12 +22,15 @@ do ->
 
       # update paper settings if selectedImage has changed
       $scope.$parent.$watch 'vm.selectedImage', ->
-        vm.strokeWidth = 5
+        if vm.path
+          vm.path.remove()
+        vm.path = null
+        vm.setHighlighterStatus status: true
         diaPaperManager.setup vm, vm.element
 
     setupMouseEvents = ->
 
-      vm.mouseDown = (event) ->
+      vm.tools.mouseDown = (event) ->
         vm.handle = null
         point = event.point
         if vm.path
@@ -43,26 +45,26 @@ do ->
               else vm.handle = null
           else
             vm.path.remove()
-            diaHighlighterManager.reset()
+            diaPaperManager.resetPath()
             vm.setHighlighterStatus status: true
             vm.path = new Path.Rectangle from: point, to: point
             vm.path.strokeColor = vm.strokeColor
             vm.path.strokeWidth = vm.strokeWidth
             vm.path.fillColor = vm.fillColor
         else
-          diaHighlighterManager.reset()
+          diaPaperManager.resetPath()
           vm.setHighlighterStatus status: true
           vm.path = new Path.Rectangle from: point, to: point
           vm.path.strokeColor = vm.strokeColor
           vm.path.strokeWidth = vm.strokeWidth
           vm.path.fillColor = vm.fillColor
 
-      vm.mouseUp = (event) ->
+      vm.tools.mouseUp = (event) ->
         vm.path.fullySelected = true
         vm.setHighlighterStatus status: false
-        diaHighlighterManager.set vm.path
+        diaPaperManager.set vm.path
 
-      vm.mouseDrag = (event) ->
+      vm.tools.mouseDrag = (event) ->
         x = event.delta.x
         y = event.delta.y
         switch vm.handle
@@ -109,6 +111,5 @@ do ->
 
   DiaAlgorithmRectangleController.$inject = [
     '$scope'
-    'diaHighlighterManager'
     'diaPaperManager'
   ]

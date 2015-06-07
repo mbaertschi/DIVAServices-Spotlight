@@ -9,13 +9,12 @@ Controller AlgorithmPageController
 do ->
   'use strict'
 
-  AlgorithmPageController = ($scope, $state, $window, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaHighlighterManager, diaProcessingQueue, diaCaptchaService, toastr) ->
+  AlgorithmPageController = ($scope, $state, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaProcessingQueue, diaCaptchaService, diaModelBuilder, diaPaperManager, toastr) ->
     vm = @
     vm.algorithm = algorithmsPrepService.data.algorithm
     vm.highlighter = algorithmsPrepService.data.highlighter
     vm.inputs = algorithmsPrepService.data.inputs
     vm.model = algorithmsPrepService.data.model
-    vm.id = algorithmsPrepService.data.id
     vm.images = imagesPrepService.images
     vm.selectedImage = null
     vm.invalidHighlighter = false
@@ -33,12 +32,6 @@ do ->
     # handle submit. If there are already 3 algorithms in process, abort and notify
     # user. If captcha is activated, check for valid input.
     vm.submit = ->
-      item =
-        algorithm: vm.algorithm
-        image: vm.selectedImage
-        inputs: vm.model
-        highlighter: diaHighlighterManager.get()
-
       if diaProcessingQueue.getQueue().length >= 3
         toastr.warning 'You already have three algorithms in processing. Please wait for one to finish', 'Warning'
       else if vm.captchaEnabled
@@ -46,6 +39,7 @@ do ->
           toastr.warning 'Please fill in captcha', 'Captcha Warning'
         else
           diaCaptchaService.checkCaptcha(vm.captcha.getCaptchaData()).then (res) ->
+            item = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
             diaProcessingQueue.push item
             vm.captcha.refresh()
           , (err) ->
@@ -55,6 +49,7 @@ do ->
             else
               toastr.error 'Captcha validation failed. Please try again', err.status
       else
+        item = diaModelBuilder.prepareAlgorithmSendModel vm.algorithm, vm.selectedImage, vm.model, diaPaperManager.get()
         diaProcessingQueue.push item
 
     # set the highlighter status to valid / invalid. This will be called
@@ -70,10 +65,9 @@ do ->
 
     # set selected image
     vm.setSelectedImage = (image) ->
-      diaHighlighterManager.reset()
+      if not vm.highlighter then diaPaperManager.resetPath()
       vm.state = 'highlight'
       vm.selectedImage = image
-      vm.submitted = false
       if vm.captcha then vm.captcha.refresh()
 
     vm.goBack = ->
@@ -114,7 +108,7 @@ do ->
         angular.forEach algorithms, (algorithm) ->
           if vm.algorithm?.url is algorithm.url
             toastr.warning 'This algorithm has been updated. Reloading the page in 5 seconds', 'Warning'
-            $timeout (-> $window.location.reload()), 5000
+            $timeout (-> $state.go $state.$current, null, reload: true ), 5000
 
       $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
         angular.forEach algorithms, (algorithm) ->
@@ -134,13 +128,13 @@ do ->
   AlgorithmPageController.$inject = [
     '$scope'
     '$state'
-    '$window'
     '$sce'
     'socketPrepService'
     'imagesPrepService'
     'algorithmsPrepService'
-    'diaHighlighterManager'
     'diaProcessingQueue'
     'diaCaptchaService'
+    'diaModelBuilder'
+    'diaPaperManager'
     'toastr'
   ]
