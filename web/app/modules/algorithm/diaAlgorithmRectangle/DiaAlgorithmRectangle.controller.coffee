@@ -26,7 +26,7 @@ do ->
           vm.path.remove()
         vm.path = null
         vm.setHighlighterStatus status: true
-        diaPaperManager.setup vm, vm.element
+        diaPaperManager.setup vm
 
     setupMouseEvents = ->
 
