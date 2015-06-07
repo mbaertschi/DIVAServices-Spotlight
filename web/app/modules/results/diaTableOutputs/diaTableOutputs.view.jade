@@ -1,7 +1,6 @@
 h1 Output
 canvas#output-canvas(ng-if='vm.highlighters')
-.image-wrapper(ng-if='!vm.highlighters && vm.image')
-  img(ng-src='{{vm.image}}')
+img(ng-if='!vm.highlighters && vm.image', ng-src='{{vm.image}}')
 .table-responsive.output-values(ng-if='vm.output')
   table.table.table-bordered
     thead

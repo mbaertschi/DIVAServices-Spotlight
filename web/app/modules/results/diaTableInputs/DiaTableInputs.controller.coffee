@@ -4,11 +4,11 @@ do ->
   DiaTableInputsController = ($timeout) ->
     vm = @
     vm.canvas = null
-    vm.highlighter = vm.inputData?.input.highlighter or null
+    vm.highlighter = vm.inputData?.highlighter or null
     vm.image = vm.inputData?.image or null
-    vm.inputs = vm.inputData?.input.inputs or null
+    vm.inputs = vm.inputData?.inputs or null
     vm.paperInput = null
-    vm.path = null
+    vm.strokeWidth = null
     vm.strokeColor = 'red'
 
     @init = (element) ->
@@ -27,22 +27,19 @@ do ->
         callback()
 
     drawPath = (callback) ->
-      vm.path = new vm.paperInput.Path
-      vm.path.strokeColor = vm.strokeColor
-      vm.path.strokeWidth = vm.highlighter.strokeWidth
+      path = new vm.paperInput.Path
+      path.strokeColor = vm.strokeColor
+      path.strokeWidth = vm.strokeWidth
       angular.forEach vm.highlighter.segments, (segment) ->
-        x = segment[0] * vm.highlighter.scaling
-        y = segment[1] * vm.highlighter.scaling
+        x = segment[0] - path.strokeWidth
+        y = segment[1] - path.strokeWidth
         @.add new Point x, y
-      , vm.path
-      vm.path.closed = true
+      , path
+      path.closed = true
       callback()
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#input-canvas')
-      if vm.path
-        vm.path.remove()
-        vm.path = null
       if vm.canvas.length
         if vm.paperInput
           vm.paperInput.paper.clear()
@@ -51,13 +48,13 @@ do ->
           paper.install window
           vm.paperInput = new paper.PaperScope
           vm.paperInput.setup vm.canvas
-          if vm.paperInput.project.layers[0]?
-            vm.paperInput.project.layers[0].removeChildren()
-          raster = new Raster
+          raster = new vm.paperInput.Raster
             source: vm.image.path
             position: vm.paperInput.view.center
           raster.on 'load', ->
             scale = vm.paperInput.view.size.width / @.bounds.width
+            inverseScale = @.bounds.width / vm.paperInput.view.size.width
+            vm.strokeWidth = 4 * inverseScale
             drawPath ->
               vm.paperInput.view.zoom = scale
               vm.paperInput.view.update()

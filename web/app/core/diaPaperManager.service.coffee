@@ -9,12 +9,27 @@ do ->
   'use strict'
 
   diaPaperManager = ->
-    image = canvas = raster = path = null
+    image = canvas = raster = null
     initialized = false
+    @path = null
 
     factory = ->
       setup: setup
       reset: reset
+      get: get
+      set: set
+      resetPath: resetPath
+
+    set = (path) ->
+      @path = path
+
+    get = ->
+      @path
+
+    resetPath = ->
+      if @path
+        @path.remove()
+      @path = null
 
     initializeCanvas = (callback) ->
       img = new Image()
@@ -35,36 +50,34 @@ do ->
       raster.on 'load', ->
         scale = view.size.width / @.bounds.width
         inverseScale = @.bounds.width / view.size.width
-        vm.strokeWidth = vm.strokeWidth * inverseScale
+        vm.strokeWidth = 4 * inverseScale
         view.zoom = scale
         view.update()
 
-    initPaper = (vm) ->
+    initPaper = (tools) ->
       paper.install window
       paper.setup canvas
-      tool = new Tool()
-      tool.onMouseDown = vm.mouseDown
-      tool.onMouseUp = vm.mouseUp
-      tool.onMouseDrag = vm.mouseDrag
-      tool.activate()
+      if tools?
+        tool = new Tool()
+        tool.onMouseDown = tools.mouseDown
+        tool.onMouseUp = tools.mouseUp
+        tool.onMouseDrag = tools.mouseDrag
+        tool.activate()
+      else
+        tool = null
       initialized = true
 
     setup = (vm) ->
       element = vm.element
-      # set highlighter status to invalid
-      vm.setHighlighterStatus status: true
       image = vm.selectedImage
       canvas = element[0]
-      if path
-        path.remove()
-        path = null
       initializeCanvas ->
         if initialized
           view.viewSize = new Size canvas.width, canvas.height
           view.zoom = 1
           view.update()
         else
-          initPaper vm
+          initPaper vm.tools
         drawRaster vm
 
     reset = ->
@@ -72,5 +85,5 @@ do ->
 
     factory()
 
-  angular.module('app.algorithm')
+  angular.module('app.core')
     .factory 'diaPaperManager', diaPaperManager

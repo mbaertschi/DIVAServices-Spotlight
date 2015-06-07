@@ -1,12 +1,12 @@
 h1 Input
 canvas#input-canvas(ng-if='vm.highlighter')
 img(ng-if='!vm.highlighter', ng-src='{{vm.image.path}}')
-.table-responsive.input-values(ng-if='vm.inputData.input.inputs')
+.table-responsive.input-values(ng-if='vm.inputData.inputs')
   table.table.table-bordered
     thead
       th Selector
       th Value
     tbody
-      tr(ng-repeat='(key, value) in vm.inputData.input.inputs')
+      tr(ng-repeat='(key, value) in vm.inputData.inputs')
         td {{key}}
         td {{value}}

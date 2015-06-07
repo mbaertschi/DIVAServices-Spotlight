@@ -8,6 +8,7 @@ do ->
     vm.image = vm.outputData?.image or null
     vm.output = vm.outputData?.output or null
     vm.paperOutput = null
+    vm.strokeWidth = null
     vm.strokeColor = 'red'
 
     @init = (element) ->
@@ -29,10 +30,10 @@ do ->
       angular.forEach vm.highlighters, (highlighter) ->
         path = new vm.paperOutput.Path
         path.strokeColor = vm.strokeColor
-        path.strokeWidth = 2
+        path.strokeWidth = 4
         angular.forEach highlighter.segments, (segment) ->
-          x = segment[0]
-          y = segment[1]
+          x = segment[0] - path.strokeWidth
+          y = segment[1] - path.strokeWidth
           @.add new Point x, y
         , path
         path.closed = true
@@ -41,9 +42,6 @@ do ->
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')
       if vm.canvas.length
-        if path
-          path.remove()
-          path = null
         if vm.paperOutput
           vm.paperOutput.clear()
         vm.canvas = vm.canvas[0]
@@ -56,6 +54,8 @@ do ->
             position: vm.paperOutput.view.center
           raster.on 'load', ->
             scale = vm.paperOutput.view.size.width / @.bounds.width
+            inverseScale = @.bounds.width / vm.paperOutput.view.size.width
+            vm.strokeWidth = 5 * inverseScale
             drawPath ->
               vm.paperOutput.view.zoom = scale
               vm.paperOutput.view.update()
