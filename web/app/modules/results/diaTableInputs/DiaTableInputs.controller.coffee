@@ -31,8 +31,8 @@ do ->
       path.strokeColor = vm.strokeColor
       path.strokeWidth = vm.strokeWidth
       angular.forEach vm.highlighter.segments, (segment) ->
-        x = segment[0]
-        y = segment[1]
+        x = segment[0] - path.strokeWidth
+        y = segment[1] - path.strokeWidth
         @.add new Point x, y
       , path
       path.closed = true
@@ -48,15 +48,15 @@ do ->
           paper.install window
           vm.paperInput = new paper.PaperScope
           vm.paperInput.setup vm.canvas
-          raster = new Raster
+          raster = new vm.paperInput.Raster
             source: vm.image.path
             position: vm.paperInput.view.center
           raster.on 'load', ->
-            vm.scale = vm.paperInput.view.size.width / @.bounds.width
+            scale = vm.paperInput.view.size.width / @.bounds.width
             inverseScale = @.bounds.width / vm.paperInput.view.size.width
-            vm.strokeWidth = 5 * inverseScale
+            vm.strokeWidth = 4 * inverseScale
             drawPath ->
-              vm.paperInput.view.zoom = vm.scale
+              vm.paperInput.view.zoom = scale
               vm.paperInput.view.update()
 
   angular.module('app.results')

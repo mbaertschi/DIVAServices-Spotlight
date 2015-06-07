@@ -50,7 +50,7 @@ do ->
       raster.on 'load', ->
         scale = view.size.width / @.bounds.width
         inverseScale = @.bounds.width / view.size.width
-        vm.strokeWidth = 5 * inverseScale
+        vm.strokeWidth = 4 * inverseScale
         view.zoom = scale
         view.update()
 

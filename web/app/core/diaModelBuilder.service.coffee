@@ -57,8 +57,8 @@ do ->
           closed: path.closed
           segments: []
         angular.forEach path.segments, (segment) ->
-          x = segment.point.x
-          y = segment.point.y
+          x = segment.point.x - path.strokeWidth
+          y = segment.point.y - path.strokeWidth
           @.push [x, y]
         , item.highlighter.segments
 

@@ -30,10 +30,10 @@ do ->
       angular.forEach vm.highlighters, (highlighter) ->
         path = new vm.paperOutput.Path
         path.strokeColor = vm.strokeColor
-        path.strokeWidth = 2
+        path.strokeWidth = 4
         angular.forEach highlighter.segments, (segment) ->
-          x = segment[0]
-          y = segment[1]
+          x = segment[0] - path.strokeWidth
+          y = segment[1] - path.strokeWidth
           @.add new Point x, y
         , path
         path.closed = true
@@ -53,11 +53,11 @@ do ->
             source: vm.image
             position: vm.paperOutput.view.center
           raster.on 'load', ->
-            vm.scale = vm.paperOutput.view.size.width / @.bounds.width
+            scale = vm.paperOutput.view.size.width / @.bounds.width
             inverseScale = @.bounds.width / vm.paperOutput.view.size.width
             vm.strokeWidth = 5 * inverseScale
             drawPath ->
-              vm.paperOutput.view.zoom = vm.scale
+              vm.paperOutput.view.zoom = scale
               vm.paperOutput.view.update()
 
   angular.module('app.results')
