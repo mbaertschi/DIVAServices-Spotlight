@@ -8,6 +8,7 @@ do ->
     vm.image = vm.outputData?.image or null
     vm.output = vm.outputData?.output or null
     vm.paperOutput = null
+    vm.strokeWidth = null
     vm.strokeColor = 'red'
 
     @init = (element) ->
@@ -41,9 +42,6 @@ do ->
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')
       if vm.canvas.length
-        if path
-          path.remove()
-          path = null
         if vm.paperOutput
           vm.paperOutput.clear()
         vm.canvas = vm.canvas[0]
@@ -55,9 +53,11 @@ do ->
             source: vm.image
             position: vm.paperOutput.view.center
           raster.on 'load', ->
-            scale = vm.paperOutput.view.size.width / @.bounds.width
+            vm.scale = vm.paperOutput.view.size.width / @.bounds.width
+            inverseScale = @.bounds.width / vm.paperOutput.view.size.width
+            vm.strokeWidth = 5 * inverseScale
             drawPath ->
-              vm.paperOutput.view.zoom = scale
+              vm.paperOutput.view.zoom = vm.scale
               vm.paperOutput.view.update()
 
   angular.module('app.results')

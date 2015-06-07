@@ -54,14 +54,11 @@ do ->
 
       if path?.view?
         item.highlighter =
-          strokeWidth: path.strokeWidth
-          scaling: path.view.zoom
           closed: path.closed
           segments: []
-        inverse = 1 / item.highlighter.scaling
         angular.forEach path.segments, (segment) ->
-          x = segment.point.x * inverse
-          y = segment.point.y * inverse
+          x = segment.point.x
+          y = segment.point.y
           @.push [x, y]
         , item.highlighter.segments
 
@@ -74,9 +71,6 @@ do ->
         algorithm:
           name: '<span class="text-capitalize">' + input.algorithm.name + '</span>'
           description: input.algorithm.description
-        image:
-          path: input.image.url
-          thumbPath: '<div class="project-members"><img src=\"' + input.image.thumbUrl + '\"></div>'
         submit:
           start: input.start
           end: input.end
@@ -84,6 +78,9 @@ do ->
         input:
           inputs: input.inputs
           highlighter: input.highlighter
+          image:
+            path: input.image.url
+            thumbPath: '<div class="project-members"><img src=\"' + input.image.thumbUrl + '\"></div>'
         output: output
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null

@@ -7,6 +7,7 @@ do ->
     vm.handle = null
     vm.path = null
     vm.segmentIndex = null
+    vm.strokeWidth = null
     vm.strokeColor = 'red'
     vm.fillColor = new paper.Color 1, 0, 0, 0.1
     vm.tools = null

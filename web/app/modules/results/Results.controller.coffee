@@ -23,7 +23,7 @@ do ->
         }
         { data: 'algorithm.name' }
         { data: 'algorithm.description' }
-        { data: 'image.thumbPath' }
+        { data: 'input.image.thumbPath' }
         { data: 'submit.start' }
         { data: 'submit.end' }
         { data: 'submit.duration' }
