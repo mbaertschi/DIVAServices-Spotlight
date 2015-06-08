@@ -14,7 +14,7 @@ class AlgorithmsPage extends PageObject
     new AlgorithmView element
 
   submitOtsubinazrization: ->
-    element(@by.css('.algorithms-overview[heading="otsubinazrization"]')).element(@by.css('[ng-click="goTo()"]')).click()
+    element(@by.css('.algorithms-overview[heading="sauvalabinarization"]')).element(@by.css('[ng-click="goTo()"]')).click()
     browser.sleep(500)
     new AlgorithmView element
 
