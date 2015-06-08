@@ -9,7 +9,7 @@ do ->
   DiaDatatableController = ($scope, $compile) ->
     vm = @
     vm.element = null
-    vm.datatable = undefined
+    vm.dataTable = undefined
     vm.options = null
 
     @init = (element) ->

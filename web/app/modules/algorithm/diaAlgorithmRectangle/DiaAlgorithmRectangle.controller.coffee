@@ -62,7 +62,7 @@ do ->
       vm.tools.mouseUp = (event) ->
         vm.path.fullySelected = true
         vm.setHighlighterStatus status: false
-        diaPaperManager.set vm.path
+        diaPaperManager.set vm.path, 'rectangle'
 
       vm.tools.mouseDrag = (event) ->
         x = event.delta.x

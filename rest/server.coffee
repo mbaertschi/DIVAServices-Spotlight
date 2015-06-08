@@ -111,7 +111,7 @@ app.get '/', (req, res) ->
 #       "maxLength": 25
 #     },
 #     "highlighter": {
-#       "enum": ["polygon", "rectangle"]
+#       "enum": ["polygon", "rectangle", "circle"]
 #     },
 #     "description": {
 #       "type": "string",
@@ -289,7 +289,7 @@ app.get '/', (req, res) ->
 #       "additionalItems": false
 #     }
 #   },
-#   "additionalProperties": false
+#   "additionalProperties": true
 # }
 # ```
 #
@@ -302,15 +302,77 @@ app.get '/', (req, res) ->
 #   "$schema": "http://json-schema.org/schema#",
 #   "description": "schema for response entry",
 #   "definitions":  {
-#     "segment": {
-#       "type": "array",
-#       "minItems": 1,
-#       "items": {
-#         "type": "array",
-#         "minItems": 2,
-#         "maxItems": 2,
-#         "items": {
+#     "rectangle": {
+#       "type": "object",
+#       "required": ["segments"],
+#       "properties": {
+#         "segments": {
+#           "type": "array",
+#           "minItems": 1,
+#           "items": {
+#             "type": "array",
+#             "minItems": 2,
+#             "maxItems": 2,
+#             "items": {
+#               "type": "number"
+#             }
+#           }
+#         },
+#         "strokeColor": {
+#           "type": "array",
+#           "minItems": 3,
+#           "maxItems": 3,
+#           "items": {
+#             "type": "number"
+#           }
+#         }
+#       },
+#       "additionalProperties": false
+#     },
+#     "circle": {
+#       "type": "object",
+#       "required": ["position", "radius"],
+#       "properties": {
+#         "position": {
+#           "type": "array",
+#           "minItems": 2,
+#           "maxItems": 2,
+#           "items": {
+#             "type": "number"
+#           }
+#         },
+#         "radius": {
 #           "type": "number"
+#         },
+#         "strokeColor": {
+#           "type": "array",
+#           "minItems": 3,
+#           "maxItems": 3,
+#           "items": {
+#             "type": "number"
+#           }
+#         }
+#       }
+#     },
+#     "point": {
+#       "type": "object",
+#       "required": ["position"],
+#       "properties": {
+#         "position": {
+#           "type": "array",
+#           "minItems": 2,
+#           "maxItems": 2,
+#           "items": {
+#             "type": "number"
+#           }
+#         },
+#         "strokeColor": {
+#           "type": "array",
+#           "minItems": 3,
+#           "maxItems": 3,
+#           "items": {
+#             "type": "number"
+#           }
 #         }
 #       }
 #     }
@@ -325,18 +387,23 @@ app.get '/', (req, res) ->
 #     },
 #     "highlighters": {
 #       "type": "array",
-#       "minItems": 1,
 #       "items": {
-#         "description": "Segments",
+#         "description": "Highlighter types",
 #         "type": "object",
-#         "required": ["segments"],
 #         "properties": {
-#           "segments": {
-#             "$ref": "#/definitions/segment"
+#           "rectangle": {
+#             "$ref": "#/definitions/rectangle"
+#           },
+#           "circle": {
+#             "$ref": "#/definitions/circle"
+#           },
+#           "point": {
+#             "$ref": "#/definitions/point"
 #           }
 #         },
 #         "additionalProperties": false
-#       }
+#       },
+#       "additionalItems": false
 #     }
 #   },
 #   "additionalProperties": false
@@ -369,6 +436,46 @@ app.post '/histogramenhancement', (req, res) ->
         field1: 'information field1'
         field2: 'information field2'
         field3: 4
+
+      highlighters: [
+        {
+          circle:
+            position: [50, 50]
+            radius: 20
+            strokeColor: [0, 1, 0]
+        }
+        {
+          circle:
+            position: [400, 400]
+            radius: 15
+        }
+        {
+          rectangle:
+            segments: [
+              [200, 200]
+              [250, 200]
+              [250, 250]
+              [200, 250]
+            ]
+        }
+        {
+          rectangle:
+            segments: [
+              [400, 200]
+              [450, 220]
+              [430, 190]
+            ]
+        }
+        {
+          point:
+            position: [600, 400]
+        }
+        {
+          point:
+            position: [600, 410]
+            strokeColor: [0, 1, 0]
+        }
+      ]
 
     fs.readFile './test.png', (err, img) ->
       if not err?
@@ -475,20 +582,13 @@ app.post '/multiscaleipd', (req, res) ->
         field3: 4
       highlighters: [
         {
-          segments: [
-            [100, 100]
-            [150, 100]
-            [150, 150]
-            [100, 150]
-          ]
-        }
-        {
-          segments: [
-            [200, 200]
-            [250, 200]
-            [250, 250]
-            [200, 250]
-          ]
+          rectangle:
+            segments: [
+              [100, 100]
+              [150, 100]
+              [150, 150]
+              [100, 150]
+            ]
         }
       ]
 
@@ -533,7 +633,11 @@ app.get '/otsubinazrization', (req, res) ->
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
-    input: []
+    input: [
+      {
+        highlighter: 'circle'
+      }
+    ]
 
   res.send records
 
@@ -552,20 +656,22 @@ app.post '/otsubinazrization', (req, res) ->
         field3: 4
       highlighters: [
         {
-          segments: [
-            [100, 100]
-            [150, 100]
-            [150, 150]
-            [100, 150]
-          ]
+          rectangle:
+            segments: [
+              [100, 100]
+              [150, 100]
+              [150, 150]
+              [100, 150]
+            ]
         }
         {
-          segments: [
-            [200, 200]
-            [250, 200]
-            [250, 250]
-            [200, 250]
-          ]
+          rectangle:
+            segments: [
+              [200, 200]
+              [250, 200]
+              [250, 250]
+              [200, 250]
+            ]
         }
       ]
 

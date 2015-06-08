@@ -10,6 +10,7 @@ do ->
     vm.paperOutput = null
     vm.strokeWidth = null
     vm.strokeColor = 'red'
+    vm.fillColor = null
 
     @init = (element) ->
       vm.element = element
@@ -28,15 +29,50 @@ do ->
 
     drawPath = (callback) ->
       angular.forEach vm.highlighters, (highlighter) ->
-        path = new vm.paperOutput.Path
-        path.strokeColor = vm.strokeColor
-        path.strokeWidth = 4
-        angular.forEach highlighter.segments, (segment) ->
-          x = segment[0] - path.strokeWidth
-          y = segment[1] - path.strokeWidth
-          @.add new Point x, y
-        , path
-        path.closed = true
+
+        if highlighter.circle?
+          circle = highlighter.circle
+          center = new vm.paperOutput.Point circle.position
+          path = new vm.paperOutput.Path.Circle center: center, radius: circle.radius
+          if circle.strokeColor?
+            color = circle.strokeColor
+            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
+          else
+            path.strokeColor = vm.strokeColor
+            path.fillColor = vm.fillColor
+          path.strokeWidth = vm.strokeWidth
+
+        else if highlighter.rectangle?
+          rectangle = highlighter.rectangle
+          path = new vm.paperOutput.Path
+          if rectangle.strokeColor?
+            color = rectangle.strokeColor
+            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
+          else
+            path.strokeColor = vm.strokeColor
+            path.fillColor = vm.fillColor
+          path.strokeWidth = vm.strokeWidth
+          angular.forEach rectangle.segments, (segment) ->
+            x = segment[0] - path.strokeWidth
+            y = segment[1] - path.strokeWidth
+            @.add new Point x, y
+          , path
+          path.closed = true
+
+        else if highlighter.point?
+          point = highlighter.point
+          path = new vm.paperOutput.Path.Circle center: point.position, radius: 2
+          if point.strokeColor?
+            color = point.strokeColor
+            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 1
+          else
+            path.strokeColor = vm.strokeColor
+            path.fillColor = 'red'
+          path.strokeWidth = 1
+
       callback()
 
     asyncLoadCanvas = ->
@@ -49,13 +85,14 @@ do ->
           paper.install window
           vm.paperOutput = new paper.PaperScope
           vm.paperOutput.setup vm.canvas
+          vm.fillColor = new vm.paperOutput.Color 1, 0, 0, 0.3
           raster = new vm.paperOutput.Raster
             source: vm.image
             position: vm.paperOutput.view.center
           raster.on 'load', ->
             scale = vm.paperOutput.view.size.width / @.bounds.width
             inverseScale = @.bounds.width / vm.paperOutput.view.size.width
-            vm.strokeWidth = 5 * inverseScale
+            vm.strokeWidth = 4 * inverseScale
             drawPath ->
               vm.paperOutput.view.zoom = scale
               vm.paperOutput.view.update()

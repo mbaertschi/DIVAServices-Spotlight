@@ -45,22 +45,33 @@ do ->
     # image: path to the selected image
     # inputs: model submitted by dynamic form
     # highlighter: path information of paperJS highlighter (if any)
-    prepareAlgorithmSendModel = (algorithm, selectedImage, model, path) ->
+    prepareAlgorithmSendModel = (algorithm, selectedImage, model, highlighterData) ->
       item =
         algorithm: algorithm
         image: selectedImage
         inputs: model
         highlighter: {}
 
-      if path?.view?
-        item.highlighter =
-          closed: path.closed
-          segments: []
-        angular.forEach path.segments, (segment) ->
-          x = segment.point.x - path.strokeWidth
-          y = segment.point.y - path.strokeWidth
-          @.push [x, y]
-        , item.highlighter.segments
+      if highlighterData?.path?.view?
+        path = highlighterData.path
+        type = highlighterData.type
+
+        if type is 'circle'
+          item.highlighter =
+            type: type
+            closed: path.closed
+            position: [path.position.x - path.strokeWidth, path.position.y - path.strokeWidth]
+            radius: path.bounds.width / 2
+        else
+          item.highlighter =
+            type: type
+            closed: path.closed
+            segments: []
+          angular.forEach path.segments, (segment) ->
+            x = segment.point.x - path.strokeWidth
+            y = segment.point.y - path.strokeWidth
+            @.push [x, y]
+          , item.highlighter.segments
 
       item: item
 
@@ -87,7 +98,6 @@ do ->
       if angular.equals {}, result.input.highlighter then result.input.highlighter = null
 
       result: result
-
 
     factory()
 

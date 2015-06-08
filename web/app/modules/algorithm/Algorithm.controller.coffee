@@ -88,7 +88,7 @@ do ->
       <p>- Click and drag a point to move it</p>
       <p>- Click on the first point to close the polygon</p>
       <p>- Once the polygon is closed, you can move it by clicking and dragging on the inner part of it</p>
-      <p>- Once the polygon is closed, you can add more points by clicking on itds edges</p>
+      <p>- Once the polygon is closed, you can add more points by clicking on its edges</p>
       <p>- Once the polygon is closed, you can remove it and draw a new one by clicking outside of the polygon</p>
       """
     )
@@ -98,8 +98,18 @@ do ->
       <p>Usage:</p>
       <p>- Click and drag mouse from top left to bottom right to span a new rectangle</p>
       <p>- Move the rectangle by clicking and dragging on its inner part</p>
-      <p>- Resize the rectangle by clicking and dragging on of its corner points</p>
+      <p>- Resize the rectangle by clicking and dragging one of its corner points</p>
       <p>- Remove the rectangle and draw a new one by clicking outside of the rectangle</p>
+      """
+    )
+
+    vm.circleDescription = $sce.trustAsHtml(
+      """
+      <p>Usage:</p>
+      <p>- Click and drag mouse to span a new circle</p>
+      <p>- Resize the circle by clicking and dragging one of its boundaries</p>
+      <p>- Move the circle by clicking and dragging on its inner part</p>
+      <p>- Remove the circle and draw a new one by clicking outside of the circle</p>
       """
     )
 
