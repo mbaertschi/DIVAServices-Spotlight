@@ -12,6 +12,7 @@ do ->
     image = canvas = raster = null
     initialized = false
     @path = null
+    @type = null
 
     factory = ->
       setup: setup
@@ -20,16 +21,21 @@ do ->
       set: set
       resetPath: resetPath
 
-    set = (path) ->
+    set = (path, type) ->
       @path = path
+      @type = type
 
     get = ->
-      @path
+      data =
+        path: @path
+        type: @type
+
 
     resetPath = ->
       if @path
         @path.remove()
       @path = null
+      @type = null
 
     initializeCanvas = (callback) ->
       img = new Image()

@@ -10,6 +10,7 @@ do ->
     vm.paperInput = null
     vm.strokeWidth = null
     vm.strokeColor = 'red'
+    vm.fillColor = null
 
     @init = (element) ->
       vm.element = element
@@ -27,16 +28,25 @@ do ->
         callback()
 
     drawPath = (callback) ->
-      path = new vm.paperInput.Path
-      path.strokeColor = vm.strokeColor
-      path.strokeWidth = vm.strokeWidth
-      angular.forEach vm.highlighter.segments, (segment) ->
-        x = segment[0] - path.strokeWidth
-        y = segment[1] - path.strokeWidth
-        @.add new Point x, y
-      , path
-      path.closed = true
-      callback()
+      if vm.highlighter.type is 'circle'
+        center = new vm.paperInput.Point(vm.highlighter.position[0] - vm.strokeWidth, vm.highlighter.position[1] - vm.strokeWidth)
+        path = new vm.paperInput.Path.Circle center: center, radius: vm.highlighter.radius
+        path.strokeColor = vm.strokeColor
+        path.strokeWidth = vm.strokeWidth
+        path.fillColor = vm.fillColor
+        callback()
+      else
+        path = new vm.paperInput.Path
+        path.strokeColor = vm.strokeColor
+        path.strokeWidth = vm.strokeWidth
+        path.fillColor = vm.fillColor
+        angular.forEach vm.highlighter.segments, (segment) ->
+          x = segment[0] - path.strokeWidth
+          y = segment[1] - path.strokeWidth
+          @.add new Point x, y
+        , path
+        path.closed = true
+        callback()
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#input-canvas')
@@ -48,6 +58,7 @@ do ->
           paper.install window
           vm.paperInput = new paper.PaperScope
           vm.paperInput.setup vm.canvas
+          vm.fillColor = new vm.paperInput.Color 1, 0, 0, 0.3
           raster = new vm.paperInput.Raster
             source: vm.image.path
             position: vm.paperInput.view.center

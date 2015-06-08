@@ -78,7 +78,7 @@ do ->
           if not vm.path.closed and vm.handle isnt 'segment'
             vm.path.add point
           vm.segmentIndex = null
-          diaPaperManager.set vm.path
+          diaPaperManager.set vm.path, 'rectangle'
 
         mouseDrag: (event) ->
           x = event.delta.x

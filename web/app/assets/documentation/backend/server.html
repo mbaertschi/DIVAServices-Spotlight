@@ -169,7 +169,7 @@ must meet the following JSON-Schema.</p>
       <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">25</span>
     },
     <span class="hljs-string">"highlighter"</span>: {
-      <span class="hljs-string">"enum"</span>: [<span class="hljs-string">"polygon"</span>, <span class="hljs-string">"rectangle"</span>]
+      <span class="hljs-string">"enum"</span>: [<span class="hljs-string">"polygon"</span>, <span class="hljs-string">"rectangle"</span>, <span class="hljs-string">"circle"</span>]
     },
     <span class="hljs-string">"description"</span>: {
       <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
@@ -347,7 +347,7 @@ must meet the following JSON-Schema.</p>
       <span class="hljs-string">"additionalItems"</span>: <span class="hljs-literal">false</span>
     }
   },
-  <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+  <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">true</span>
 }
 </code></pre><p>Call the post route of an algorithm to use it. The request’s body must contain the
 information which was provided by the get route and also the image to apply the
@@ -357,15 +357,77 @@ algorithm on. The response of the post route must meet the following JSON-Schema
   <span class="hljs-string">"$schema"</span>: <span class="hljs-string">"http://json-schema.org/schema#"</span>,
   <span class="hljs-string">"description"</span>: <span class="hljs-string">"schema for response entry"</span>,
   <span class="hljs-string">"definitions"</span>:  {
-    <span class="hljs-string">"segment"</span>: {
-      <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
-      <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
-      <span class="hljs-string">"items"</span>: {
-        <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
-        <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
-        <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
-        <span class="hljs-string">"items"</span>: {
+    <span class="hljs-string">"rectangle"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"segments"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"segments"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+            <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
+            <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
+            <span class="hljs-string">"items"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          }
+        },
+        <span class="hljs-string">"strokeColor"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    },
+    <span class="hljs-string">"circle"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"position"</span>, <span class="hljs-string">"radius"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"position"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
+        },
+        <span class="hljs-string">"radius"</span>: {
           <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+        },
+        <span class="hljs-string">"strokeColor"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
+        }
+      }
+    },
+    <span class="hljs-string">"point"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"position"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"position"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
+        },
+        <span class="hljs-string">"strokeColor"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
         }
       }
     }
@@ -380,18 +442,23 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     },
     <span class="hljs-string">"highlighters"</span>: {
       <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
-      <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
       <span class="hljs-string">"items"</span>: {
-        <span class="hljs-string">"description"</span>: <span class="hljs-string">"Segments"</span>,
+        <span class="hljs-string">"description"</span>: <span class="hljs-string">"Highlighter types"</span>,
         <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
-        <span class="hljs-string">"required"</span>: [<span class="hljs-string">"segments"</span>],
         <span class="hljs-string">"properties"</span>: {
-          <span class="hljs-string">"segments"</span>: {
-            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/segment"</span>
+          <span class="hljs-string">"rectangle"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/rectangle"</span>
+          },
+          <span class="hljs-string">"circle"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/circle"</span>
+          },
+          <span class="hljs-string">"point"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/point"</span>
           }
         },
         <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
-      }
+      },
+      <span class="hljs-string">"additionalItems"</span>: <span class="hljs-literal">false</span>
     }
   },
   <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
@@ -432,6 +499,46 @@ algorithm on. The response of the post route must meet the following JSON-Schema
         <span class="hljs-attribute">field1</span>: <span class="hljs-string">'information field1'</span>
         <span class="hljs-attribute">field2</span>: <span class="hljs-string">'information field2'</span>
         <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
+
+      <span class="hljs-attribute">highlighters</span>: [
+        {
+          <span class="hljs-attribute">circle</span>:
+            <span class="hljs-attribute">position</span>: [<span class="hljs-number">50</span>, <span class="hljs-number">50</span>]
+            <span class="hljs-attribute">radius</span>: <span class="hljs-number">20</span>
+            <span class="hljs-attribute">strokeColor</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]
+        }
+        {
+          <span class="hljs-attribute">circle</span>:
+            <span class="hljs-attribute">position</span>: [<span class="hljs-number">400</span>, <span class="hljs-number">400</span>]
+            <span class="hljs-attribute">radius</span>: <span class="hljs-number">15</span>
+        }
+        {
+          <span class="hljs-attribute">rectangle</span>:
+            <span class="hljs-attribute">segments</span>: [
+              [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
+              [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
+              [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
+              [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
+            ]
+        }
+        {
+          <span class="hljs-attribute">rectangle</span>:
+            <span class="hljs-attribute">segments</span>: [
+              [<span class="hljs-number">400</span>, <span class="hljs-number">200</span>]
+              [<span class="hljs-number">450</span>, <span class="hljs-number">220</span>]
+              [<span class="hljs-number">430</span>, <span class="hljs-number">190</span>]
+            ]
+        }
+        {
+          <span class="hljs-attribute">point</span>:
+            <span class="hljs-attribute">position</span>: [<span class="hljs-number">600</span>, <span class="hljs-number">400</span>]
+        }
+        {
+          <span class="hljs-attribute">point</span>:
+            <span class="hljs-attribute">position</span>: [<span class="hljs-number">600</span>, <span class="hljs-number">410</span>]
+            <span class="hljs-attribute">strokeColor</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]
+        }
+      ]
 
     fs.readFile <span class="hljs-string">'./test.png'</span>, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> err?
@@ -545,20 +652,13 @@ algorithm on. The response of the post route must meet the following JSON-Schema
         <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
       <span class="hljs-attribute">highlighters</span>: [
         {
-          <span class="hljs-attribute">segments</span>: [
-            [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
-            [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
-            [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
-            [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
-          ]
-        }
-        {
-          <span class="hljs-attribute">segments</span>: [
-            [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
-            [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
-            [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
-            [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
-          ]
+          <span class="hljs-attribute">rectangle</span>:
+            <span class="hljs-attribute">segments</span>: [
+              [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
+              [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
+              [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
+              [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
+            ]
         }
       ]
 
@@ -613,7 +713,11 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'otsubinazrization'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the otsubinazrization algorithm on your image'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/otsubinazrization'</span>
-    <span class="hljs-attribute">input</span>: []
+    <span class="hljs-attribute">input</span>: [
+      {
+        <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'circle'</span>
+      }
+    ]
 
   res.send records</pre></div>
         
@@ -636,20 +740,22 @@ algorithm on. The response of the post route must meet the following JSON-Schema
         <span class="hljs-attribute">field3</span>: <span class="hljs-number">4</span>
       <span class="hljs-attribute">highlighters</span>: [
         {
-          <span class="hljs-attribute">segments</span>: [
-            [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
-            [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
-            [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
-            [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
-          ]
+          <span class="hljs-attribute">rectangle</span>:
+            <span class="hljs-attribute">segments</span>: [
+              [<span class="hljs-number">100</span>, <span class="hljs-number">100</span>]
+              [<span class="hljs-number">150</span>, <span class="hljs-number">100</span>]
+              [<span class="hljs-number">150</span>, <span class="hljs-number">150</span>]
+              [<span class="hljs-number">100</span>, <span class="hljs-number">150</span>]
+            ]
         }
         {
-          <span class="hljs-attribute">segments</span>: [
-            [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
-            [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
-            [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
-            [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
-          ]
+          <span class="hljs-attribute">rectangle</span>:
+            <span class="hljs-attribute">segments</span>: [
+              [<span class="hljs-number">200</span>, <span class="hljs-number">200</span>]
+              [<span class="hljs-number">250</span>, <span class="hljs-number">200</span>]
+              [<span class="hljs-number">250</span>, <span class="hljs-number">250</span>]
+              [<span class="hljs-number">200</span>, <span class="hljs-number">250</span>]
+            ]
         }
       ]
 

@@ -26,6 +26,11 @@
               = ' '
               | Polygon Selection
             canvas#polygon(ng-if='vm.highlighter=="polygon"', dia-algorithm-polygon, data-selected-image='vm.selectedImage', set-highlighter-status='vm.setHighlighterStatus(status)')
+            span(ng-if='vm.highlighter=="circle"')
+              i.help.fa.fa-question-circle(ng-if='vm.highlighter=="circle"', tooltip-placement="right", tooltip-html-unsafe='{{vm.circleDescription}}')
+              = ' '
+              | Circle Selection
+            canvas#circle(ng-if='vm.highlighter=="circle"', dia-algorithm-circle, data-selected-image='vm.selectedImage', set-highlighter-status='vm.setHighlighterStatus(status)')
           .selected-image(ng-if='!vm.highlighter')
             img#image(ng-src='{{vm.selectedImage.url}}')
         .col-xs-12.col-lg-6(ng-if='vm.inputs.length')
