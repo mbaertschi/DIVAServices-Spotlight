@@ -27,7 +27,7 @@ do ->
         vm.canvas.height = height
         callback()
 
-    drawPath = (callback) ->
+    drawPath = ->
       angular.forEach vm.highlighters, (highlighter) ->
 
         if highlighter.circle?
@@ -42,6 +42,7 @@ do ->
             path.strokeColor = vm.strokeColor
             path.fillColor = vm.fillColor
           path.strokeWidth = vm.strokeWidth
+          path.scale vm.scale, [0, 0]
 
         else if highlighter.rectangle?
           rectangle = highlighter.rectangle
@@ -55,10 +56,11 @@ do ->
             path.fillColor = vm.fillColor
           path.strokeWidth = vm.strokeWidth
           angular.forEach rectangle.segments, (segment) ->
-            x = segment[0] - path.strokeWidth
-            y = segment[1] - path.strokeWidth
-            @.add new Point x, y
+            x = segment[0] #- path.strokeWidth
+            y = segment[1] #- path.strokeWidth
+            @.add new vm.paperOutput.Point x, y
           , path
+          path.scale vm.scale, [0, 0]
           path.closed = true
 
         else if highlighter.point?
@@ -72,8 +74,7 @@ do ->
             path.strokeColor = vm.strokeColor
             path.fillColor = 'red'
           path.strokeWidth = 1
-
-      callback()
+          path.scale vm.scale, [0, 0]
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')
@@ -82,7 +83,6 @@ do ->
           vm.paperOutput.clear()
         vm.canvas = vm.canvas[0]
         initializeCanvas ->
-          paper.install window
           vm.paperOutput = new paper.PaperScope
           vm.paperOutput.setup vm.canvas
           vm.fillColor = new vm.paperOutput.Color 1, 0, 0, 0.3
@@ -90,12 +90,12 @@ do ->
             source: vm.image
             position: vm.paperOutput.view.center
           raster.on 'load', ->
-            scale = vm.paperOutput.view.size.width / @.bounds.width
+            vm.scale = vm.paperOutput.view.size.width / @.bounds.width
             inverseScale = @.bounds.width / vm.paperOutput.view.size.width
-            vm.strokeWidth = 4 * inverseScale
-            drawPath ->
-              vm.paperOutput.view.zoom = scale
-              vm.paperOutput.view.update()
+            vm.strokeWidth = 4 * vm.scale
+            raster.scale vm.scale
+            vm.paperOutput.view.update()
+            drawPath()
 
   angular.module('app.results')
     .controller 'DiaTableOutputsController', DiaTableOutputsController

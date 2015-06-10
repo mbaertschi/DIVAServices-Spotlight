@@ -53,7 +53,10 @@ do ->
         highlighter: {}
 
       if highlighterData?.path?.view?
-        path = highlighterData.path
+        path = highlighterData.path.clone()
+        path.visible = false
+        path.fullySelected = false
+        path.scale highlighterData.scale, [0, 0]
         type = highlighterData.type
 
         if type is 'circle'
@@ -68,8 +71,8 @@ do ->
             closed: path.closed
             segments: []
           angular.forEach path.segments, (segment) ->
-            x = segment.point.x - path.strokeWidth
-            y = segment.point.y - path.strokeWidth
+            x = segment.point.x
+            y = segment.point.y
             @.push [x, y]
           , item.highlighter.segments
 

@@ -27,26 +27,26 @@ do ->
         vm.canvas.height = height
         callback()
 
-    drawPath = (callback) ->
+    drawPath = ->
       if vm.highlighter.type is 'circle'
         center = new vm.paperInput.Point(vm.highlighter.position[0] - vm.strokeWidth, vm.highlighter.position[1] - vm.strokeWidth)
         path = new vm.paperInput.Path.Circle center: center, radius: vm.highlighter.radius
         path.strokeColor = vm.strokeColor
         path.strokeWidth = vm.strokeWidth
         path.fillColor = vm.fillColor
-        callback()
+        path.scale vm.scale, [0, 0]
       else
         path = new vm.paperInput.Path
         path.strokeColor = vm.strokeColor
         path.strokeWidth = vm.strokeWidth
         path.fillColor = vm.fillColor
         angular.forEach vm.highlighter.segments, (segment) ->
-          x = segment[0] - path.strokeWidth
-          y = segment[1] - path.strokeWidth
-          @.add new Point x, y
+          x = segment[0] #- path.strokeWidth
+          y = segment[1] #- path.strokeWidth
+          @.add new vm.paperInput.Point x, y
         , path
         path.closed = true
-        callback()
+        path.scale vm.scale, [0, 0]
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#input-canvas')
@@ -55,7 +55,6 @@ do ->
           vm.paperInput.paper.clear()
         vm.canvas = vm.canvas[0]
         initializeCanvas ->
-          paper.install window
           vm.paperInput = new paper.PaperScope
           vm.paperInput.setup vm.canvas
           vm.fillColor = new vm.paperInput.Color 1, 0, 0, 0.3
@@ -63,12 +62,12 @@ do ->
             source: vm.image.path
             position: vm.paperInput.view.center
           raster.on 'load', ->
-            scale = vm.paperInput.view.size.width / @.bounds.width
+            vm.scale = vm.paperInput.view.size.width / @.bounds.width
             inverseScale = @.bounds.width / vm.paperInput.view.size.width
-            vm.strokeWidth = 4 * inverseScale
-            drawPath ->
-              vm.paperInput.view.zoom = scale
-              vm.paperInput.view.update()
+            vm.strokeWidth = 4 * vm.scale
+            raster.scale vm.scale
+            vm.paperInput.view.update()
+            drawPath()
 
   angular.module('app.results')
     .controller 'DiaTableInputsController', DiaTableInputsController
