@@ -17,6 +17,6 @@
   },
   "server": {
     "timeout": 120000,
-    "maxFileSize": 10485760
+    "maxFileSize": 20971520
   }
 }

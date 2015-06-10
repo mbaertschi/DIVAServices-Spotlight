@@ -12,7 +12,7 @@ ExifImage = require('exif').ExifImage
 lwip      = require 'lwip'
 
 # We don't want images to be larger than 1024 pixels with / height
-MAX_SIZE = 1024
+MAX_SIZE = 4000
 
 # Expose utils
 utils = exports = module.exports = {}

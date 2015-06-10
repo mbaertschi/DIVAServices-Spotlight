@@ -17,6 +17,7 @@ do ->
     factory = ->
       setup: setup
       reset: reset
+      scale: null
       get: get
       set: set
       resetPath: resetPath
@@ -29,7 +30,7 @@ do ->
       data =
         path: @path
         type: @type
-
+        scale: factory.scale
 
     resetPath = ->
       if @path
@@ -55,9 +56,9 @@ do ->
         position: view.center
       raster.on 'load', ->
         scale = view.size.width / @.bounds.width
-        inverseScale = @.bounds.width / view.size.width
-        vm.strokeWidth = 4 * inverseScale
-        view.zoom = scale
+        factory.scale = @.bounds.width / view.size.width
+        vm.strokeWidth = 4 * scale
+        raster.scale scale
         view.update()
 
     initPaper = (tools) ->
@@ -80,7 +81,6 @@ do ->
       initializeCanvas ->
         if initialized
           view.viewSize = new Size canvas.width, canvas.height
-          view.zoom = 1
           view.update()
         else
           initPaper vm.tools
