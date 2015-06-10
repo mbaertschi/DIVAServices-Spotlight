@@ -1,7 +1,7 @@
 do ->
   'use strict'
 
-  DiaTableOutputsController = ($timeout) ->
+  DiaTableOutputsController = ($timeout, diaPanAndZoomManager) ->
     vm = @
     vm.canvas = null
     vm.highlighters = vm.outputData?.highlighters or null
@@ -11,6 +11,7 @@ do ->
     vm.strokeWidth = null
     vm.strokeColor = 'red'
     vm.fillColor = null
+    vm.uuid = vm.outputData?.uuid or new Date
 
     @init = (element) ->
       vm.element = element
@@ -27,54 +28,71 @@ do ->
         vm.canvas.height = height
         callback()
 
-    drawPath = ->
-      angular.forEach vm.highlighters, (highlighter) ->
+    drawPath = (callback) ->
+      if vm.highlighters?
+        angular.forEach vm.highlighters, (highlighter) ->
+          if highlighter.circle?
+            circle = highlighter.circle
+            center = new vm.paperOutput.Point circle.position
+            path = new vm.paperOutput.Path.Circle center: center, radius: circle.radius
+            if circle.strokeColor?
+              color = circle.strokeColor
+              path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+              path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
+            else
+              path.strokeColor = vm.strokeColor
+              path.fillColor = vm.fillColor
+            path.strokeWidth = vm.strokeWidth
+            path.scale vm.scale, [0, 0]
+          else if highlighter.rectangle?
+            rectangle = highlighter.rectangle
+            path = new vm.paperOutput.Path
+            if rectangle.strokeColor?
+              color = rectangle.strokeColor
+              path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+              path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
+            else
+              path.strokeColor = vm.strokeColor
+              path.fillColor = vm.fillColor
+            path.strokeWidth = vm.strokeWidth
+            angular.forEach rectangle.segments, (segment) ->
+              x = segment[0]
+              y = segment[1]
+              @.add new vm.paperOutput.Point x, y
+            , path
+            path.scale vm.scale, [0, 0]
+            path.closed = true
+          else if highlighter.point?
+            point = highlighter.point
+            path = new vm.paperOutput.Path.Circle center: point.position, radius: 2
+            if point.strokeColor?
+              color = point.strokeColor
+              path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+              path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 1
+            else
+              path.strokeColor = vm.strokeColor
+              path.fillColor = 'red'
+            path.strokeWidth = 1
+            path.scale vm.scale, [0, 0]
+        callback()
+      else
+        callback()
 
-        if highlighter.circle?
-          circle = highlighter.circle
-          center = new vm.paperOutput.Point circle.position
-          path = new vm.paperOutput.Path.Circle center: center, radius: circle.radius
-          if circle.strokeColor?
-            color = circle.strokeColor
-            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
-            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
-          else
-            path.strokeColor = vm.strokeColor
-            path.fillColor = vm.fillColor
-          path.strokeWidth = vm.strokeWidth
-          path.scale vm.scale, [0, 0]
-
-        else if highlighter.rectangle?
-          rectangle = highlighter.rectangle
-          path = new vm.paperOutput.Path
-          if rectangle.strokeColor?
-            color = rectangle.strokeColor
-            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
-            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 0.3
-          else
-            path.strokeColor = vm.strokeColor
-            path.fillColor = vm.fillColor
-          path.strokeWidth = vm.strokeWidth
-          angular.forEach rectangle.segments, (segment) ->
-            x = segment[0] #- path.strokeWidth
-            y = segment[1] #- path.strokeWidth
-            @.add new vm.paperOutput.Point x, y
-          , path
-          path.scale vm.scale, [0, 0]
-          path.closed = true
-
-        else if highlighter.point?
-          point = highlighter.point
-          path = new vm.paperOutput.Path.Circle center: point.position, radius: 2
-          if point.strokeColor?
-            color = point.strokeColor
-            path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
-            path.fillColor = new vm.paperOutput.Color color[0], color[1], color[2], 1
-          else
-            path.strokeColor = vm.strokeColor
-            path.fillColor = 'red'
-          path.strokeWidth = 1
-          path.scale vm.scale, [0, 0]
+    initPanAndZoom = ->
+      diaPanAndZoomManager.add 'output', vm.uuid, vm.paperOutput
+      vm.element.on 'mouseenter', (event) ->
+        diaPanAndZoomManager.activate vm.uuid
+      vm.element.on 'mouseleave', ->
+        diaPanAndZoomManager.reset vm.uuid
+      vm.element.on 'mousewheel', (event) ->
+        if event.shiftKey
+          diaPanAndZoomManager.changeCenter vm.uuid, event.deltaX, event.deltaY, event.deltaFactor
+          event.preventDefault()
+        else if event.altKey
+          mousePosition = new vm.paperOutput.Point event.offsetX, event.offsetY
+          viewPosition = vm.paperOutput.view.viewToProject mousePosition
+          diaPanAndZoomManager.changeZoom vm.uuid, event.deltaY, viewPosition
+          event.preventDefault()
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')
@@ -95,11 +113,13 @@ do ->
             vm.strokeWidth = 4 * vm.scale
             raster.scale vm.scale
             vm.paperOutput.view.update()
-            drawPath()
+            drawPath ->
+              initPanAndZoom()
 
   angular.module('app.results')
     .controller 'DiaTableOutputsController', DiaTableOutputsController
 
   DiaTableOutputsController.$inject = [
     '$timeout'
+    'diaPanAndZoomManager'
   ]

@@ -90,12 +90,14 @@ do ->
           end: input.end
           duration: input.duration
         input:
+          uuid: input.uuid
           inputs: input.inputs
           highlighter: input.highlighter
           image:
             path: input.image.url
             thumbPath: '<div class="project-members"><img src=\"' + input.image.thumbUrl + '\"></div>'
         output: output
+      result.output.uuid = input.uuid
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null
       if angular.equals {}, result.input.highlighter then result.input.highlighter = null

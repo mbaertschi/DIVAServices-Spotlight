@@ -24,7 +24,7 @@ app = express()
 
 # Enable body parser for json content. ``limit`` must not be larger than specified in
 # ``./web/conf/server.[dev/prod].json``
-app.use bodyParser.json limit: '10mb'
+app.use bodyParser.json limit: '20mb'
 
 # Root entry of REST server
 # -------------------------

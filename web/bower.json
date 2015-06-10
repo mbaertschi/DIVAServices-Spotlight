@@ -33,7 +33,8 @@
     "paper": "0.9.22",
     "visualcaptcha.angular": "0.0.5",
     "angular-superbox": "1.0.0",
-    "moment": "2.10.3"
+    "moment": "2.10.3",
+    "jquery-mousewheel": "3.1.12"
   },
   "overrides": {
     "socket.io-client": {
