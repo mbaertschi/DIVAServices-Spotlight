@@ -7,19 +7,21 @@
         .text-muted(ng-if='!vm.results.length') You currently have no results. Click
           a#link(ui-sref='algorithms') here
           | to go to algorithms page.
-        table.display.projects-table.table.table-striped.table-bordered.table-hover(ng-if='vm.results.length', dia-datatable='', data-table-options='vm.tableOptions', cellspacing='0', width='100%')
-          thead
-            tr
-              th
-              th Algorithm
-              th Description
-              th Image
-              th Started
-              th Ended
-              th Duration
-          caption.smart-datatable-child-format(data-child-control='td.details-control')
-            .wrapper
-              .col-xs-12.col-lg-6
-                .table-inputs(dia-table-inputs='', data-input-data='d.input')
-              .col-xs-12.col-lg-6
-                .table-outputs(dia-table-outputs='', data-output-data='d.output')
+        span(ng-if='vm.results.length')
+          .text-muted Hold SHIFT and scroll to move input and output images around. Hold ALT and scroll to zoom in and out. Warning: If the image contains a lot of information (i.e more than 1000 points), moving or zooming might freeze your browser.
+          table.display.projects-table.table.table-striped.table-bordered.table-hover(dia-datatable='', data-table-options='vm.tableOptions', cellspacing='0', width='100%')
+            thead
+              tr
+                th
+                th Algorithm
+                th Description
+                th Image
+                th Started
+                th Ended
+                th Duration
+            caption.smart-datatable-child-format(data-child-control='td.details-control')
+              .wrapper
+                .col-xs-12.col-lg-6
+                  .table-inputs(dia-table-inputs='', data-input-data='d.input')
+                .col-xs-12.col-lg-6
+                  .table-outputs(dia-table-outputs='', data-output-data='d.output')

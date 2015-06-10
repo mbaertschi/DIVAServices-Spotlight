@@ -1,7 +1,7 @@
 do ->
   'use strict'
 
-  DiaTableInputsController = ($timeout) ->
+  DiaTableInputsController = ($timeout, diaPanAndZoomManager) ->
     vm = @
     vm.canvas = null
     vm.highlighter = vm.inputData?.highlighter or null
@@ -11,6 +11,7 @@ do ->
     vm.strokeWidth = null
     vm.strokeColor = 'red'
     vm.fillColor = null
+    vm.uuid = vm.inputData?.uuid or new Date
 
     @init = (element) ->
       vm.element = element
@@ -27,26 +28,47 @@ do ->
         vm.canvas.height = height
         callback()
 
-    drawPath = ->
-      if vm.highlighter.type is 'circle'
-        center = new vm.paperInput.Point(vm.highlighter.position[0] - vm.strokeWidth, vm.highlighter.position[1] - vm.strokeWidth)
-        path = new vm.paperInput.Path.Circle center: center, radius: vm.highlighter.radius
-        path.strokeColor = vm.strokeColor
-        path.strokeWidth = vm.strokeWidth
-        path.fillColor = vm.fillColor
-        path.scale vm.scale, [0, 0]
+    drawPath = (callback) ->
+      if vm.highlighter?
+        if vm.highlighter.type is 'circle'
+          center = new vm.paperInput.Point(vm.highlighter.position[0] , vm.highlighter.position[1])
+          path = new vm.paperInput.Path.Circle center: center, radius: vm.highlighter.radius
+          path.strokeColor = vm.strokeColor
+          path.strokeWidth = vm.strokeWidth
+          path.fillColor = vm.fillColor
+          path.scale vm.scale, [0, 0]
+          callback()
+        else
+          path = new vm.paperInput.Path
+          path.strokeColor = vm.strokeColor
+          path.strokeWidth = vm.strokeWidth
+          path.fillColor = vm.fillColor
+          angular.forEach vm.highlighter.segments, (segment) ->
+            x = segment[0]
+            y = segment[1]
+            @.add new vm.paperInput.Point x, y
+          , path
+          path.closed = true
+          path.scale vm.scale, [0, 0]
+          callback()
       else
-        path = new vm.paperInput.Path
-        path.strokeColor = vm.strokeColor
-        path.strokeWidth = vm.strokeWidth
-        path.fillColor = vm.fillColor
-        angular.forEach vm.highlighter.segments, (segment) ->
-          x = segment[0] #- path.strokeWidth
-          y = segment[1] #- path.strokeWidth
-          @.add new vm.paperInput.Point x, y
-        , path
-        path.closed = true
-        path.scale vm.scale, [0, 0]
+        callback()
+
+    initPanAndZoom = ->
+      diaPanAndZoomManager.add 'input', vm.uuid, vm.paperInput
+      vm.element.on 'mouseenter', (event) ->
+        diaPanAndZoomManager.activate vm.uuid
+      vm.element.on 'mouseleave', ->
+        diaPanAndZoomManager.reset vm.uuid
+      vm.element.on 'mousewheel', (event) ->
+        if event.shiftKey
+          diaPanAndZoomManager.changeCenter vm.uuid, event.deltaX, event.deltaY, event.deltaFactor
+          event.preventDefault()
+        else if event.altKey
+          mousePosition = new vm.paperInput.Point event.offsetX, event.offsetY
+          viewPosition = vm.paperInput.view.viewToProject mousePosition
+          diaPanAndZoomManager.changeZoom vm.uuid, event.deltaY, viewPosition
+          event.preventDefault()
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#input-canvas')
@@ -67,11 +89,13 @@ do ->
             vm.strokeWidth = 4 * vm.scale
             raster.scale vm.scale
             vm.paperInput.view.update()
-            drawPath()
+            drawPath ->
+              initPanAndZoom()
 
   angular.module('app.results')
     .controller 'DiaTableInputsController', DiaTableInputsController
 
   DiaTableInputsController.$inject = [
     '$timeout'
+    'diaPanAndZoomManager'
   ]

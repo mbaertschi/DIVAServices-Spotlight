@@ -74,6 +74,7 @@ do ->
         item.start = moment(item.start).format 'HH:mm:ss'
         item.end = moment(end).format 'HH:mm:ss'
         item.duration = duration.toFixed(2)
+        item.uuid = end.getTime()
         $rootScope.finished++
         toastr.info "Algorithm #{item.algorithm.name} is done", 'Info'
         results.push diaModelBuilder.prepareResultForDatatable(item, res.data).result
