@@ -6,7 +6,7 @@ Controller diaDatatable
 do ->
   'use strict'
 
-  DiaDatatableController = ($scope, $compile) ->
+  DiaDatatableController = ($scope, $state, $compile) ->
     vm = @
     vm.element = null
     vm.dataTable = undefined
@@ -60,10 +60,20 @@ do ->
 
       vm.dataTable = vm.element.DataTable(vm.options)
 
+      vm.dataTable.on 'click', '.action-button-back', ->
+        entry = vm.dataTable.row($(this).parents('tr')).data()
+        $state.go 'algorithm', {id: entry.algorithm.id, backEntry: entry}
+
+      vm.dataTable.on 'click', '.action-button-delete', ->
+        entry = vm.dataTable.row($(this).parents('tr')).data()
+        vm.dataTable.row($(this).parents('tr')).remove().draw()
+        vm.clickDelete entry: entry
+
   angular.module('app.results')
     .controller 'DiaDatatableController', DiaDatatableController
 
   DiaDatatableController.$inject = [
     '$scope'
+    '$state'
     '$compile'
   ]

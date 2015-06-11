@@ -83,6 +83,7 @@ do ->
       result =
         algorithm:
           id: input.algorithm.id
+          uuid: input.uuid
           name: input.algorithm.name
           description: input.algorithm.description
         submit:

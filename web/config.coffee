@@ -16,6 +16,8 @@ brunchSettings.config =
     definition: false
     wrapper: false
 
+  sourceMaps: true
+
   files:
 
     javascripts:

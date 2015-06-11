@@ -28,7 +28,24 @@ do ->
           vm.path.remove()
         vm.path = null
         vm.setHighlighterStatus status: true
-        diaPaperManager.setup vm
+        diaPaperManager.setup vm, ->
+          if vm.selection? then drawPath()
+
+    drawPath = ->
+      vm.path = new Path
+      vm.path.strokeColor = vm.strokeColor
+      vm.path.strokeWidth = vm.strokeWidth
+      vm.path.fillColor = vm.fillColor
+      angular.forEach vm.selection.segments, (segment) ->
+        x = segment[0]
+        y = segment[1]
+        @.add new Point x, y
+      , vm.path
+      vm.path.closed = true
+      vm.path.fullySelected = true
+      vm.path.scale vm.scale, [0, 0]
+      vm.setHighlighterStatus status: false
+      diaPaperManager.set vm.path, 'rectangle'
 
     setupMouseEvents = ->
 

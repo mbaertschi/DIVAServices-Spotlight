@@ -48,18 +48,19 @@ do ->
         canvas.height = height
         callback()
 
-    drawRaster = (vm) ->
+    drawRaster = (vm, callback) ->
       if project.layers[0]?
         project.layers[0].removeChildren()
       raster = new Raster
         source: image.url
         position: view.center
       raster.on 'load', ->
-        scale = view.size.width / @.bounds.width
+        vm.scale = view.size.width / @.bounds.width
         factory.scale = @.bounds.width / view.size.width
-        vm.strokeWidth = 4 * scale
-        raster.scale scale
+        vm.strokeWidth = 4 * vm.scale
+        raster.scale vm.scale
         view.update()
+        callback()
 
     initPaper = (tools) ->
       paper.install window
@@ -74,7 +75,7 @@ do ->
         tool = null
       initialized = true
 
-    setup = (vm) ->
+    setup = (vm, callback) ->
       element = vm.element
       image = vm.selectedImage
       canvas = element[0]
@@ -84,7 +85,8 @@ do ->
           view.update()
         else
           initPaper vm.tools
-        drawRaster vm
+        drawRaster vm, ->
+          callback()
 
     reset = ->
       initialized = false
