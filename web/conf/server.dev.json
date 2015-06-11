@@ -15,7 +15,7 @@
   },
   "poller": {
     "run": true,
-    "interval": 20000
+    "interval": 3600000
   },
   "loader": {
     "retries": 7
