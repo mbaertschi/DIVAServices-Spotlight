@@ -7,7 +7,7 @@ Controller AlgorithmsPageController
 do ->
   'use strict'
 
-  AlgorithmsPageController = ($scope, $state, socketPrepService, algorithmsPrepService, toastr) ->
+  AlgorithmsPageController = ($scope, $state, socketPrepService, algorithmsPrepService, diaSocket, toastr) ->
     vm = @
     vm.algorithms = algorithmsPrepService.algorithms
 
@@ -25,7 +25,6 @@ do ->
         }
         { data: 'host' }
         { data: 'description' }
-        { data: 'hits' }
         {
           data: '_lastChange'
           render: (data, type, row) ->
@@ -45,23 +44,32 @@ do ->
 
     if socketPrepService.settings.run
       $scope.$on 'socket:update algorithms', (ev, algorithms) ->
+        table = $('#algorithm-table').DataTable()
         angular.forEach algorithms, (algorithm) ->
-          available = false
           angular.forEach vm.algorithms, (scopeAlgorithm, index) ->
-            if algorithm.url is scopeAlgorithm.url
+            if algorithm._id is scopeAlgorithm._id
               vm.algorithms[index] = algorithm
+              table.rows (idx, data) ->
+                if data._id is algorithm._id
+                  table.row(idx).data(algorithm).draw()
         toastr.info 'Algorithms have changed', 'Updated'
 
       $scope.$on 'socket:add algorithms', (ev, algorithms) ->
+        table = $('#algorithm-table').DataTable()
         angular.forEach algorithms, (algorithm) ->
           vm.algorithms.push algorithm
+          table.row.add(algorithm).draw()
         toastr.info 'Added new algorithms', 'Added'
 
       $scope.$on 'socket:delete algorithms', (ev, algorithms) ->
+        table = $('#algorithm-table').DataTable()
         angular.forEach algorithms, (algorithm) ->
           angular.forEach vm.algorithms, (scopeAlgorithm, index) ->
-            if algorithm.url is scopeAlgorithm.url
+            if algorithm._id is scopeAlgorithm._id
               vm.algorithms.splice index, 1
+              table.rows((idx, data) ->
+                data._id is algorithm._id
+              ).remove().draw()
         toastr.info 'Deleted one or more algorithms', 'Delete'
 
       $scope.$on 'socket:error', (ev, data) ->
@@ -76,5 +84,6 @@ do ->
     '$state'
     'socketPrepService'
     'algorithmsPrepService'
+    'diaSocket'
     'toastr'
   ]
