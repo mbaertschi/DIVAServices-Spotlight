@@ -17,6 +17,7 @@ do ->
       link: link
       scope:
         selectedImage: '='
+        selection: '='
         setHighlighterStatus: '&'
       controller: 'DiaAlgorithmPolygonController'
       controllerAs: 'vm'

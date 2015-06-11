@@ -10,6 +10,8 @@ do ->
       templateUrl: '/modules/algorithm/algorithm.view.html'
       controller: 'AlgorithmPageController'
       controllerAs: 'vm'
+      params:
+        backEntry: null
       data:
         title: 'Algorithm'
       resolve:

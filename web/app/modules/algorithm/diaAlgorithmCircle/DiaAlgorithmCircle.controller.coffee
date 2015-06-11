@@ -27,7 +27,19 @@ do ->
           vm.path.remove()
         vm.path = null
         vm.setHighlighterStatus status: true
-        diaPaperManager.setup vm
+        diaPaperManager.setup vm, ->
+          if vm.selection? then drawPath()
+
+    drawPath = ->
+      center = new Point(vm.selection.position[0] , vm.selection.position[1])
+      vm.path = new Path.Circle center: center, radius: vm.selection.radius
+      vm.path.strokeColor = vm.strokeColor
+      vm.path.strokeWidth = vm.strokeWidth
+      vm.path.fillColor = vm.fillColor
+      vm.path.fullySelected = true
+      vm.path.scale vm.scale, [0, 0]
+      vm.setHighlighterStatus status: false
+      diaPaperManager.set vm.path, 'circle'
 
     setupMouseEvents = ->
 

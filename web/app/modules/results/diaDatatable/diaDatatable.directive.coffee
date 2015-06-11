@@ -10,7 +10,9 @@ do ->
 
     directive = ->
       restrict: 'A'
-      scope: tableOptions: '='
+      scope:
+        tableOptions: '='
+        clickDelete: '&'
       link: link
       controller: 'DiaDatatableController'
       controllerAs: 'vm'

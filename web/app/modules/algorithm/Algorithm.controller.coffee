@@ -9,10 +9,11 @@ Controller AlgorithmPageController
 do ->
   'use strict'
 
-  AlgorithmPageController = ($scope, $state, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaProcessingQueue, diaCaptchaService, diaModelBuilder, diaPaperManager, toastr) ->
+  AlgorithmPageController = ($scope, $state, $stateParams, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaProcessingQueue, diaCaptchaService, diaModelBuilder, diaPaperManager, toastr) ->
     vm = @
     vm.algorithm = algorithmsPrepService.data.algorithm
     vm.highlighter = algorithmsPrepService.data.highlighter
+    vm.selection = null
     vm.inputs = algorithmsPrepService.data.inputs
     vm.model = algorithmsPrepService.data.model
     vm.images = imagesPrepService.images
@@ -64,11 +65,22 @@ do ->
       vm.invalidForm = status
 
     # set selected image
-    vm.setSelectedImage = (image) ->
-      if not vm.highlighter then diaPaperManager.resetPath()
+    vm.setSelectedImage = (image, fromBackModel) ->
+      diaPaperManager.resetPath()
+      if not fromBackModel then vm.selection = null
       vm.state = 'highlight'
       vm.selectedImage = image
       if vm.captcha then vm.captcha.refresh()
+
+    # if we come from results view, set entry passed to $stateParams
+    if $stateParams.backEntry?
+      entry = $stateParams.backEntry.input
+      vm.model = {}
+      if entry.inputs? then angular.copy entry.inputs, vm.model
+      vm.selection = entry.highlighter
+      angular.forEach vm.images, (image) ->
+        if image.url.split('?')[0] is entry.image.path.split('?')[0]
+          vm.setSelectedImage image, true
 
     vm.goBack = ->
       $state.go 'algorithms'
@@ -138,6 +150,7 @@ do ->
   AlgorithmPageController.$inject = [
     '$scope'
     '$state'
+    '$stateParams'
     '$sce'
     'socketPrepService'
     'imagesPrepService'

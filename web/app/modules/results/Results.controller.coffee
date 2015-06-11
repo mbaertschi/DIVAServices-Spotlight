@@ -7,9 +7,21 @@ Controller ResultsPageController
 do ->
   'use strict'
 
-  ResultsPageController = (diaProcessingQueue) ->
+  ResultsPageController = ($scope, diaProcessingQueue) ->
     vm = @
     vm.results = diaProcessingQueue.getResults()
+
+    vm.delete = (entry) ->
+      angular.forEach vm.results, (result, index) ->
+        if entry.algorithm.uuid is result.algorithm.uuid
+          vm.results.splice index, 1
+          $scope.safeApply ->
+            $scope.$root.finished -= 1
+
+    $scope.$watch 'vm.results', (newVal, oldVal) ->
+      if newVal.length > oldVal.length
+        $scope.safeApply -> $('#DataTables_Table_0').DataTable().row.add(newVal[newVal.length - 1]).draw()
+    , true
 
     vm.tableOptions =
       data: vm.results
@@ -21,12 +33,41 @@ do ->
           data: null
           defaultContent: ''
         }
-        { data: 'algorithm.name' }
+        {
+          data: 'algorithm.name'
+          render: (data, type, row) ->
+            if type is 'display'
+              '<span class="text-capitalize">' + data + '</span>'
+            else
+              data
+        }
         { data: 'algorithm.description' }
-        { data: 'input.image.thumbPath' }
+        {
+          data: 'input.image'
+          render: (data, type, row) ->
+            if type is 'display'
+              '<div class="project-members"><img src=\"' + data.thumbPath + '\"></div>'
+            else
+              data.thumbPath
+        }
         { data: 'submit.start' }
         { data: 'submit.end' }
         { data: 'submit.duration' }
+        {
+          data: 'algorithm'
+          render: (data, type, row) ->
+            if type is 'display'
+              """
+              <div class="clearfix">
+                <div class="btn-group inline">
+                  <div class="btn btn-xs btn-primary action-button-back">Back</div>
+                  <div class="btn btn-xs btn-danger action-button-delete">Delete</div>
+                </div>
+              </div>
+              """
+            else
+              data
+        }
       ]
       order: [[5, 'dsc']]
 
@@ -36,5 +77,6 @@ do ->
     .controller 'ResultsPageController', ResultsPageController
 
   ResultsPageController.$inject = [
+    '$scope'
     'diaProcessingQueue'
   ]
