@@ -22,7 +22,7 @@ describe 'Algorithms Page', ->
       page.visitPage()
 
     it 'shows all five dummy algorithms from the dummy backend', ->
-      expect(page.algorithms.count()).toEqual 5
+      expect(page.algorithms.count()).toEqual 7
 
     describe 'Multiscaleipd', ->
 

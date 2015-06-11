@@ -49,10 +49,10 @@ AlgorithmSchema.methods.compareAndSave = (algorithm, callback) ->
     doc.save (err, algorithm) ->
       if err
         logger.log 'error', 'there was an error while storing changed algorithm. Check mongoose log', 'Algorithm'
-      callback null, changes
+      callback null, changes, doc
 
   else
-    callback null, changes
+    callback null, changes, doc
 
 # ---
 # **_findDifferences**</br>

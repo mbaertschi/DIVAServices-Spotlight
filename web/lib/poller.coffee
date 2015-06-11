@@ -160,7 +160,7 @@ poller = exports = module.exports = class Poller
             next()
           else
             if dbAlgorithm?
-              dbAlgorithm.compareAndSave algorithm, (err, changes) ->
+              dbAlgorithm.compareAndSave algorithm, (err, changes, newAlgorithm) ->
                 if err?
                   logger.log 'warn', 'there was an error while comparing algorithms. Check the mongoose log', 'Poller'
                   next()
@@ -171,7 +171,7 @@ poller = exports = module.exports = class Poller
                       logger.log 'debug', "type=#{change.type}, attr=#{change.attr}, old=#{change.old}, new=#{change.new}", 'Poller'
                       nextChange()
                     , ->
-                      changedAlgorithms.push algorithm
+                      changedAlgorithms.push newAlgorithm
                       next()
                   else
                     logger.log 'debug', "no changes to apply for host=#{algorithm.host}, algorithm=#{algorithm.url}", 'Poller'

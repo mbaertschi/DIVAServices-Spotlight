@@ -9,7 +9,7 @@ Controller AlgorithmPageController
 do ->
   'use strict'
 
-  AlgorithmPageController = ($scope, $state, $stateParams, $sce, socketPrepService, imagesPrepService, algorithmsPrepService, diaProcessingQueue, diaCaptchaService, diaModelBuilder, diaPaperManager, toastr) ->
+  AlgorithmPageController = ($scope, $state, $stateParams, $sce, $timeout, socketPrepService, imagesPrepService, algorithmsPrepService, diaProcessingQueue, diaCaptchaService, diaModelBuilder, diaPaperManager, diaSocket, toastr) ->
     vm = @
     vm.algorithm = algorithmsPrepService.data.algorithm
     vm.highlighter = algorithmsPrepService.data.highlighter
@@ -152,6 +152,7 @@ do ->
     '$state'
     '$stateParams'
     '$sce'
+    '$timeout'
     'socketPrepService'
     'imagesPrepService'
     'algorithmsPrepService'
@@ -159,5 +160,6 @@ do ->
     'diaCaptchaService'
     'diaModelBuilder'
     'diaPaperManager'
+    'diaSocket'
     'toastr'
   ]

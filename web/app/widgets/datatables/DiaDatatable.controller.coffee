@@ -69,7 +69,11 @@ do ->
         vm.dataTable.row($(this).parents('tr')).remove().draw()
         vm.clickDelete entry: entry
 
-  angular.module('app.results')
+      vm.dataTable.on 'click', '.action-button-apply', ->
+        entry = vm.dataTable.row($(this).parents('tr')).data()
+        $state.go 'algorithm', {id: entry._id}
+
+  angular.module('app.widgets')
     .controller 'DiaDatatableController', DiaDatatableController
 
   DiaDatatableController.$inject = [

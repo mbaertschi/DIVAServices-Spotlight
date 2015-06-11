@@ -47,6 +47,7 @@ api = exports = module.exports = (router) ->
       description: true
       url: true
       host: true
+      _lastChange: true
 
     Algorithm.find {}, fields, (err, algorithms) ->
       if err?

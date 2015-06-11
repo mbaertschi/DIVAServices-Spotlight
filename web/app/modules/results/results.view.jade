@@ -9,7 +9,7 @@
           | to go to algorithms page.
         span(ng-if='vm.results.length')
           .text-muted Hold SHIFT and scroll to move input and output images around. Hold ALT and scroll to zoom in and out. Warning: If the image contains a lot of information (i.e more than 1000 points), moving or zooming might freeze your browser.
-          table.display.projects-table.table.table-striped.table-bordered.table-hover(dia-datatable='', data-table-options='vm.tableOptions', click-delete='vm.delete(entry)', cellspacing='0', width='100%')
+          table#results-table.display.projects-table.table.table-striped.table-bordered.table-hover(dia-datatable='', data-table-options='vm.tableOptions', click-delete='vm.delete(entry)', cellspacing='0', width='100%')
             thead
               tr
                 th
