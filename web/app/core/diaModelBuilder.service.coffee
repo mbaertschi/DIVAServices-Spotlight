@@ -63,7 +63,7 @@ do ->
           item.highlighter =
             type: type
             closed: path.closed
-            position: [path.position.x - path.strokeWidth, path.position.y - path.strokeWidth]
+            position: [path.position.x, path.position.y]
             radius: path.bounds.width / 2
         else
           item.highlighter =
@@ -80,10 +80,10 @@ do ->
 
     # prepare algorithm input and output data to be displayed in datatable under results page
     prepareResultForDatatable = (input, output) ->
-      # add html format for result so it can be displayed in a nicely way in results table
       result =
         algorithm:
-          name: '<span class="text-capitalize">' + input.algorithm.name + '</span>'
+          id: input.algorithm.id
+          name: input.algorithm.name
           description: input.algorithm.description
         submit:
           start: input.start
@@ -95,7 +95,7 @@ do ->
           highlighter: input.highlighter
           image:
             path: input.image.url
-            thumbPath: '<div class="project-members"><img src=\"' + input.image.thumbUrl + '\"></div>'
+            thumbPath: input.image.thumbUrl
         output: output
       result.output.uuid = input.uuid
 
