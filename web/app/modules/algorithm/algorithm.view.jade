@@ -8,9 +8,16 @@
         | to go back to algorithms page.
     .col-md-12(ng-if='vm.algorithm')
       panel(heading='{{vm.algorithm.name}}', icon='info-circle', go-to='vm.goBack()', go-to-text='Go back')
-        .text-muted Description:
-          = ' '
-          span.text-normal {{vm.algorithm.description}}
+        table.table-responsive(ng-if='vm.infos.length')
+          table.table.table-bordered.table-striped
+            tbody(ng-repeat='info in vm.infos')
+              tr(ng-repeat='(key, val) in info')
+                td.text-capitalize.text-muted {{key}}
+                td(ng-switch='', on='key')
+                  a(href='mailto:{{val}}', ng-switch-when='email') {{val}}
+                  a(href='{{val}}', target='_blank', ng-switch-when='website') {{val}}
+                  a(href='http://dx.doi.org/{{val}}', target='_blank', ng-switch-when='DOI') {{val}}
+                  span(ng-switch-default) {{val}}
       panel(heading='Image Gallery', icon='image')
         dia-algorithm-images-gallery(data-images='vm.images', set-selected-image='vm.setSelectedImage(image)')
       panel(heading='Apply Algorithm on Image', icon='image', ng-if='vm.selectedImage && vm.state=="highlight"')
@@ -33,12 +40,13 @@
             canvas#circle(ng-if='vm.highlighter=="circle"', dia-algorithm-circle, data-selected-image='vm.selectedImage', data-selection='vm.selection', set-highlighter-status='vm.setHighlighterStatus(status)')
           .selected-image(ng-if='!vm.highlighter')
             img#image(ng-src='{{vm.selectedImage.url}}')
-        .col-xs-12.col-lg-6(ng-if='vm.inputs.length')
-          dia-algorithm-inputs(data-model='vm.model', data-inputs='vm.inputs', set-form-validity='vm.setFormValidity(status)')
-        .col-xs-12.col-sm-12.col-md-12.col-lg-6
-          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6(ng-if='vm.captchaEnabled')
-            div(captcha='', options='vm.captchaOptions')
-          .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
-            .pull-right
-              span.error(ng-if='vm.invalidHighlighter') Please select a {{vm.highlighter}}
-              button.btn.btn-primary(ng-click='vm.submit()', ng-disabled='vm.invalidForm || vm.invalidHighlighter') Submit
+        .input-wrapper
+          .col-xs-12.col-lg-6(ng-if='vm.inputs.length')
+            dia-algorithm-inputs(data-model='vm.model', data-inputs='vm.inputs', set-form-validity='vm.setFormValidity(status)')
+          .col-xs-12.col-sm-12.col-md-12.col-lg-6
+            .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6(ng-if='vm.captchaEnabled')
+              div(captcha='', options='vm.captchaOptions')
+            .col-xs-12.col-sm-offset-6.col-sm-6.col-md-offset-6.col-md-6
+              .pull-right
+                span.error(ng-if='vm.invalidHighlighter') Please select a {{vm.highlighter}}
+                button.btn.btn-primary(ng-click='vm.submit()', ng-disabled='vm.invalidForm || vm.invalidHighlighter') Submit

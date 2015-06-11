@@ -20,8 +20,15 @@ do ->
         inputs: []
         model: {}
         algorithm: algorithm
+        infos: []
 
       data.algorithm.id = id
+
+      if algorithm.description? then data.infos.push description: algorithm.description
+      if algorithm.author? then data.infos.push author: algorithm.author
+      if algorithm.email? then data.infos.push email: algorithm.email
+      if algorithm.website? then data.infos.push website: algorithm.website
+      if algorithm.DOI? then data.infos.push DOI: algorithm.DOI
 
       # prepare input information
       angular.forEach algorithm.input, (entry) ->

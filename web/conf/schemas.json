@@ -306,7 +306,24 @@
             "minLength": 5
           },
           "url": {
+            "type": "string",
             "format": "uri"
+          },
+          "author": {
+            "type": "string",
+            "minLenght": 5,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "website": {
+            "type": "string",
+            "format": "uri"
+          },
+          "DOI": {
+            "type": "string"
           },
           "input": {
             "type": "array",

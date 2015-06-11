@@ -416,6 +416,10 @@ app.get '/histogramenhancement', (req, res) ->
     name: 'histogramenhancement'
     description: 'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'
     url: 'http://localhost:8081/histogramenhancement'
+    author: 'Michael Bärtschi'
+    email: 'michu.baertschi@students.unibe.ch'
+    website: 'http://google.ch'
+    DOI: '10.1038/nature.2012.10010'
     input: [
       {
         highlighter: 'rectangle'

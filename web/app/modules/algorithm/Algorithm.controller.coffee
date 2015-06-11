@@ -16,6 +16,7 @@ do ->
     vm.selection = null
     vm.inputs = algorithmsPrepService.data.inputs
     vm.model = algorithmsPrepService.data.model
+    vm.infos = algorithmsPrepService.data.infos
     vm.images = imagesPrepService.images
     vm.selectedImage = null
     vm.invalidHighlighter = false
