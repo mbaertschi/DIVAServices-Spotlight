@@ -55,6 +55,7 @@ do ->
         { data: 'submit.duration' }
         {
           data: 'algorithm'
+          width: '10%'
           render: (data, type, row) ->
             if type is 'display'
               """
@@ -69,7 +70,7 @@ do ->
               data
         }
       ]
-      order: [[5, 'dsc']]
+      order: [[5, 'desc']]
 
     vm
 

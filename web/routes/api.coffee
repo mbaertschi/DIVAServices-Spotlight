@@ -47,6 +47,8 @@ api = exports = module.exports = (router) ->
       description: true
       url: true
       host: true
+      hits: true
+      _lastChange: true
 
     Algorithm.find {}, fields, (err, algorithms) ->
       if err?
@@ -180,3 +182,5 @@ api = exports = module.exports = (router) ->
                   res.status(err.status).json err.error
                 else
                   res.status(200).json resultProcessed
+                  algorithm.hits += 1
+                  algorithm.save()

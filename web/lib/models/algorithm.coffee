@@ -16,6 +16,7 @@ AlgorithmSchema = mongoose.Schema
   description: String
   url: String
   host: String
+  hits: type: Number, default: 0
   _lastChange: Date
 
 # Set the algorithms url as its index
@@ -39,8 +40,11 @@ AlgorithmSchema.methods.compareAndSave = (algorithm, callback) ->
   Algorithm = mongoose.model 'Algorithm'
   newAlgorithm = new Algorithm(algorithm).toObject()
   oldAlgorithm = @.toObject()
+  skipFields = ['hits']
 
   changes = _findDifferences newAlgorithm, oldAlgorithm
+  changes = _.remove changes, (change) ->
+    not change.attr in skipFields
 
   if changes.length > 0
     for change in changes

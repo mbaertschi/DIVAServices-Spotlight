@@ -23,5 +23,5 @@ do ->
 
     directive()
 
-  angular.module('app.results')
+  angular.module('app.widgets')
     .directive 'diaDatatable', diaDatatable

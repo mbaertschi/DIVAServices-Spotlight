@@ -11,9 +11,37 @@ do ->
     vm = @
     vm.algorithms = algorithmsPrepService.algorithms
 
-    # switch to algorithm page for this algorithm
-    vm.thisAlgorithm = (algorithm) ->
-      $state.go 'algorithm', {id: algorithm._id}
+    vm.tableOptions =
+      data: vm.algorithms
+      iDisplayLength: 15,
+      columns: [
+        {
+          data: 'name'
+          render: (data, type, row) ->
+            if type is 'display'
+              '<span class="text-capitalize">' + data + '</span>'
+            else
+              data
+        }
+        { data: 'host' }
+        { data: 'description' }
+        { data: 'hits' }
+        {
+          data: '_lastChange'
+          render: (data, type, row) ->
+            moment(data).format 'DD.MM.YY HH:mm:ss'
+        }
+        {
+          data: '_id'
+          width: '1%'
+          render: (data, type, row) ->
+            if type is 'display'
+              '<button class="btn btn-xs btn-primary hvr-grow-shadow action-button-apply">Apply <i class="fa fa-arrow-right"</button>'
+            else
+              data
+        }
+      ]
+      order: [[3, 'desc']]
 
     if socketPrepService.settings.run
       $scope.$on 'socket:update algorithms', (ev, algorithms) ->
