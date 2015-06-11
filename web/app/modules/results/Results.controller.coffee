@@ -20,7 +20,7 @@ do ->
 
     $scope.$watch 'vm.results', (newVal, oldVal) ->
       if newVal.length > oldVal.length
-        $scope.safeApply -> $('#DataTables_Table_0').DataTable().row.add(newVal[newVal.length - 1]).draw()
+        $scope.safeApply -> $('#results-table').DataTable().row.add(newVal[newVal.length - 1]).draw()
     , true
 
     vm.tableOptions =
