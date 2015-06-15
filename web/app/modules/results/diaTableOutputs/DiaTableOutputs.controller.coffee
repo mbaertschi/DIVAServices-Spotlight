@@ -12,6 +12,13 @@ do ->
     vm.strokeColor = 'red'
     vm.fillColor = null
     vm.uuid = vm.outputData?.uuid or new Date
+    vm.drag =
+      x: 0
+      y: 0
+      state: false
+    vm.delta =
+      x: 0
+      y: 0
 
     @init = (element) ->
       vm.element = element
@@ -93,6 +100,19 @@ do ->
           viewPosition = vm.paperOutput.view.viewToProject mousePosition
           diaPanAndZoomManager.changeZoom vm.uuid, event.deltaY, viewPosition
           event.preventDefault()
+      vm.element.on 'mousedown', (event) ->
+        vm.drag.x = event.pageX
+        vm.drag.y = event.pageY
+        vm.drag.state = true
+      vm.element.on 'mouseup', ->
+        vm.drag.state = false
+      vm.element.on 'mousemove', (event) ->
+        if vm.drag.state
+          vm.delta.x = event.pageX - vm.drag.x
+          vm.delta.y = event.pageY - vm.drag.y
+          vm.drag.x = event.pageX
+          vm.drag.y = event.pageY
+          diaPanAndZoomManager.changeCenter vm.uuid, -vm.delta.x, vm.delta.y, 1
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')
