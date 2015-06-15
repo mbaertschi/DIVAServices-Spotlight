@@ -74,6 +74,21 @@ do ->
               path.fillColor = 'red'
             path.strokeWidth = 1
             path.scale vm.scale, [0, 0]
+          else if highlighter.line?
+            line = highlighter.line
+            path = new vm.paperOutput.Path
+            if line.strokeColor?
+              color = line.strokeColor
+              path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+            else
+              path.strokeColor = vm.strokeColor
+            angular.forEach line.segments, (segment) ->
+              x = segment[0]
+              y = segment[1]
+              @.add new vm.paperOutput.Point x, y
+            , path
+            path.scale vm.scale, [0, 0]
+            path.closed = false
         callback()
       else
         callback()
