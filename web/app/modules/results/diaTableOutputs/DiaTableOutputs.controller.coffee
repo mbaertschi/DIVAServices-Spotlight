@@ -12,6 +12,13 @@ do ->
     vm.strokeColor = 'red'
     vm.fillColor = null
     vm.uuid = vm.outputData?.uuid or new Date
+    vm.drag =
+      x: 0
+      y: 0
+      state: false
+    vm.delta =
+      x: 0
+      y: 0
 
     @init = (element) ->
       vm.element = element
@@ -74,6 +81,21 @@ do ->
               path.fillColor = 'red'
             path.strokeWidth = 1
             path.scale vm.scale, [0, 0]
+          else if highlighter.line?
+            line = highlighter.line
+            path = new vm.paperOutput.Path
+            if line.strokeColor?
+              color = line.strokeColor
+              path.strokeColor = new vm.paperOutput.Color color[0], color[1], color[2]
+            else
+              path.strokeColor = vm.strokeColor
+            angular.forEach line.segments, (segment) ->
+              x = segment[0]
+              y = segment[1]
+              @.add new vm.paperOutput.Point x, y
+            , path
+            path.scale vm.scale, [0, 0]
+            path.closed = false
         callback()
       else
         callback()
@@ -93,6 +115,19 @@ do ->
           viewPosition = vm.paperOutput.view.viewToProject mousePosition
           diaPanAndZoomManager.changeZoom vm.uuid, event.deltaY, viewPosition
           event.preventDefault()
+      vm.element.on 'mousedown', (event) ->
+        vm.drag.x = event.pageX
+        vm.drag.y = event.pageY
+        vm.drag.state = true
+      vm.element.on 'mouseup', ->
+        vm.drag.state = false
+      vm.element.on 'mousemove', (event) ->
+        if vm.drag.state
+          vm.delta.x = event.pageX - vm.drag.x
+          vm.delta.y = event.pageY - vm.drag.y
+          vm.drag.x = event.pageX
+          vm.drag.y = event.pageY
+          diaPanAndZoomManager.changeCenter vm.uuid, -vm.delta.x, vm.delta.y, 1
 
     asyncLoadCanvas = ->
       vm.canvas = vm.element.find('#output-canvas')

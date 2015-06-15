@@ -133,7 +133,8 @@ api = exports = module.exports = (router) ->
         callback { status: 400, error: responseErrors[0].stack }
       else if result.image
         image = new Buffer result.image, 'base64'
-        path = params.image.path.replace '.png', '_output.png'
+        timeStamp = new Date()
+        path = params.image.path.replace '.png', '_output' + timeStamp.getTime() + '.png'
         url = path.replace 'public', ''
         fs.writeFile path, image, (err) ->
           if err
