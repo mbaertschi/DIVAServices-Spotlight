@@ -79,7 +79,8 @@ do ->
         toastr.info "Algorithm #{item.algorithm.name} is done", 'Info'
         results.push diaModelBuilder.prepareResultForDatatable(item, res.data).result
       , (err) ->
-        if err.config? then toastr.error "Post request for #{err.config.data.algorithm.name} failed", err.data.code
+        if err.data? then code = err.data.code else code = 500
+        if err.config? then toastr.error "Post request for #{err.config.data.algorithm.name} failed", code
 
     factory()
 

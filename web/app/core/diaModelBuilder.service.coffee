@@ -25,10 +25,15 @@ do ->
       data.algorithm.id = id
 
       if algorithm.description? then data.infos.push description: algorithm.description
-      if algorithm.author? then data.infos.push author: algorithm.author
-      if algorithm.email? then data.infos.push email: algorithm.email
-      if algorithm.website? then data.infos.push website: algorithm.website
-      if algorithm.DOI? then data.infos.push DOI: algorithm.DOI
+      angular.forEach algorithm.info, (value, key) ->
+        obj = {}
+        obj[key] = value
+        data.infos.push obj
+      # if algorithm.info?
+      #   if algorithm.info.author? then data.infos.push author: algorithm.info.author
+      #   if algorithm.info.email? then data.infos.push email: algorithm.info.email
+      #   if algorithm.info.website? then data.infos.push website: algorithm.info.website
+      #   if algorithm.info.DOI? then data.infos.push DOI: algorithm.info.DOI
 
       # prepare input information
       angular.forEach algorithm.input, (entry) ->

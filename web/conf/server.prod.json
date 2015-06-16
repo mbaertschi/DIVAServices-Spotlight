@@ -51,7 +51,7 @@
   "server": {
     "port": 3000,
     "path": "public",
-    "timeout": 120000,
+    "timeout": 600000,
     "maxFileSize": 20971520
   }
 }

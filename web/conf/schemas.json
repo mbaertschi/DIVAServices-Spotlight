@@ -339,21 +339,35 @@
             "type": "string",
             "format": "uri"
           },
-          "author": {
-            "type": "string",
-            "minLenght": 5,
-            "maxLength": 50
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "website": {
-            "type": "string",
-            "format": "uri"
-          },
-          "DOI": {
-            "type": "string"
+          "info":{
+            "type": "object",
+            "properties": {
+              "author": {
+                "type": "string",
+                "minLenght": 5,
+                "maxLength": 50
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "website": {
+                "type": "string",
+                "format": "uri"
+              },
+              "DOI": {
+                "type": "string"
+              },
+              "exptectedRuntime": {
+                "type": "string"
+              },
+              "purpose": {
+                "type": "string"
+              },
+              "license": {
+                "type": "string"
+              }
+            }
           },
           "input": {
             "type": "array",
