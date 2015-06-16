@@ -16,7 +16,7 @@
     "url": "localhost:27017/dia_dev?auto_reconnect"
   },
   "server": {
-    "timeout": 120000,
+    "timeout": 600000,
     "maxFileSize": 20971520
   }
 }

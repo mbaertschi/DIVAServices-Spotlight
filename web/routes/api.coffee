@@ -137,7 +137,7 @@ api = exports = module.exports = (router) ->
         path = params.image.path.replace '.png', '_output' + timeStamp.getTime() + '.png'
         url = path.replace 'public', ''
         fs.writeFile path, image, (err) ->
-          if err
+          if err?
             callback { status: 500, error: err }
           else
             result.image = url
@@ -158,7 +158,7 @@ api = exports = module.exports = (router) ->
           highlighter: params.highlighter
 
         getImageAsBase64 params.image.path, (err, base64Image) ->
-          if err
+          if err?
             res.status(500).json error: err
           else
             body.image = base64Image
@@ -174,11 +174,12 @@ api = exports = module.exports = (router) ->
             loader.post settings, body, (err, result) ->
               if err?
                 if _.isNumber err
-                  return res.status(err).send()
+                  res.status(err).send()
                 else
-                  return res.status(500).json err
-              processResponse result, (err, resultProcessed) ->
-                if err
-                  res.status(err.status).json err.error
-                else
-                  res.status(200).json resultProcessed
+                  res.status(500).json err
+              else
+                processResponse result, (err, resultProcessed) ->
+                  if err?
+                    res.status(err.status).json err.error
+                  else
+                    res.status(200).json resultProcessed
