@@ -416,10 +416,11 @@ app.get '/histogramenhancement', (req, res) ->
     name: 'histogramenhancement'
     description: 'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'
     url: 'http://localhost:8081/histogramenhancement'
-    author: 'Michael Bärtschi'
-    email: 'michu.baertschi@students.unibe.ch'
-    website: 'http://google.ch'
-    DOI: '10.1038/nature.2012.10010'
+    info:
+      author: 'Michael Bärtschi'
+      email: 'michu.baertschi@students.unibe.ch'
+      website: 'http://google.ch'
+      DOI: '10.1038/nature.2012.10010'
     input: [
       {
         highlighter: 'rectangle'
@@ -494,6 +495,8 @@ app.get '/multiscaleipd', (req, res) ->
     name: 'multiscaleipd'
     description: 'this will apply the multiscaleipd algorithm on your image'
     url: 'http://localhost:8081/multiscaleipd'
+    info:
+      author: 'Michael Bärtschi'
     input: [
       {
         highlighter: 'polygon'
@@ -606,6 +609,8 @@ app.get '/noise', (req, res) ->
     name: 'noise'
     description: 'this will apply the noise algorithm on your image'
     url: 'http://localhost:8081/noise'
+    info:
+      author: 'Michael Bärtschi'
     input: [
       {
         highlighter: 'rectangle'
@@ -637,6 +642,8 @@ app.get '/otsubinazrization', (req, res) ->
     name: 'otsubinazrization'
     description: 'this will apply the otsubinazrization algorithm on your image'
     url: 'http://localhost:8081/otsubinazrization'
+    info:
+      author: 'Michael Bärtschi'
     input: [
       {
         highlighter: 'circle'
@@ -692,6 +699,8 @@ app.get '/sauvalabinarization', (req, res) ->
     name: 'sauvalabinarization'
     description: 'this will apply the sauvalabinarization algorithm on your image'
     url: 'http://localhost:8081/sauvalabinarization'
+    info:
+      author: 'Michael Bärtschi'
     input: []
 
   res.send records
