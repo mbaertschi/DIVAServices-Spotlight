@@ -27,7 +27,12 @@ do ->
       if algorithm.description? then data.infos.push description: algorithm.description
       angular.forEach algorithm.info, (value, key) ->
         obj = {}
-        obj[key] = value
+        if key is 'expectedRuntime' and not isNaN(parseFloat(value))
+          runtime = parseFloat value
+          if runtime is 1 then runtime += ' second' else runtime += ' seconds'
+          obj[key] = runtime
+        else
+          obj[key] = value
         data.infos.push obj
 
       # prepare input information
