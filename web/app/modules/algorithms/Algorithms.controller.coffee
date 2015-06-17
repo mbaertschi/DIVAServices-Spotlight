@@ -41,6 +41,8 @@ do ->
         }
       ]
       order: [[3, 'desc']]
+      pageLength: 20
+      lengthMenu: [ [10, 20, 50, -1], [10, 20, 50, 'All'] ]
 
     if socketPrepService.settings.run
       $scope.$on 'socket:update algorithms', (ev, algorithms) ->

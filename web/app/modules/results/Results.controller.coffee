@@ -71,6 +71,8 @@ do ->
         }
       ]
       order: [[5, 'desc']]
+      pageLength: 20
+      lengthMenu: [ [10, 20, 50, -1], [10, 20, 50, 'All'] ]
 
     vm
 
