@@ -4,6 +4,7 @@ describe 'Dashboard Page', ->
   page = null
 
   beforeAll ->
+    browser.driver.manage().window().setSize(1280, 1440)
     page = new DashboardPage()
     page.visitPage()
 

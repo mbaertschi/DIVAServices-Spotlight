@@ -29,11 +29,6 @@ do ->
         obj = {}
         obj[key] = value
         data.infos.push obj
-      # if algorithm.info?
-      #   if algorithm.info.author? then data.infos.push author: algorithm.info.author
-      #   if algorithm.info.email? then data.infos.push email: algorithm.info.email
-      #   if algorithm.info.website? then data.infos.push website: algorithm.info.website
-      #   if algorithm.info.DOI? then data.infos.push DOI: algorithm.info.DOI
 
       # prepare input information
       angular.forEach algorithm.input, (entry) ->
@@ -113,7 +108,12 @@ do ->
       result.output.uuid = input.uuid
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null
-      if angular.equals {}, result.input.highlighter then result.input.highlighter = null
+      if angular.equals {}, result.input.highlighter
+        result.input.highlighter = null
+      else
+        parsedHighlighter = {}
+        parsedHighlighter[result.input.highlighter.type] = result.input.highlighter
+        result.input.highlighters = [parsedHighlighter]
 
       result: result
 

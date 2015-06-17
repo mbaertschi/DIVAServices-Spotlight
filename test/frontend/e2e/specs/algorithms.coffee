@@ -22,7 +22,7 @@ describe 'Algorithms Page', ->
       page.visitPage()
 
     it 'shows all five dummy algorithms from the dummy backend', ->
-      expect(page.algorithms.count()).toEqual 7
+      expect(page.algorithms.count()).toEqual 5
 
     describe 'Multiscaleipd', ->
 
@@ -30,11 +30,6 @@ describe 'Algorithms Page', ->
         expect(page.showMultiscale().inputs.count()).toEqual 8
 
     describe 'Otsubinazrization', ->
-      beforeAll ->
-        browser.driver.manage().window().setSize(1280, 1440)
 
       it 'should be processed successfully', ->
         expect(page.submitOtsubinazrization().success).toBe true
-
-      afterAll ->
-        browser.driver.manage().window().setSize(1280, 720)
