@@ -108,7 +108,12 @@ do ->
       result.output.uuid = input.uuid
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null
-      if angular.equals {}, result.input.highlighter then result.input.highlighter = null
+      if angular.equals {}, result.input.highlighter
+        result.input.highlighter = null
+      else
+        parsedHighlighter = {}
+        parsedHighlighter[result.input.highlighter.type] = result.input.highlighter
+        result.input.highlighters = [parsedHighlighter]
 
       result: result
 
