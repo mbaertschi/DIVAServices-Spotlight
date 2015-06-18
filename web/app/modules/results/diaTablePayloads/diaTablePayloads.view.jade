@@ -1,0 +1,14 @@
+.panel.panel-plain.panel-gray
+  .panel-heading
+    | API JSON Payloads
+    span.pull-right.payload-toggle
+      i.fa(ng-class='displayPayloads ? "fa-minus" : "fa-plus"', ng-click='displayPayloads = !displayPayloads')
+  .panel-body(ng-show='displayPayloads')
+    .col-xs-12.col-lg-6
+      h5 Request
+      .well.well-small.json-well
+        json-formatter(json='payloadData.reqPayload', open='1')
+    .col-xs-12.col-lg-6
+      h5 Response
+      .well.well-small.json-well
+        json-formatter(json='payloadData.resPayload', open='1')

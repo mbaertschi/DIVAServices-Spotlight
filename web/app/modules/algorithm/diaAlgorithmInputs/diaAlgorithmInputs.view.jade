@@ -5,7 +5,13 @@
         .form-group(ng-switch='', on='type')
           label.col-xs-4.col-lg-4.control-label(for='{{settings.name}}') {{settings.name}}
           .col-xs-8.col-lg-8(ng-switch-when='text')
-            input.form-control(type='text', name='{{settings.name}}', id='{{settings.name}}', ng-model='model[settings.name]', ng-minlength='{{settings.options.min}}', ng-maxlength='{{settings.options.max}}', ng-required='{{settings.options.required}}')
+            input.form-control(type='text',
+                               name='{{settings.name}}',
+                               id='{{settings.name}}',
+                               ng-model='model[settings.name]',
+                               ng-minlength='{{settings.options.min}}',
+                               ng-maxlength='{{settings.options.max}}',
+                               ng-required='{{settings.options.required}}')
             span.help-block(ng-if='settings.description') {{settings.description}}
             .error(ng-show='inputForm.{{settings.name}}.$dirty && inputForm.{{settings.name}}.$invalid')
               small.error(ng-show='inputForm.{{settings.name}}.$error.required')
@@ -15,7 +21,14 @@
               small.error(ng-show='inputForm.{{settings.name}}.$error.maxlength')
                 | {{settings.name}} must not contain more than {{settings.options.max}} characters
           .col-xs-8.col-lg-8(ng-switch-when='number')
-            input.form-control(type='number', name='{{settings.name}}', id='{{settings.name}}', min='{{settings.options.min}}', max='{{settings.options.max}}', step='{{settings.options.steps}}', ng-model='model[settings.name]', ng-required='{{settings.options.required}}')
+            input.form-control(type='number',
+                               name='{{settings.name}}',
+                               id='{{settings.name}}',
+                               min='{{settings.options.min}}',
+                               max='{{settings.options.max}}',
+                               step='{{settings.options.steps}}',
+                               ng-model='model[settings.name]',
+                               ng-required='{{settings.options.required}}')
             span.help-block(ng-if='settings.description') {{settings.description}}
             .error(ng-show='inputForm.{{settings.name}}.$dirty && inputForm.{{settings.name}}.$invalid')
               small.error(ng-show='inputForm.{{settings.name}}.$error.required')
@@ -29,8 +42,16 @@
           .col-xs-8.col-lg-8(ng-switch-when='checkbox')
             .checkbox
               label(for='{{settings.name}}')
-                input(type='checkbox', name='{{settings.name}}', id='{{settings.name}}', ng-checked='{{settings.options.default}}', ng-click='toggleCheckbox(settings.name)')
+                input(type='checkbox',
+                      name='{{settings.name}}',
+                      id='{{settings.name}}',
+                      ng-checked='{{settings.options.default}}',
+                      ng-click='toggleCheckbox(settings.name)')
                 span.help-block.help-block-checkbox(ng-if='settings.description') {{settings.description}}
           .col-xs-8.col-lg-8(ng-switch-when='select')
-            select.form-control(name='{{settings.name}}', id='{{settings.name}}', ng-model='model[settings.name]', ng-required='{{settings.options.required}}', ng-options='option for option in settings.options.values')
+            select.form-control(name='{{settings.name}}',
+                                id='{{settings.name}}',
+                                ng-model='model[settings.name]',
+                                ng-required='{{settings.options.required}}',
+                                ng-options='option for option in settings.options.values')
             span.help-block(ng-if='settings.description') {{settings.description}}
