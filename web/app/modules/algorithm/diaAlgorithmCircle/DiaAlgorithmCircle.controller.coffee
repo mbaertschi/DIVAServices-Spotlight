@@ -1,7 +1,7 @@
 do ->
   'use strict'
 
-  DiaAlgorithmCircleController = ($scope, diaPaperManager) ->
+  DiaAlgorithmCircleController = ($scope, $sce, diaPaperManager) ->
     vm = @
     vm.element = null
     vm.handle = null
@@ -10,9 +10,18 @@ do ->
     vm.strokeColor = 'red'
     vm.fillColor = new paper.Color 1, 0, 0, 0.1
     vm.tools = null
+    vm.circleDescription = $sce.trustAsHtml(
+      """
+      <p>Usage:</p>
+      <p>- Click and drag mouse to span a new circle</p>
+      <p>- Resize the circle by clicking and dragging one of its boundaries</p>
+      <p>- Move the circle by clicking and dragging on its inner part</p>
+      <p>- Remove the circle and draw a new one by clicking outside of the circle</p>
+      """
+    )
 
     @init = (element) ->
-      vm.element = element
+      vm.element = element.find '#circle'
 
       # tell diaPaperManager to re-initialize paperJS. This is executed
       # everytime the algorithm changes (but not when selectedImage changes)
@@ -23,10 +32,9 @@ do ->
 
       # update paper settings if selectedImage has changed
       $scope.$parent.$watch 'vm.selectedImage', ->
-        if vm.path
-          vm.path.remove()
+        diaPaperManager.resetPath()
+        if vm.path then vm.path.remove()
         vm.path = null
-        vm.setHighlighterStatus status: true
         diaPaperManager.setup vm, ->
           if vm.selection? then drawPath()
 
@@ -38,7 +46,7 @@ do ->
       vm.path.fillColor = vm.fillColor
       vm.path.fullySelected = true
       vm.path.scale vm.scale, [0, 0]
-      vm.setHighlighterStatus status: false
+      $scope.$emit 'set-highlighter-status', true
       diaPaperManager.set vm.path, 'circle'
 
     setupMouseEvents = ->
@@ -68,7 +76,7 @@ do ->
 
         mouseUp: (event) ->
           vm.path.fullySelected = true
-          vm.setHighlighterStatus status: false
+          $scope.$emit 'set-highlighter-status', true
           diaPaperManager.set vm.path, 'circle'
 
         mouseDrag: (event) ->
@@ -94,5 +102,6 @@ do ->
 
   DiaAlgorithmCircleController.$inject = [
     '$scope'
+    '$sce'
     'diaPaperManager'
   ]

@@ -117,13 +117,6 @@
               
                 
                 <li>
-                  <a class="source" href="captcha.html">
-                    captcha.coffee
-                  </a>
-                </li>
-              
-                
-                <li>
                   <a class="source" href="router.html">
                     router.coffee
                   </a>
@@ -402,7 +395,7 @@ Iterates over all algorithms and compares them to algorithms stored in mongoDB.<
             next()
           <span class="hljs-keyword">else</span>
             <span class="hljs-keyword">if</span> dbAlgorithm?
-              dbAlgorithm.compareAndSave algorithm, <span class="hljs-function"><span class="hljs-params">(err, changes)</span> -&gt;</span>
+              dbAlgorithm.compareAndSave algorithm, <span class="hljs-function"><span class="hljs-params">(err, changes, newAlgorithm)</span> -&gt;</span>
                 <span class="hljs-keyword">if</span> err?
                   logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while comparing algorithms. Check the mongoose log'</span>, <span class="hljs-string">'Poller'</span>
                   next()
@@ -413,7 +406,7 @@ Iterates over all algorithms and compares them to algorithms stored in mongoDB.<
                       logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"type=<span class="hljs-subst">#{change.type}</span>, attr=<span class="hljs-subst">#{change.attr}</span>, old=<span class="hljs-subst">#{change.old}</span>, new=<span class="hljs-subst">#{change.<span class="hljs-keyword">new</span>}</span>"</span>, <span class="hljs-string">'Poller'</span>
                       nextChange()
                     , <span class="hljs-function">-&gt;</span>
-                      changedAlgorithms.push algorithm
+                      changedAlgorithms.push newAlgorithm
                       next()
                   <span class="hljs-keyword">else</span>
                     logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"no changes to apply for host=<span class="hljs-subst">#{algorithm.host}</span>, algorithm=<span class="hljs-subst">#{algorithm.url}</span>"</span>, <span class="hljs-string">'Poller'</span>

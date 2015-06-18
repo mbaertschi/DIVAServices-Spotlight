@@ -1,7 +1,7 @@
 do ->
   'use strict'
 
-  DiaAlgorithmRectangleController = ($scope, diaPaperManager) ->
+  DiaAlgorithmRectangleController = ($scope, $sce, diaPaperManager) ->
     vm = @
     vm.element = null
     vm.handle = null
@@ -9,9 +9,18 @@ do ->
     vm.strokeColor = 'red'
     vm.fillColor = new paper.Color 1, 0, 0, 0.1
     vm.tools = {}
+    vm.rectangleDescription = $sce.trustAsHtml(
+      """
+      <p>Usage:</p>
+      <p>- Click and drag mouse from top left to bottom right to span a new rectangle</p>
+      <p>- Move the rectangle by clicking and dragging on its inner part</p>
+      <p>- Resize the rectangle by clicking and dragging one of its corner points</p>
+      <p>- Remove the rectangle and draw a new one by clicking outside of the rectangle</p>
+      """
+    )
 
     @init = (element) ->
-      vm.element = element
+      vm.element = element.find '#rectangle'
 
       # tell diaPaperManager to re-initialize paperJS. This is executed
       # everytime the algorithm changes (but not when selectedImage changes)
@@ -22,10 +31,9 @@ do ->
 
       # update paper settings if selectedImage has changed
       $scope.$parent.$watch 'vm.selectedImage', ->
-        if vm.path
-          vm.path.remove()
+        diaPaperManager.resetPath()
+        if vm.path then vm.path.remove()
         vm.path = null
-        vm.setHighlighterStatus status: true
         diaPaperManager.setup vm, ->
           if vm.selection? then drawPath()
 
@@ -42,7 +50,7 @@ do ->
       vm.path.closed = true
       vm.path.fullySelected = true
       vm.path.scale vm.scale, [0, 0]
-      vm.setHighlighterStatus status: false
+      $scope.$emit 'set-highlighter-status', true
       diaPaperManager.set vm.path, 'rectangle'
 
     setupMouseEvents = ->
@@ -63,14 +71,14 @@ do ->
           else
             vm.path.remove()
             diaPaperManager.resetPath()
-            vm.setHighlighterStatus status: true
+            $scope.$emit 'set-highlighter-status', false
             vm.path = new Path.Rectangle from: point, to: point
             vm.path.strokeColor = vm.strokeColor
             vm.path.strokeWidth = vm.strokeWidth
             vm.path.fillColor = vm.fillColor
         else
           diaPaperManager.resetPath()
-          vm.setHighlighterStatus status: true
+          $scope.$emit 'set-highlighter-status', false
           vm.path = new Path.Rectangle from: point, to: point
           vm.path.strokeColor = vm.strokeColor
           vm.path.strokeWidth = vm.strokeWidth
@@ -78,7 +86,7 @@ do ->
 
       vm.tools.mouseUp = (event) ->
         vm.path.fullySelected = true
-        vm.setHighlighterStatus status: false
+        $scope.$emit 'set-highlighter-status', true
         diaPaperManager.set vm.path, 'rectangle'
 
       vm.tools.mouseDrag = (event) ->
@@ -128,5 +136,6 @@ do ->
 
   DiaAlgorithmRectangleController.$inject = [
     '$scope'
+    '$sce'
     'diaPaperManager'
   ]

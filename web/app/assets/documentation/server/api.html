@@ -117,13 +117,6 @@
               
                 
                 <li>
-                  <a class="source" href="captcha.html">
-                    captcha.coffee
-                  </a>
-                </li>
-              
-                
-                <li>
                   <a class="source" href="router.html">
                     router.coffee
                   </a>
@@ -254,6 +247,7 @@ client settings specified in <code>./web/conf/client.[dev/prod].json</code></li>
       <span class="hljs-attribute">description</span>: <span class="hljs-literal">true</span>
       <span class="hljs-attribute">url</span>: <span class="hljs-literal">true</span>
       <span class="hljs-attribute">host</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">_lastChange</span>: <span class="hljs-literal">true</span>
 
     Algorithm.find {}, fields, <span class="hljs-function"><span class="hljs-params">(err, algorithms)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> err?
@@ -361,10 +355,11 @@ the origin image will be passed on (if highlighters are defined in response)</p>
         callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attribute">error</span>: responseErrors[<span class="hljs-number">0</span>].stack }
       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.image
         image = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
-        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output.png'</span>
+        timeStamp = <span class="hljs-keyword">new</span> Date()
+        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output'</span> + timeStamp.getTime() + <span class="hljs-string">'.png'</span>
         url = path.replace <span class="hljs-string">'public'</span>, <span class="hljs-string">''</span>
         fs.writeFile path, image, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-          <span class="hljs-keyword">if</span> err
+          <span class="hljs-keyword">if</span> err?
             callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err }
           <span class="hljs-keyword">else</span>
             result.image = url
@@ -385,7 +380,7 @@ the origin image will be passed on (if highlighters are defined in response)</p>
           <span class="hljs-attribute">highlighter</span>: params.highlighter
 
         getImageAsBase64 params.image.path, <span class="hljs-function"><span class="hljs-params">(err, base64Image)</span> -&gt;</span>
-          <span class="hljs-keyword">if</span> err
+          <span class="hljs-keyword">if</span> err?
             res.status(<span class="hljs-number">500</span>).json <span class="hljs-attribute">error</span>: err
           <span class="hljs-keyword">else</span>
             body.image = base64Image
@@ -401,14 +396,22 @@ the origin image will be passed on (if highlighters are defined in response)</p>
             loader.post settings, body, <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
               <span class="hljs-keyword">if</span> err?
                 <span class="hljs-keyword">if</span> _.isNumber err
-                  <span class="hljs-keyword">return</span> res.status(err).send()
+                  res.status(err).send()
                 <span class="hljs-keyword">else</span>
-                  <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).json err
-              processResponse result, <span class="hljs-function"><span class="hljs-params">(err, resultProcessed)</span> -&gt;</span>
-                <span class="hljs-keyword">if</span> err
-                  res.status(err.status).json err.error
-                <span class="hljs-keyword">else</span>
-                  res.status(<span class="hljs-number">200</span>).json resultProcessed</pre></div>
+                  res.status(<span class="hljs-number">500</span>).json err
+              <span class="hljs-keyword">else</span>
+                <span class="hljs-keyword">if</span> result.image? <span class="hljs-keyword">then</span> resPayloadHasImage = <span class="hljs-literal">true</span>
+                processResponse result, <span class="hljs-function"><span class="hljs-params">(err, resultProcessed)</span> -&gt;</span>
+                  <span class="hljs-keyword">if</span> err?
+                    res.status(err.status).json err.error
+                  <span class="hljs-keyword">else</span>
+                    resultProcessed.reqPayload = body
+                    resultProcessed.resPayload =
+                      <span class="hljs-attribute">output</span>: result.output
+                      <span class="hljs-attribute">highlighters</span>: result.highlighters
+                    <span class="hljs-keyword">if</span> body.image? <span class="hljs-keyword">then</span> body.image = <span class="hljs-string">'Base64 encoded image'</span>
+                    <span class="hljs-keyword">if</span> resPayloadHasImage <span class="hljs-keyword">then</span> resultProcessed.resPayload.image = <span class="hljs-string">'Base64 encoded image'</span>
+                    res.status(<span class="hljs-number">200</span>).json resultProcessed</pre></div>
         
       
       <div class="fleur">h</div>

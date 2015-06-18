@@ -117,13 +117,6 @@
               
                 
                 <li>
-                  <a class="source" href="captcha.html">
-                    captcha.coffee
-                  </a>
-                </li>
-              
-                
-                <li>
                   <a class="source" href="router.html">
                     router.coffee
                   </a>
@@ -252,10 +245,10 @@ will be updated</br>
     doc.save (err, algorithm) -&gt;
       <span class="hljs-keyword">if</span> err
         logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">'there was an error while storing changed algorithm. Check mongoose log'</span>, <span class="hljs-string">'Algorithm'</span>
-      callback <span class="hljs-literal">null</span>, changes
+      callback <span class="hljs-literal">null</span>, changes, doc
 
   <span class="hljs-keyword">else</span>
-    callback <span class="hljs-literal">null</span>, changes</pre></div>
+    callback <span class="hljs-literal">null</span>, changes, doc</pre></div>
         
       
         

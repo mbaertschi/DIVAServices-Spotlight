@@ -1,6 +1,4 @@
 do ->
   'use strict'
 
-  angular.module 'app.algorithm', [
-    'visualCaptcha'
-  ]
+  angular.module 'app.algorithm', []

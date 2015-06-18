@@ -14,11 +14,11 @@ do ->
 
     directive = ->
       restrict: 'AE'
+      templateUrl: 'modules/algorithm/diaAlgorithmPolygon/diaAlgorithmPolygon.view.html'
       link: link
       scope:
         selectedImage: '='
         selection: '='
-        setHighlighterStatus: '&'
       controller: 'DiaAlgorithmPolygonController'
       controllerAs: 'vm'
       bindToController: true

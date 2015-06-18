@@ -14,11 +14,11 @@ do ->
 
     directive = ->
       restrict: 'AE'
+      templateUrl: 'modules/algorithm/diaAlgorithmRectangle/diaAlgorithmRectangle.view.html'
       link: link
       scope:
         selectedImage: '='
         selection: '='
-        setHighlighterStatus: '&'
       controller: 'DiaAlgorithmRectangleController'
       controllerAs: 'vm'
       bindToController: true
