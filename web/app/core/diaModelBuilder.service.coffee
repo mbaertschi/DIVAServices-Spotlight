@@ -110,6 +110,7 @@ do ->
             path: input.image.url
             thumbPath: input.image.thumbUrl
         output: output
+
       result.output.uuid = input.uuid
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null

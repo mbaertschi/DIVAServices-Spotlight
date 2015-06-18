@@ -178,8 +178,15 @@ api = exports = module.exports = (router) ->
                 else
                   res.status(500).json err
               else
+                if result.image? then resPayloadHasImage = true
                 processResponse result, (err, resultProcessed) ->
                   if err?
                     res.status(err.status).json err.error
                   else
+                    resultProcessed.reqPayload = body
+                    resultProcessed.resPayload =
+                      output: result.output
+                      highlighters: result.highlighters
+                    if body.image? then body.image = 'Base64 encoded image'
+                    if resPayloadHasImage then resultProcessed.resPayload.image = 'Base64 encoded image'
                     res.status(200).json resultProcessed
