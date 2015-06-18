@@ -177,8 +177,10 @@ api = exports = module.exports = (router) ->
                   res.status(err).send()
                 else
                   res.status(500).json err
+              else if not result?
+                res.status(500).json error: 'no response received'
               else
-                if result.image? then resPayloadHasImage = true
+                if result?.image? then resPayloadHasImage = true
                 processResponse result, (err, resultProcessed) ->
                   if err?
                     res.status(err.status).json err.error

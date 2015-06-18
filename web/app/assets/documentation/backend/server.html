@@ -71,7 +71,7 @@ be smaller or equal to the server timeout specified in <code>./web/conf/server.[
 <code>./web/conf/server.[dev/prod].json</code></p>
 
         
-          <div class='highlight'><pre>app.use bodyParser.json <span class="hljs-attribute">limit</span>: <span class="hljs-string">'10mb'</span></pre></div>
+          <div class='highlight'><pre>app.use bodyParser.json <span class="hljs-attribute">limit</span>: <span class="hljs-string">'20mb'</span></pre></div>
         
       
         
@@ -475,6 +475,11 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'histogramenhancement'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the histogramenhancement algorithm on your image. this is just a placeholder. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.. this is just a placeholder.'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/histogramenhancement'</span>
+    <span class="hljs-attribute">info</span>:
+      <span class="hljs-attribute">author</span>: <span class="hljs-string">'Michael Bärtschi'</span>
+      <span class="hljs-attribute">email</span>: <span class="hljs-string">'michu.baertschi@students.unibe.ch'</span>
+      <span class="hljs-attribute">website</span>: <span class="hljs-string">'http://google.ch'</span>
+      <span class="hljs-attribute">DOI</span>: <span class="hljs-string">'10.1038/nature.2012.10010'</span>
     <span class="hljs-attribute">input</span>: [
       {
         <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'rectangle'</span>
@@ -556,6 +561,8 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'multiscaleipd'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the multiscaleipd algorithm on your image'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/multiscaleipd'</span>
+    <span class="hljs-attribute">info</span>:
+      <span class="hljs-attribute">author</span>: <span class="hljs-string">'Michael Bärtschi'</span>
     <span class="hljs-attribute">input</span>: [
       {
         <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'polygon'</span>
@@ -675,6 +682,8 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'noise'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the noise algorithm on your image'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/noise'</span>
+    <span class="hljs-attribute">info</span>:
+      <span class="hljs-attribute">author</span>: <span class="hljs-string">'Michael Bärtschi'</span>
     <span class="hljs-attribute">input</span>: [
       {
         <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'rectangle'</span>
@@ -713,6 +722,8 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'otsubinazrization'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the otsubinazrization algorithm on your image'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/otsubinazrization'</span>
+    <span class="hljs-attribute">info</span>:
+      <span class="hljs-attribute">author</span>: <span class="hljs-string">'Michael Bärtschi'</span>
     <span class="hljs-attribute">input</span>: [
       {
         <span class="hljs-attribute">highlighter</span>: <span class="hljs-string">'circle'</span>
@@ -775,6 +786,8 @@ algorithm on. The response of the post route must meet the following JSON-Schema
     <span class="hljs-attribute">name</span>: <span class="hljs-string">'sauvalabinarization'</span>
     <span class="hljs-attribute">description</span>: <span class="hljs-string">'this will apply the sauvalabinarization algorithm on your image'</span>
     <span class="hljs-attribute">url</span>: <span class="hljs-string">'http://localhost:8081/sauvalabinarization'</span>
+    <span class="hljs-attribute">info</span>:
+      <span class="hljs-attribute">author</span>: <span class="hljs-string">'Michael Bärtschi'</span>
     <span class="hljs-attribute">input</span>: []
 
   res.send records</pre></div>

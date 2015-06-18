@@ -12,7 +12,6 @@ router      = require('express').Router()
 # Pass Express Router to all routing modules
 api         = require('./api')(router)
 uploader    = require('./uploadManager')(router)
-captcha     = require('./captcha')(router)
 
 # Expose router
 module.exports = router

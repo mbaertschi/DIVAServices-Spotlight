@@ -12,15 +12,15 @@ do ->
       restrict: 'AE'
       templateUrl: 'modules/algorithm/diaAlgorithmInputs/diaAlgorithmInputs.view.html'
       scope:
+        algorithm: '='
         model: '='
         inputs: '='
-        setFormValidity: '&'
-      link: link
-
-    link = (scope, element, attrs) ->
-      # set formValidity in parent scope to valid / invalid
-      scope.$watch 'inputForm.$invalid', (value) ->
-        scope.setFormValidity status: value
+        highlighter: '='
+        validHighlighter: '='
+        selectedImage: '='
+      controller: 'DiaAlgorithmInputsController'
+      controllerAs: 'vm'
+      bindToController: true
 
     directive()
 
