@@ -7,7 +7,7 @@ class AlgorithmView extends PageObject
     browser.sleep(500)
 
   @has 'inputs', ->
-    @element.all @by.repeater('entry in inputs')
+    @element.all @by.repeater('entry in vm.inputs')
 
   @has 'success', ->
     @element(@by.css('.panel[heading="Apply Algorithm on Image"]')).element(@by.css('[ng-click="vm.submit()"]')).click()

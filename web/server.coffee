@@ -1,16 +1,16 @@
 # Server
 # ======
 #
-# **Server** is the main entry point for running the DIA-Distributed application. DIA-Distributed
+# **Server** is the main entry point for running the DIVAServices Spotlight application. DIVAServices Spotlight
 # is running on an [nodeJS](https://nodejs.org/) plattform and uses the [Express](http://expressjs.com/)
 # framework.
 #
 # Copyright &copy; Michael Bärtschi, MIT Licensed.
 
-# Set the `NODE_ENV` environment variable to `dev` or `prod` depending on whether you are
-# in development mode or in production mode
-if not process.env.NODE_ENV? or process.env.NODE_ENV not in ['dev', 'prod']
-  console.log 'please set NODE_ENV to [dev, prod]. going to exit'
+# Set the `NODE_ENV` environment variable to `dev`, `test`, or `prod` depending on whether you are
+# in development mode, in testing mode, or in production mode
+if not process.env.NODE_ENV? or process.env.NODE_ENV not in ['dev', 'test', 'prod']
+  console.log 'please set NODE_ENV to [dev, test, prod]. going to exit'
   process.exit 0
 
 # Load the configuration files. We use `nconf` for managing

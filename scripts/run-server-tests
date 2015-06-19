@@ -20,7 +20,6 @@ function stop_server {
     sleep 2
     kill 0
   fi
-  
 }
 
 # stop server on exit and signals

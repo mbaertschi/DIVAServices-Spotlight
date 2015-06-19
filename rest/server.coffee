@@ -111,7 +111,7 @@ app.get '/', (req, res) ->
 #       "maxLength": 25
 #     },
 #     "highlighter": {
-#       "enum": ["polygon", "rectangle", "circle"]
+#       "enum": ["polygon", "rectangle", "circle", "line"]
 #     },
 #     "description": {
 #       "type": "string",
@@ -260,7 +260,38 @@ app.get '/', (req, res) ->
 #       "minLength": 5
 #     },
 #     "url": {
+#       "type": "string",
 #       "format": "uri"
+#     },
+#     "info":{
+#       "type": "object",
+#       "properties": {
+#         "author": {
+#           "type": "string",
+#           "minLenght": 5,
+#           "maxLength": 50
+#         },
+#         "email": {
+#           "type": "string",
+#           "format": "email"
+#         },
+#         "website": {
+#           "type": "string",
+#           "format": "uri"
+#         },
+#         "DOI": {
+#           "type": "string"
+#         },
+#         "exptectedRuntime": {
+#           "type": "string"
+#         },
+#         "purpose": {
+#           "type": "string"
+#         },
+#         "license": {
+#           "type": "string"
+#         }
+#       }
 #     },
 #     "input": {
 #       "type": "array",
@@ -303,6 +334,33 @@ app.get '/', (req, res) ->
 #   "description": "schema for response entry",
 #   "definitions":  {
 #     "rectangle": {
+#       "type": "object",
+#       "required": ["segments"],
+#       "properties": {
+#         "segments": {
+#           "type": "array",
+#           "minItems": 1,
+#           "items": {
+#             "type": "array",
+#             "minItems": 2,
+#             "maxItems": 2,
+#             "items": {
+#               "type": "number"
+#             }
+#           }
+#         },
+#         "strokeColor": {
+#           "type": "array",
+#           "minItems": 3,
+#           "maxItems": 3,
+#           "items": {
+#             "type": "number"
+#           }
+#         }
+#       },
+#       "additionalProperties": false
+#     },
+#     "line": {
 #       "type": "object",
 #       "required": ["segments"],
 #       "properties": {
@@ -393,6 +451,9 @@ app.get '/', (req, res) ->
 #         "properties": {
 #           "rectangle": {
 #             "$ref": "#/definitions/rectangle"
+#           },
+#           "line": {
+#             "$ref": "#/definitions/line"
 #           },
 #           "circle": {
 #             "$ref": "#/definitions/circle"
