@@ -2,7 +2,7 @@
 # =======
 #
 # **Router** uses the [Express > Router](http://expressjs.com/api.html#router) middleware
-# for handling all routing from DIA-Distributed.
+# for handling all routing from DIVAServices Spotlight.
 #
 # Copyright &copy; Michael Bärtschi, MIT Licensed.
 

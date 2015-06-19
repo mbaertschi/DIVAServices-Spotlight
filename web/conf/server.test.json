@@ -3,17 +3,39 @@
     "appenders": []
   },
   "poller": {
-    "run": true,
-    "interval": 0
+    "run": false,
+    "interval": 1
   },
   "loader": {
-    "retries": 1
+    "retries": 7
   },
   "pusher": {
     "run": true
   },
   "mongoDB": {
-    "url": "localhost:27017/dia_dev?auto_reconnect"
+    "url": "localhost:27017/dia_test?auto_reconnect"
+  },
+  "session": {
+    "secret": "Psst don't tell others",
+    "resave": false,
+    "saveUninitialized": true,
+    "rolling": true,
+    "maxAge": 1800000
+  },
+  "mongoStore": {
+    "defaultOptions": {
+      "host": "127.0.0.1",
+      "port": 27017,
+      "autoReconnect": true,
+      "ssl": false,
+      "w": 1,
+      "collection": "sessions",
+      "stringify": true,
+      "hash": false,
+      "ttl": 60000,
+      "autoRemove": "interval",
+      "autoRemoveInterval": 600000
+    }
   },
   "server": {
     "timeout": 600000,

@@ -28,5 +28,5 @@ describe 'loader instance', ->
     loader.post settings, @body, (err, result) ->
       should.not.exist err
       result.output.field1.should.equal 'information field1'
-      result.highlighters.should.have.length 2
+      result.highlighters.should.have.length 1
       done()

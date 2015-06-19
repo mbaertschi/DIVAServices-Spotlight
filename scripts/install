@@ -91,11 +91,11 @@ header "Installing local npm packages for tests"
 cd test && npm install && cd ..
 echo "done"
 
-header "Installing local npm packages for DIA-Distributed"
+header "Installing local npm packages for DIVAServices Spotlight"
 cd web && npm install && cd ..
 echo "done"
 
-header "Installing local bower packages for DIA-Distributed"
+header "Installing local bower packages for DIVAServices Spotlight"
 cd web && bower install && cd ..
 echo "done"
 
@@ -108,6 +108,10 @@ echo "done"
 
 header "Setting up dia_dev database"
 mongo localhost:27017/dia_dev ./scripts/setup-database.js
+echo "done"
+
+header "Setting up dia_test database"
+mongo localhost:27017/dia_test ./scripts/setup-database.js
 echo "done"
 
 header "Generating documentation"

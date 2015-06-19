@@ -169,7 +169,7 @@ must meet the following JSON-Schema.</p>
       <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">25</span>
     },
     <span class="hljs-string">"highlighter"</span>: {
-      <span class="hljs-string">"enum"</span>: [<span class="hljs-string">"polygon"</span>, <span class="hljs-string">"rectangle"</span>, <span class="hljs-string">"circle"</span>]
+      <span class="hljs-string">"enum"</span>: [<span class="hljs-string">"polygon"</span>, <span class="hljs-string">"rectangle"</span>, <span class="hljs-string">"circle"</span>, <span class="hljs-string">"line"</span>]
     },
     <span class="hljs-string">"description"</span>: {
       <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
@@ -318,7 +318,38 @@ must meet the following JSON-Schema.</p>
       <span class="hljs-string">"minLength"</span>: <span class="hljs-number">5</span>
     },
     <span class="hljs-string">"url"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
       <span class="hljs-string">"format"</span>: <span class="hljs-string">"uri"</span>
+    },
+    <span class="hljs-string">"info"</span>:{
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"author"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+          <span class="hljs-string">"minLenght"</span>: <span class="hljs-number">5</span>,
+          <span class="hljs-string">"maxLength"</span>: <span class="hljs-number">50</span>
+        },
+        <span class="hljs-string">"email"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+          <span class="hljs-string">"format"</span>: <span class="hljs-string">"email"</span>
+        },
+        <span class="hljs-string">"website"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>,
+          <span class="hljs-string">"format"</span>: <span class="hljs-string">"uri"</span>
+        },
+        <span class="hljs-string">"DOI"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+        },
+        <span class="hljs-string">"exptectedRuntime"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+        },
+        <span class="hljs-string">"purpose"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+        },
+        <span class="hljs-string">"license"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"string"</span>
+        }
+      }
     },
     <span class="hljs-string">"input"</span>: {
       <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
@@ -358,6 +389,33 @@ algorithm on. The response of the post route must meet the following JSON-Schema
   <span class="hljs-string">"description"</span>: <span class="hljs-string">"schema for response entry"</span>,
   <span class="hljs-string">"definitions"</span>:  {
     <span class="hljs-string">"rectangle"</span>: {
+      <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
+      <span class="hljs-string">"required"</span>: [<span class="hljs-string">"segments"</span>],
+      <span class="hljs-string">"properties"</span>: {
+        <span class="hljs-string">"segments"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+            <span class="hljs-string">"minItems"</span>: <span class="hljs-number">2</span>,
+            <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">2</span>,
+            <span class="hljs-string">"items"</span>: {
+              <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+            }
+          }
+        },
+        <span class="hljs-string">"strokeColor"</span>: {
+          <span class="hljs-string">"type"</span>: <span class="hljs-string">"array"</span>,
+          <span class="hljs-string">"minItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"maxItems"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"items"</span>: {
+            <span class="hljs-string">"type"</span>: <span class="hljs-string">"number"</span>
+          }
+        }
+      },
+      <span class="hljs-string">"additionalProperties"</span>: <span class="hljs-literal">false</span>
+    },
+    <span class="hljs-string">"line"</span>: {
       <span class="hljs-string">"type"</span>: <span class="hljs-string">"object"</span>,
       <span class="hljs-string">"required"</span>: [<span class="hljs-string">"segments"</span>],
       <span class="hljs-string">"properties"</span>: {
@@ -448,6 +506,9 @@ algorithm on. The response of the post route must meet the following JSON-Schema
         <span class="hljs-string">"properties"</span>: {
           <span class="hljs-string">"rectangle"</span>: {
             <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/rectangle"</span>
+          },
+          <span class="hljs-string">"line"</span>: {
+            <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/line"</span>
           },
           <span class="hljs-string">"circle"</span>: {
             <span class="hljs-string">"$ref"</span>: <span class="hljs-string">"#/definitions/circle"</span>
