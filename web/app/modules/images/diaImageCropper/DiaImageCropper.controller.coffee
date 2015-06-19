@@ -22,6 +22,7 @@ do ->
       options =
         aspectRatio: 16 / 9
         preview: '.img-preview'
+        mouseWheelZoom: false
         crop: (data) ->
           $scope.safeApply ->
             vm.dataX = Math.round(data.x)
@@ -29,6 +30,12 @@ do ->
             vm.dataHeight = Math.round(data.height)
             vm.dataWidth = Math.round(data.width)
             vm.dataRotate = Math.round(data.rotate)
+        built: ->
+          vm.element.find('.cropper-container').on 'mousewheel', (event) ->
+            if event.altKey
+              if event.deltaY > 0 then factor = -0.1 else factor = 0.1
+              vm.image.cropper 'zoom', factor
+              event.preventDefault()
 
       vm.image.bind 'load', ->
         vm.image.cropper options
