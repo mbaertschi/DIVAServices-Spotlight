@@ -51,6 +51,9 @@ do ->
     vm.goBack = ->
       $state.go 'algorithms'
 
+    vm.goUpload = ->
+      $state.go 'images.upload', algorithmId: vm.algorithm.id
+
     if socketPrepService.settings.run
       $scope.$on 'socket:update algorithms', (ev, algorithms) ->
         angular.forEach algorithms, (algorithm) ->

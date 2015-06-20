@@ -3,15 +3,15 @@
 
 .row.images-page
   .col-md-12
-    panel(heading='Upload images', icon='cloud-upload', ng-if='vm.state=="upload"')
+    panel(heading='Upload images', icon='cloud-upload', go-to='vm.goAlgorithms()', go-to-text='Algorithms', go-to-icon='fa-arrow-right', ng-if='vm.state=="upload"')
       .text-muted Upload your images here. Maximum amount of images is 10. To edit an image, click on it. To delete it, click on remove.
       br
       form.dropzone(action='/upload', data-dia-smart-dropzone='', data-images='vm.images')
-    panel(heading='Cropping', icon='crop', go-to='goToState("upload")', go-to-text='Back to Upload', ng-if='vm.state=="cropping"')
+    panel(heading='Cropping', icon='crop', go-to='vm.goToState("upload")', go-to-text='Back to Upload', ng-if='vm.state=="cropping"')
       .text-muted Crop and rotate your image here. Once you are done, click on save to go to next state. Click on reset to undo all changes or click on clear to remove cropper.
       br
       dia-image-cropper
-    panel(heading='Filtering', icon='adjust', go-to='goToState("cropping")', go-to-text='Back to Cropping', ng-if='vm.state=="filtering"')
+    panel(heading='Filtering', icon='adjust', go-to='vm.goToState("cropping")', go-to-text='Back to Cropping', ng-if='vm.state=="filtering"')
       .text-muted Apply your image filters here. Once you are done, click on save to go to next state. Click on clear to undo all changes.
       br
       dia-image-filter

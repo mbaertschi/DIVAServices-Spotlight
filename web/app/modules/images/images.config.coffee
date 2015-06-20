@@ -28,6 +28,8 @@ do ->
       templateUrl: '/modules/images/upload/upload.view.html'
       controller: 'UploadPageController'
       controllerAs: 'vm'
+      params:
+        algorithmId: null
       data:
         title: 'Upload'
       resolve:

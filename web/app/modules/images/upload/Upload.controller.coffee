@@ -6,11 +6,12 @@ Controller UploadPageController
 do ->
   'use strict'
 
-  UploadPageController = ($scope, diaStateManager, imagesPrepServiceUpload) ->
+  UploadPageController = ($scope, $state, $stateParams, diaStateManager, imagesPrepServiceUpload) ->
     vm = @
     vm.state = 'upload'
     vm.currentImage = null
     vm.images = imagesPrepServiceUpload.images
+    vm.algorithmId = $stateParams.algorithmId
 
     # if we come from gallery view, change to state cropping
     if diaStateManager.state
@@ -25,9 +26,15 @@ do ->
         vm.currentImage = diaStateManager.image.src
 
     # emit state changes
-    $scope.goToState = (state) ->
+    vm.goToState = (state) ->
       $scope.safeApply ->
         diaStateManager.switchState state, diaStateManager.image
+
+    vm.goAlgorithms = ->
+      if vm.algorithmId
+        $state.go 'algorithm', id: vm.algorithmId
+      else
+        $state.go 'algorithms'
 
     vm
 
@@ -36,6 +43,8 @@ do ->
 
   UploadPageController.$inject = [
     '$scope'
+    '$state'
+    '$stateParams'
     'diaStateManager'
     'imagesPrepServiceUpload'
   ]
