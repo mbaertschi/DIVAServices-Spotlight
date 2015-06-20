@@ -57,7 +57,6 @@ do ->
       raster.on 'load', ->
         vm.scale = view.size.width / @.bounds.width
         factory.scale = @.bounds.width / view.size.width
-        vm.strokeWidth = 4 * vm.scale
         raster.scale vm.scale
         view.update()
         callback()
@@ -93,5 +92,5 @@ do ->
 
     factory()
 
-  angular.module('app.core')
+  angular.module('app.algorithm')
     .factory 'diaPaperManager', diaPaperManager

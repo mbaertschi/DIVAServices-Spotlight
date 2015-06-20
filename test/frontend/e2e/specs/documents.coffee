@@ -2,19 +2,6 @@ DocumentsPage = require '../pages/documents/page'
 
 describe 'Document Page', ->
 
-  describe 'HowTo page', ->
-    page = null
-
-    beforeEach ->
-      page = new DocumentsPage 'howto'
-      page.visitPage()
-
-    it 'has the breadcrumb Home / Documents / FAQ', ->
-      expect(page.breadcrumbs).toEqual ['Home', 'Documents', 'HowTo']
-
-    it 'has the title Documents > For your information', ->
-      expect(page.title).toEqual 'Documents > For your information'
-
   describe 'FAQs page', ->
     page = null
 

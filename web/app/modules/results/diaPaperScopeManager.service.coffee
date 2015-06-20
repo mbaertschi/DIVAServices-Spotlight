@@ -15,13 +15,13 @@ do ->
       vm.paperScope = new paper.PaperScope
       vm.paperScope.setup vm.canvas
       vm.fillColor = new vm.paperScope.Color 1, 0, 0, 0.3
+      vm.strokeWidth = 3
       raster = new vm.paperScope.Raster
         source: vm.image
         position: vm.paperScope.view.center
       raster.on 'load', =>
         vm.scale = vm.paperScope.view.size.width / raster.bounds.width
         inverseScale = raster.bounds.width / vm.paperScope.view.size.width
-        vm.strokeWidth = 4 * vm.scale
         raster.scale vm.scale
         vm.paperScope.view.update()
         @drawPath vm, ->

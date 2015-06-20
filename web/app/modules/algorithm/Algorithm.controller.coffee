@@ -14,6 +14,7 @@ do ->
     vm.algorithm = algorithmsPrepService.data.algorithm
     vm.highlighter = algorithmsPrepService.data.highlighter
     vm.validHighlighter = false
+    vm.highlighterExists = true
     vm.selection = null
     vm.inputs = algorithmsPrepService.data.inputs
     vm.model = algorithmsPrepService.data.model
@@ -24,6 +25,10 @@ do ->
 
     $scope.$on 'set-highlighter-status', (event, data) ->
       $scope.safeApply -> vm.validHighlighter = data
+
+    $scope.$on 'invalid-highlighter', ->
+      toastr.error "Highlighter for #{vm.highlighter} is not defined", 'Error'
+      vm.highlighterExists = false
 
     # set selected image
     vm.setSelectedImage = (image, fromBackModel) ->

@@ -11,13 +11,6 @@ do ->
       data:
         title: 'Documents'
 
-    $stateProvider.state 'docs.howto',
-      parent: 'main'
-      url: '/docs/howto'
-      templateUrl: '/modules/docs/howto.view.html'
-      data:
-        title: 'HowTo'
-
     $stateProvider.state 'docs.faq',
       parent: 'main'
       url: '/docs/faq'

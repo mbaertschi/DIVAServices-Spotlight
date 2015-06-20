@@ -179,12 +179,12 @@ framework.</p>
         
       
         
-        <p>Set the <code>NODE_ENV</code> environment variable to <code>dev</code> or <code>prod</code> depending on whether you are
-in development mode or in production mode</p>
+        <p>Set the <code>NODE_ENV</code> environment variable to <code>dev</code>, <code>test</code>, or <code>prod</code> depending on whether you are
+in development mode, in testing mode, or in production mode</p>
 
         
-          <div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> process.env.NODE_ENV? <span class="hljs-keyword">or</span> process.env.NODE_ENV <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">'dev'</span>, <span class="hljs-string">'prod'</span>]
-  <span class="hljs-built_in">console</span>.log <span class="hljs-string">'please set NODE_ENV to [dev, prod]. going to exit'</span>
+          <div class='highlight'><pre><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> process.env.NODE_ENV? <span class="hljs-keyword">or</span> process.env.NODE_ENV <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> [<span class="hljs-string">'dev'</span>, <span class="hljs-string">'test'</span>, <span class="hljs-string">'prod'</span>]
+  <span class="hljs-built_in">console</span>.log <span class="hljs-string">'please set NODE_ENV to [dev, test, prod]. going to exit'</span>
   process.exit <span class="hljs-number">0</span></pre></div>
         
       
