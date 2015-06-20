@@ -1,64 +1,14 @@
 do ->
   'use strict'
 
-  DiaAlgorithmPolygonController = ($scope, $sce, diaPaperManager) ->
-    vm = @
-    vm.element = null
-    vm.handle = null
-    vm.path = null
-    vm.segmentIndex = null
-    vm.strokeWidth = null
-    vm.strokeColor = 'red'
-    vm.fillColor = new paper.Color 1, 0, 0, 0.1
-    vm.tools = null
-    vm.polygonDescription = $sce.trustAsHtml(
-      """
-      <p>Usage:</p>
-      <p>- Click on image to add new points</p>
-      <p>- Click and drag a point to move it</p>
-      <p>- Click on the first point to close the polygon</p>
-      <p>- Once the polygon is closed, you can move it by clicking and dragging on the inner part of it</p>
-      <p>- Once the polygon is closed, you can add more points by clicking on its edges</p>
-      <p>- Once the polygon is closed, you can remove it and draw a new one by clicking outside of the polygon</p>
-      """
-    )
+  polygonTool = ($sce, diaPaperManager) ->
 
-    @init = (element) ->
-      vm.element = element.find '#polygon'
+    factory = ->
+      initMouseEvents: initMouseEvents
+      drawPath: drawPath
+      setDescription: setDescription
 
-      # tell diaPaperManager to re-initialize paperJS. This is executed
-      # everytime the algorithm changes (but not when selectedImage changes)
-      diaPaperManager.reset()
-
-      # init mouse event handlers
-      setupMouseEvents()
-
-      # update paper settings if selectedImage has changed
-      $scope.$parent.$watch 'vm.selectedImage', ->
-        diaPaperManager.resetPath()
-        if vm.path then vm.path.remove()
-        vm.path = null
-        diaPaperManager.setup vm, ->
-          if vm.selection? then drawPath()
-
-    drawPath = ->
-      vm.path = new Path
-      vm.path.strokeColor = vm.strokeColor
-      vm.path.strokeWidth = vm.strokeWidth
-      vm.path.fillColor = vm.fillColor
-      angular.forEach vm.selection.segments, (segment) ->
-        x = segment[0]
-        y = segment[1]
-        @.add new Point x, y
-      , vm.path
-      vm.path.closed = true
-      vm.path.fullySelected = true
-      vm.path.scale vm.scale, [0, 0]
-      $scope.$emit 'set-highlighter-status', true
-      diaPaperManager.set vm.path, 'rectangle'
-
-    setupMouseEvents = ->
-
+    initMouseEvents = (vm) ->
       vm.tools =
         mouseDown: (event) ->
           vm.handle = null
@@ -79,7 +29,7 @@ do ->
                     else
                       vm.path.closed = true
                       vm.path.fillColor = vm.fillColor
-                      $scope.$emit 'set-highlighter-status', true
+                      vm.scope.$emit 'set-highlighter-status', true
                   else
                     vm.handle = hitResult.type
                     vm.segmentIndex = hitResult.segment.index
@@ -91,7 +41,7 @@ do ->
               vm.path.remove()
               vm.path = null
               diaPaperManager.resetPath()
-              $scope.$emit 'set-highlighter-status', false
+              vm.scope.$emit 'set-highlighter-status', false
           else
             diaPaperManager.resetPath()
 
@@ -121,11 +71,41 @@ do ->
               vm.path.segments[vm.segmentIndex].point.x += x
               vm.path.segments[vm.segmentIndex].point.y += y
 
-  angular.module('app.algorithm')
-    .controller 'DiaAlgorithmPolygonController', DiaAlgorithmPolygonController
+    drawPath = (vm) ->
+      vm.path = new Path
+      vm.path.strokeColor = vm.strokeColor
+      vm.path.strokeWidth = vm.strokeWidth
+      vm.path.fillColor = vm.fillColor
+      angular.forEach vm.selection.segments, (segment) ->
+        x = segment[0]
+        y = segment[1]
+        @.add new Point x, y
+      , vm.path
+      vm.path.closed = true
+      vm.path.fullySelected = true
+      vm.path.scale vm.scale, [0, 0]
+      vm.scope.$emit 'set-highlighter-status', true
+      diaPaperManager.set vm.path, 'rectangle'
 
-  DiaAlgorithmPolygonController.$inject = [
-    '$scope'
+    setDescription = (vm) ->
+      vm.description = $sce.trustAsHtml(
+        """
+        <p>Usage:</p>
+        <p>- Click on image to add new points</p>
+        <p>- Click and drag a point to move it</p>
+        <p>- Click on the first point to close the polygon</p>
+        <p>- Once the polygon is closed, you can move it by clicking and dragging on the inner part of it</p>
+        <p>- Once the polygon is closed, you can add more points by clicking on its edges</p>
+        <p>- Once the polygon is closed, you can remove it and draw a new one by clicking outside of the polygon</p>
+        """
+      )
+
+    factory()
+
+  angular.module('app.algorithm')
+    .factory 'polygonTool', polygonTool
+
+  polygonTool.$inject = [
     '$sce'
     'diaPaperManager'
   ]
