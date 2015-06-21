@@ -5,7 +5,8 @@ do ->
     vm = @
 
     # if no highlighter is given, set this variable to true
-    if not vm.highlighter? then vm.validHighlighter = true
+    $scope.$watch 'vm.validHighlighter', ->
+      if not vm.highlighter? then vm.validHighlighter = true
 
     # handle checkbox interactions
     vm.toggleCheckbox = (name) ->

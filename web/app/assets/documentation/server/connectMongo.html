@@ -198,10 +198,11 @@ stringifySerializationOptions =
 <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(connect)</span> -&gt;</span>
   Store = connect.Store <span class="hljs-keyword">or</span> connect.session.Store
 <span class="hljs-function">
-  <span class="hljs-title">MongoStore</span> = <span class="hljs-params">(options)</span> -&gt;</span>
+  <span class="hljs-title">MongoStore</span> = <span class="hljs-params">(options, pusher)</span> -&gt;</span>
     options = _.defaults(options <span class="hljs-keyword">or</span> {}, nconf.get <span class="hljs-string">'mongoStore:defaultOptions'</span>)
     options = _.assign(options, stringifySerializationOptions)
     <span class="hljs-property">@options</span> = options
+    <span class="hljs-property">@pusher</span> = pusher
     Store.call <span class="hljs-keyword">this</span>, options
     self = <span class="hljs-keyword">this</span>
 <span class="hljs-function">
@@ -280,6 +281,8 @@ Remove all images associated to that sessionId from mongoDB</br>
           <span class="hljs-keyword">if</span> err
             <span class="hljs-keyword">throw</span> err
           <span class="hljs-keyword">for</span> session <span class="hljs-keyword">in</span> sessions
+            <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
+              self.pusher.sessionDestroy session._id
             removeImageFolder session._id
             removeImagesFromDb session._id
           self.collection.remove { <span class="hljs-attribute">expires</span>: { <span class="hljs-attribute">$lt</span>: <span class="hljs-keyword">new</span> Date } }, <span class="hljs-attribute">w</span>: <span class="hljs-number">0</span>

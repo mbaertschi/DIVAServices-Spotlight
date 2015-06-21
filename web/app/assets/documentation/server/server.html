@@ -247,12 +247,47 @@ Uploader    = <span class="hljs-built_in">require</span> <span class="hljs-strin
         
       
         
+        <p>Wrap <code>Express</code> with <code>httpServer</code> for <code>socket.io</code></p>
+
+        
+          <div class='highlight'><pre>  app.server = http.createServer app</pre></div>
+        
+      
+        
+        <p>Set server timeout to value specified in configuration file</p>
+
+        
+          <div class='highlight'><pre>  app.server.timeout = nconf.get <span class="hljs-string">'server:timeout'</span></pre></div>
+        
+      
+        
+        <p>Start the <code>pusher</code> if defined so</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
+    io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>)(app.server)
+    pusher = <span class="hljs-keyword">new</span> Pusher io</pre></div>
+        
+      
+        
+        <p>Start the <code>poller</code> if defined so</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'poller:run'</span>
+    <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
+      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>, pusher
+    <span class="hljs-keyword">else</span>
+      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>
+    poller.run()</pre></div>
+        
+      
+        
         <p>Setup sessions. We use a session store which uses a mongoDB connection
 to store the sessions in. This allows us to hook into the session destroy
 method and handle image deletion (on disk and in mongoDB)</p>
 
         
-          <div class='highlight'><pre>  sessionStore = <span class="hljs-keyword">new</span> SessionStore session
+          <div class='highlight'><pre>  sessionStore = <span class="hljs-keyword">new</span> SessionStore session, pusher
   app.use session sessionStore</pre></div>
         
       
@@ -298,41 +333,6 @@ method and handle image deletion (on disk and in mongoDB)</p>
         
           <div class='highlight'><pre>  app.all <span class="hljs-string">'*'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
     res.sendFile __dirname + <span class="hljs-string">'/'</span> + sysPath.join path, <span class="hljs-string">'index.html'</span></pre></div>
-        
-      
-        
-        <p>Wrap <code>Express</code> with <code>httpServer</code> for <code>socket.io</code></p>
-
-        
-          <div class='highlight'><pre>  app.server = http.createServer app</pre></div>
-        
-      
-        
-        <p>Set server timeout to value specified in configuration file</p>
-
-        
-          <div class='highlight'><pre>  app.server.timeout = nconf.get <span class="hljs-string">'server:timeout'</span></pre></div>
-        
-      
-        
-        <p>Start the <code>pusher</code> if defined so</p>
-
-        
-          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
-    io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>)(app.server)
-    pusher = <span class="hljs-keyword">new</span> Pusher io</pre></div>
-        
-      
-        
-        <p>Start the <code>poller</code> if defined so</p>
-
-        
-          <div class='highlight'><pre>  <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'poller:run'</span>
-    <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'pusher:run'</span>
-      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>, pusher
-    <span class="hljs-keyword">else</span>
-      poller = <span class="hljs-keyword">new</span> Poller <span class="hljs-property">@db</span>
-    poller.run()</pre></div>
         
       
         

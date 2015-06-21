@@ -12,6 +12,7 @@ do ->
     diaSocket.forward 'add algorithms'
     diaSocket.forward 'delete algorithms'
     diaSocket.forward 'error'
+    diaSocket.forward 'session_expired'
     diaSocket
 
   angular.module('app.core')

@@ -8,7 +8,9 @@
 # Copyright &copy; Michael Bärtschi, MIT Licensed.
 
 # Module dependencies
-logger      = require './logger'
+logger       = require './logger'
+cookieParser = require 'cookie-parser'
+nconf        = require 'nconf'
 
 # Expose pusher
 pusher = exports = module.exports = class Pusher
@@ -18,9 +20,19 @@ pusher = exports = module.exports = class Pusher
   # Create Pusher and assign socket.io</br>
   # `params:`
   #   * *io* `<socket.io>` the socket.io instance
-  constructor: (io) ->
+  constructor: (@io) ->
     logger.log 'info', 'initializing', 'Pusher'
-    @io = io
+    @clients = {}
+
+    parseCookie = cookieParser nconf.get 'session:secret'
+    @io.sockets.on 'connection', (socket) =>
+      parseCookie socket.handshake, null, (err) =>
+        if socket.handshake.signedCookies['connect.sid']?
+          sessionID = socket.handshake.signedCookies['connect.sid']
+          if not @clients[sessionID]?
+            @clients[sessionID] = socket
+            socket.on 'disconnect', =>
+              delete @clients[sessionID]
 
   # ---
   # **update**</br>
@@ -52,3 +64,12 @@ pusher = exports = module.exports = class Pusher
   delete: (algorithms) =>
     logger.log 'info', 'pushing algorithms to remove', 'Pusher'
     @io.emit 'delete algorithms', algorithms
+
+  # ---
+  # **sessionDestroy**</br>
+  # Sends a notification to client with given sessionID that his session has expired</br>
+  # `params:`
+  #   * *id* `<String>` session id
+  sessionDestroy: (id) =>
+    logger.log 'debug', "session #{id} has expired", 'Pusher'
+    if @clients[id]? then @clients[id].emit 'session_expired'
