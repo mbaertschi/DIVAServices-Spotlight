@@ -43,3 +43,20 @@ do ->
   core.config stateProvider
   core.config toastr
   core.config provideSafeDigestCycles
+
+  # handle session expired event
+  core.run [
+    '$rootScope'
+    '$window'
+    'diaSocket'
+    'toastr'
+
+    ($rootScope, $window, diaSocket, toastr) ->
+      $rootScope.$on 'socket:session_expired', ->
+        toastr.warning 'Your session has expired, please reload the page', 'Session Expired',
+          closeButton: false
+          progressBar: false
+          timeOut: undefined
+          onHidden: ->
+            $window.location.reload()
+  ]

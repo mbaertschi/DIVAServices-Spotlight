@@ -115,6 +115,7 @@ do ->
       result.output.uuid = input.uuid
 
       if angular.equals {}, result.input.inputs then result.input.inputs = null
+      if angular.equals {}, result.output.output then result.output.output = null
       if angular.equals {}, result.input.highlighter
         result.input.highlighter = null
       else

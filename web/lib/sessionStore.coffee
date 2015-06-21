@@ -22,7 +22,8 @@ sessionStore = exports = module.exports = class SessionStore
   # Create an express-session and associate it with connectMongo</br>
   # `params:`
   #   * *session* `<express-session>` the express-session instance
-  constructor: (session) ->
+  #   * *pusher* `<pusher>` inject pusher to handle session expiration
+  constructor: (session, pusher) ->
     logger.log 'info', 'initializing', 'SessionStore'
 
     MongoStore = require('./connectMongo')(session)
@@ -31,8 +32,8 @@ sessionStore = exports = module.exports = class SessionStore
       secret: nconf.get 'session:secret'
       resave: nconf.get 'session:resave'
       saveUninitialized: nconf.get 'session:saveUninitialized'
-      rolling: true
+      rolling: nconf.get 'session:rolling'
       cookie: maxAge: nconf.get 'session:maxAge'
-      store: new MongoStore mongooseConnection: mongoose.connection
+      store: new MongoStore mongooseConnection: mongoose.connection, pusher
 
     return @session

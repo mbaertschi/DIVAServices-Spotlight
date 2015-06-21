@@ -24,10 +24,11 @@ stringifySerializationOptions =
 module.exports = (connect) ->
   Store = connect.Store or connect.session.Store
 
-  MongoStore = (options) ->
+  MongoStore = (options, pusher) ->
     options = _.defaults(options or {}, nconf.get 'mongoStore:defaultOptions')
     options = _.assign(options, stringifySerializationOptions)
     @options = options
+    @pusher = pusher
     Store.call this, options
     self = this
 
@@ -78,6 +79,8 @@ module.exports = (connect) ->
           if err
             throw err
           for session in sessions
+            if nconf.get 'pusher:run'
+              self.pusher.sessionDestroy session._id
             removeImageFolder session._id
             removeImagesFromDb session._id
           self.collection.remove { expires: { $lt: new Date } }, w: 0

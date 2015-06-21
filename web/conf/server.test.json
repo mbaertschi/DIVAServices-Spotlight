@@ -20,7 +20,7 @@
     "resave": false,
     "saveUninitialized": true,
     "rolling": true,
-    "maxAge": 1800000
+    "maxAge": 7200000
   },
   "mongoStore": {
     "defaultOptions": {
@@ -32,9 +32,9 @@
       "collection": "sessions",
       "stringify": true,
       "hash": false,
-      "ttl": 60000,
+      "ttl": 7200000,
       "autoRemove": "interval",
-      "autoRemoveInterval": 600000
+      "autoRemoveInterval": 60000
     }
   },
   "server": {

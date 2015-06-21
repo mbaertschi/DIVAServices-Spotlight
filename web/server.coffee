@@ -47,10 +47,29 @@ server.startServer = (port, path, callback) ->
   # Setup `Express` framework
   app = express()
 
+  # Wrap `Express` with `httpServer` for `socket.io`
+  app.server = http.createServer app
+
+  # Set server timeout to value specified in configuration file
+  app.server.timeout = nconf.get 'server:timeout'
+
+  # Start the `pusher` if defined so
+  if nconf.get 'pusher:run'
+    io = require('socket.io')(app.server)
+    pusher = new Pusher io
+
+  # Start the `poller` if defined so
+  if nconf.get 'poller:run'
+    if nconf.get 'pusher:run'
+      poller = new Poller @db, pusher
+    else
+      poller = new Poller @db
+    poller.run()
+
   # Setup sessions. We use a session store which uses a mongoDB connection
   # to store the sessions in. This allows us to hook into the session destroy
   # method and handle image deletion (on disk and in mongoDB)
-  sessionStore = new SessionStore session
+  sessionStore = new SessionStore session, pusher
   app.use session sessionStore
 
   # Route all static files to http paths
@@ -72,25 +91,6 @@ server.startServer = (port, path, callback) ->
   # Route all non-existent files to `index.html`
   app.all '*', (req, res) ->
     res.sendFile __dirname + '/' + sysPath.join path, 'index.html'
-
-  # Wrap `Express` with `httpServer` for `socket.io`
-  app.server = http.createServer app
-
-  # Set server timeout to value specified in configuration file
-  app.server.timeout = nconf.get 'server:timeout'
-
-  # Start the `pusher` if defined so
-  if nconf.get 'pusher:run'
-    io = require('socket.io')(app.server)
-    pusher = new Pusher io
-
-  # Start the `poller` if defined so
-  if nconf.get 'poller:run'
-    if nconf.get 'pusher:run'
-      poller = new Poller @db, pusher
-    else
-      poller = new Poller @db
-    poller.run()
 
   # Start server on port specified in configuration file
   app.server.listen port, callback

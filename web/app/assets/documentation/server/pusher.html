@@ -182,7 +182,9 @@ communication channels here.</p>
         <p>Module dependencies</p>
 
         
-          <div class='highlight'><pre>logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span></pre></div>
+          <div class='highlight'><pre>logger       = <span class="hljs-built_in">require</span> <span class="hljs-string">'./logger'</span>
+cookieParser = <span class="hljs-built_in">require</span> <span class="hljs-string">'cookie-parser'</span>
+nconf        = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span></pre></div>
         
       
         
@@ -206,9 +208,19 @@ Create Pusher and assign socket.io</br>
 </ul>
 
         
-          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(io)</span> -&gt;</span>
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(<span class="hljs-property">@io</span>)</span> -&gt;</span>
     logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'Pusher'</span>
-    <span class="hljs-property">@io</span> = io</pre></div>
+    <span class="hljs-property">@clients</span> = {}
+
+    parseCookie = cookieParser nconf.get <span class="hljs-string">'session:secret'</span>
+    <span class="hljs-property">@io</span>.sockets.<span class="hljs-literal">on</span> <span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-params">(socket)</span> =&gt;</span>
+      parseCookie socket.handshake, <span class="hljs-literal">null</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> =&gt;</span>
+        <span class="hljs-keyword">if</span> socket.handshake.signedCookies[<span class="hljs-string">'connect.sid'</span>]?
+          sessionID = socket.handshake.signedCookies[<span class="hljs-string">'connect.sid'</span>]
+          <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-property">@clients</span>[sessionID]?
+            <span class="hljs-property">@clients</span>[sessionID] = socket
+            socket.<span class="hljs-literal">on</span> <span class="hljs-string">'disconnect'</span>, <span class="hljs-function">=&gt;</span>
+              <span class="hljs-keyword">delete</span> <span class="hljs-property">@clients</span>[sessionID]</pre></div>
         
       
         
@@ -270,6 +282,25 @@ on client side</br>
           <div class='highlight'><pre>  <span class="hljs-attribute">delete</span>: <span class="hljs-function"><span class="hljs-params">(algorithms)</span> =&gt;</span>
     logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'pushing algorithms to remove'</span>, <span class="hljs-string">'Pusher'</span>
     <span class="hljs-property">@io</span>.emit <span class="hljs-string">'delete algorithms'</span>, algorithms</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>sessionDestroy</strong></br>
+Sends a notification to client with given sessionID that his session has expired</br>
+<code>params:</code></p>
+<ul>
+<li><em>id</em> <code>&lt;String&gt;</code> session id</li>
+</ul>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">sessionDestroy</span>: <span class="hljs-function"><span class="hljs-params">(id)</span> =&gt;</span>
+    logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"session <span class="hljs-subst">#{id}</span> has expired"</span>, <span class="hljs-string">'Pusher'</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-property">@clients</span>[id]? <span class="hljs-keyword">then</span> <span class="hljs-property">@clients</span>[id].emit <span class="hljs-string">'session_expired'</span></pre></div>
         
       
       <div class="fleur">h</div>

@@ -207,10 +207,11 @@ Create an express-session and associate it with connectMongo</br>
 <code>params:</code></p>
 <ul>
 <li><em>session</em> <code>&lt;express-session&gt;</code> the express-session instance</li>
+<li><em>pusher</em> <code>&lt;pusher&gt;</code> inject pusher to handle session expiration</li>
 </ul>
 
         
-          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(session)</span> -&gt;</span>
+          <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(session, pusher)</span> -&gt;</span>
     logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'SessionStore'</span>
 
     MongoStore = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./connectMongo'</span>)(session)
@@ -219,9 +220,9 @@ Create an express-session and associate it with connectMongo</br>
       <span class="hljs-attribute">secret</span>: nconf.get <span class="hljs-string">'session:secret'</span>
       <span class="hljs-attribute">resave</span>: nconf.get <span class="hljs-string">'session:resave'</span>
       <span class="hljs-attribute">saveUninitialized</span>: nconf.get <span class="hljs-string">'session:saveUninitialized'</span>
-      <span class="hljs-attribute">rolling</span>: <span class="hljs-literal">true</span>
+      <span class="hljs-attribute">rolling</span>: nconf.get <span class="hljs-string">'session:rolling'</span>
       <span class="hljs-attribute">cookie</span>: <span class="hljs-attribute">maxAge</span>: nconf.get <span class="hljs-string">'session:maxAge'</span>
-      <span class="hljs-attribute">store</span>: <span class="hljs-keyword">new</span> MongoStore <span class="hljs-attribute">mongooseConnection</span>: mongoose.connection
+      <span class="hljs-attribute">store</span>: <span class="hljs-keyword">new</span> MongoStore <span class="hljs-attribute">mongooseConnection</span>: mongoose.connection, pusher
 
     <span class="hljs-keyword">return</span> <span class="hljs-property">@session</span></pre></div>
         
