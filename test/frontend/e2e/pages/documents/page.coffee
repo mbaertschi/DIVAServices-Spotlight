@@ -7,7 +7,7 @@ class DocumentsPage extends PageObject
 
   visitPage: (sub) ->
     # make sure the menu is expanded
-    $("li[title='Documents']").click()
+    $("li[title='Documentation']").click()
     browser.sleep(500)
     # make sure the sub menu is expanded
     if sub?
