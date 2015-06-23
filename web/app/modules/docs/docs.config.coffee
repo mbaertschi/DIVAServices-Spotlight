@@ -9,7 +9,7 @@ do ->
       abstract: true
       url: '/docs'
       data:
-        title: 'Documents'
+        title: 'Documentation'
 
     $stateProvider.state 'docs.faq',
       parent: 'main'
@@ -23,7 +23,7 @@ do ->
       url: '/docs/api'
       abstract: true
       data:
-        title: 'API Documentation'
+        title: 'API'
 
     $stateProvider.state 'docs.api.backend',
       parent: 'main'
