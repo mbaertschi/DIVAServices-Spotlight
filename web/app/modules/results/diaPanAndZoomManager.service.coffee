@@ -42,7 +42,7 @@ do ->
           vm.delta.y = event.pageY - vm.drag.y
           vm.drag.x = event.pageX
           vm.drag.y = event.pageY
-          @changeCenter vm.uuid, -vm.delta.x, vm.delta.y, 1
+          @changeCenter vm.uuid, -pz.direction * vm.delta.x, -pz.direction * -vm.delta.y, 1
 
     add = (type, id, vm) ->
       if not pz.paperScopes[id]? then pz.paperScopes[id] = {}
@@ -57,11 +57,17 @@ do ->
 
     changeZoom = (id, deltaY, viewPosition) ->
       calcNewZoom = (oldZoom, delta, c, p) ->
-        factor = 1.01 * pz.direction
+        factor = 1.01
         if delta < 0
-          newZoom = oldZoom * factor
+          if pz.direction is 1
+            newZoom = oldZoom * factor
+          else
+            newZoom = oldZoom / factor
         else if delta > 0
-          newZoom = oldZoom / factor
+          if pz.direction is 1
+            newZoom = oldZoom / factor
+          else
+            newZoom = oldZoom * factor
         else
           newZoom = oldZoom
         beta = oldZoom / newZoom
