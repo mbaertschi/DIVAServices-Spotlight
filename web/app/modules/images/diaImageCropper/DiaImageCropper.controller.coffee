@@ -33,7 +33,8 @@ do ->
         built: ->
           vm.element.find('.cropper-container').on 'mousewheel', (event) ->
             if event.altKey
-              if event.deltaY > 0 then factor = -0.1 else factor = 0.1
+              if /MAC/.test navigator.platform.toUpperCase() then direction = 1 else direction = -1
+              if event.deltaY > 0 then factor = -0.1 * direction else factor = 0.1 * direction
               vm.image.cropper 'zoom', factor
               event.preventDefault()
 
