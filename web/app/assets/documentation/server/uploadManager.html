@@ -197,12 +197,8 @@ utils     = <span class="hljs-built_in">require</span> <span class="hljs-string"
         
       
         
-        <hr>
-
-        
-      
-        
-        <p><strong>router.get</strong> <code>/upload</code></p>
+        <p>——and
+<strong>router.get</strong> <code>/upload</code></p>
 <ul>
 <li>method: GET</li>
 <li>params: none</li>
@@ -276,7 +272,7 @@ the following steps:</p>
     query =
       <span class="hljs-attribute">sessionId</span>: res.imageData.sessionId
       <span class="hljs-attribute">serverName</span>: res.imageData.serverName
-    utils.orientateJpegImage res.imageData, <span class="hljs-function">-&gt;</span>
+    utils.processImage res.imageData, <span class="hljs-function">-&gt;</span>
       utils.convertToPng res.imageData, <span class="hljs-function"><span class="hljs-params">(err, image)</span> -&gt;</span>
         utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
           image.thumbPath = thumbPath

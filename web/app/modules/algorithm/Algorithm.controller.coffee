@@ -45,7 +45,7 @@ do ->
       if entry.inputs? then angular.copy entry.inputs, vm.model
       vm.selection = entry.highlighter
       angular.forEach vm.images, (image) ->
-        if image.url.split('?')[0] is entry.image.path.split('?')[0]
+        if image.url.split('?')[0] is entry.image.url.split('?')[0]
           vm.setSelectedImage image, true
 
     vm.goBack = ->

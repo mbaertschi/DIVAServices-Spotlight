@@ -27,7 +27,7 @@ uploader = exports = module.exports = class Uploader
       limits:
         fieldSize: nconf.get 'server:maxFileSize'
       rename: (fieldname, filename, req, res) ->
-        name = 'upload_' + req.body.index
+        name = 'upload_' + new Date().getTime()
         name
       changeDest: (dest, req, res) ->
         newPath = dest + req.sessionID
@@ -50,7 +50,6 @@ uploader = exports = module.exports = class Uploader
           extension: file.extension
           url: url
           path: file.path
-          index: req.body.index
 
         res.imageData = image
 

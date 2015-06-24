@@ -213,7 +213,7 @@ has completed, all image information are stored in mongoDB</p>
       <span class="hljs-attribute">limits</span>:
         <span class="hljs-attribute">fieldSize</span>: nconf.get <span class="hljs-string">'server:maxFileSize'</span>
       <span class="hljs-attribute">rename</span>: <span class="hljs-function"><span class="hljs-params">(fieldname, filename, req, res)</span> -&gt;</span>
-        name = <span class="hljs-string">'upload_'</span> + req.body.index
+        name = <span class="hljs-string">'upload_'</span> + <span class="hljs-keyword">new</span> Date().getTime()
         name
       <span class="hljs-attribute">changeDest</span>: <span class="hljs-function"><span class="hljs-params">(dest, req, res)</span> -&gt;</span>
         newPath = dest + req.sessionID
@@ -236,7 +236,6 @@ has completed, all image information are stored in mongoDB</p>
           <span class="hljs-attribute">extension</span>: file.extension
           <span class="hljs-attribute">url</span>: url
           <span class="hljs-attribute">path</span>: file.path
-          <span class="hljs-attribute">index</span>: req.body.index
 
         res.imageData = image
 

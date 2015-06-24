@@ -12,7 +12,10 @@ mongoose    = require 'mongoose'
 fs          = require 'fs-extra'
 Validator   = require('jsonschema').Validator
 validator   = new Validator
+utils       = require './utils'
 _           = require 'lodash'
+gm          = require 'gm'
+logger      = require '../lib/logger'
 
 # Expose api routes
 api = exports = module.exports = (router) ->
@@ -132,18 +135,45 @@ api = exports = module.exports = (router) ->
       if responseErrors.length
         callback { status: 400, error: responseErrors[0].stack }
       else if result.image
-        image = new Buffer result.image, 'base64'
-        timeStamp = new Date()
-        path = params.image.path.replace '.png', '_output' + timeStamp.getTime() + '.png'
+        path = params.image.path.replace '.png', '_output_' + new Date().getTime() + '.png'
+        values = path.split '/'
+        serverName = values[values.length - 1]
         url = path.replace 'public', ''
-        fs.writeFile path, image, (err) ->
+        image =
+          serverName: serverName
+          clientName: params.algorithm.name.trim().replace(' ', '_') + '_' + new Date().getTime() + '.png'
+          sessionId: req.sessionID
+          extension: 'png'
+          type: 'image/png'
+          path: path
+          url: url
+        buffer = new Buffer result.image, 'base64'
+        fs.writeFile path, buffer, (err) ->
           if err?
-            callback { status: 500, error: err }
+            logger.log 'warn', "fs could not write buffered image to disk error=#{err}", 'API'
+            callback { status: 500, error: err}
           else
-            result.image = url
-            callback null, result
+            image.size = utils.getFilesizeInBytes path
+            utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+              if err?
+                callback { status: 500, error: err}
+              else
+                image.thumbPath = thumbPath
+                image.thumbUrl = thumbUrl
+                Image = mongoose.model 'Image'
+                query =
+                  sessionId: req.sessionID
+                  serverName: serverName
+                Image.update query, image, upsert: true, (err) ->
+                  if err?
+                    logger.log 'warn', 'could not save image', 'API'
+                    callback { status: 500, error: err}
+                  else
+                    result.image = image
+                    callback null, result
       else if result.highlighters
-        result.image = params.image.url
+        # pass on input image as we want to display result highlighters on that image
+        result.image = params.image
         callback null, result
       else
         callback null, result

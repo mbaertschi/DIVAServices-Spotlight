@@ -64,7 +64,6 @@ do ->
           name: image.serverName
           size: image.size
           type: image.type
-          index: image.index
           src: image.url
         @push image
       , images

@@ -107,9 +107,7 @@ do ->
           uuid: input.uuid
           inputs: input.inputs
           highlighter: input.highlighter
-          image:
-            path: input.image.url
-            thumbPath: input.image.thumbUrl
+          image: input.image
         output: output
 
       result.output.uuid = input.uuid

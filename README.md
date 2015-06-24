@@ -8,6 +8,7 @@ Unified repository for both, dummy rest server and client components for the DIV
   2. Install the mandatory dependencies:
     * [mongoDB](http://docs.mongodb.org/manual/installation/) and start mongo daemon
     * [Node.js](https://docs.npmjs.com/getting-started/installing-node) and update npm
+    * [GraphicsMagick](http://www.graphicsmagick.org/)
 
     Following packages must be installed globally. If you use `install` script, you can omit this and all the following sections from *Install*.
 
