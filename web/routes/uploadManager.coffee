@@ -17,7 +17,7 @@ utils     = require './utils'
 # Expose uploadManager routes
 uploadManager = exports = module.exports = (router) ->
 
-  # ----
+  # ----and
   # **router.get** `/upload`
   #   * method: GET
   #   * params: none
@@ -78,7 +78,7 @@ uploadManager = exports = module.exports = (router) ->
     query =
       sessionId: res.imageData.sessionId
       serverName: res.imageData.serverName
-    utils.orientateJpegImage res.imageData, ->
+    utils.processImage res.imageData, ->
       utils.convertToPng res.imageData, (err, image) ->
         utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
           image.thumbPath = thumbPath

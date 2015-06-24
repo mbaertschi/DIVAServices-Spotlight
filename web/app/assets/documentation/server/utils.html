@@ -182,8 +182,7 @@
         
           <div class='highlight'><pre>fs        = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
 logger    = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span>
-ExifImage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'exif'</span>).ExifImage
-lwip      = <span class="hljs-built_in">require</span> <span class="hljs-string">'lwip'</span></pre></div>
+gm        = <span class="hljs-built_in">require</span> <span class="hljs-string">'gm'</span></pre></div>
         
       
         
@@ -262,31 +261,18 @@ Write a base64 encoded image to disk and callback its file size</br>
         
       
         
-        <p><strong>utils.getRotation</strong></br>
-Read Exif meta-data from an image and callback rotation in degree</br>
+        <p><strong>utils.getImageSize</strong></br>
+Load image from disk and return its size (width and height in pixels)</br>
 <code>params:</code></p>
 <ul>
-<li>path <code>&lt;String&gt;</code> path to image location</li>
+<li>image <code>&lt;Object&gt;</code> image object from mongoDB</li>
 </ul>
 
         
-          <div class='highlight'><pre>utils.getRotation = <span class="hljs-function"><span class="hljs-params">(path, callback)</span> -&gt;</span>
-  <span class="hljs-keyword">try</span>
-    <span class="hljs-keyword">new</span> ExifImage <span class="hljs-attribute">image</span>: path, <span class="hljs-function"><span class="hljs-params">(err, exifData)</span> -&gt;</span>
-      <span class="hljs-keyword">if</span> err
-        callback <span class="hljs-string">"could not extract exif meta-data from image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>
-      <span class="hljs-keyword">else</span>
-        <span class="hljs-keyword">if</span> exifData.image
-          rotate = <span class="hljs-number">0</span>
-          <span class="hljs-keyword">switch</span> exifData.image.Orientation
-            <span class="hljs-keyword">when</span> <span class="hljs-number">3</span>, <span class="hljs-number">4</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">180</span>
-            <span class="hljs-keyword">when</span> <span class="hljs-number">5</span>, <span class="hljs-number">6</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">90</span>
-            <span class="hljs-keyword">when</span> <span class="hljs-number">7</span>, <span class="hljs-number">8</span> <span class="hljs-keyword">then</span> rotate = <span class="hljs-number">270</span>
-            <span class="hljs-keyword">else</span> rotate = <span class="hljs-number">0</span>
-          callback <span class="hljs-literal">null</span>, rotate
-        <span class="hljs-keyword">else</span> callback <span class="hljs-literal">null</span>, <span class="hljs-number">0</span>
-  <span class="hljs-keyword">catch</span> err
-    callback <span class="hljs-string">"could not load ExifImage on image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span></pre></div>
+          <div class='highlight'><pre>utils.getImageSize = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
+  gm(image.path).size (err, size) -&gt;
+    <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could not load image size error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+    callback err, size.width, size.height</pre></div>
         
       
         
@@ -295,49 +281,30 @@ Read Exif meta-data from an image and callback rotation in degree</br>
         
       
         
-        <p><strong>utils.orientateJpegImage</strong></br>
-Resize and rotate an image. Callback once you are done</br>
+        <p><strong>utils.processImage</strong></br>
+Resize, auto orient, remove exif-metadata, and write image to disk</br>
 <code>params:</code></p>
 <ul>
 <li>image <code>&lt;Object&gt;</code> image object from mongoDB</li>
 </ul>
 
         
-          <div class='highlight'><pre>utils.orientateJpegImage = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
-  path = image.path
-<span class="hljs-function">
-  <span class="hljs-title">resizeAndRotate</span> = <span class="hljs-params">(image, rotate)</span> -&gt;</span>
-    lwip.open path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
-      <span class="hljs-keyword">if</span> err?
-        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not load image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
-        callback()
+          <div class='highlight'><pre>utils.processImage = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
+  utils.getImageSize image, <span class="hljs-function"><span class="hljs-params">(err, width, height)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> err?
+      callback()
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-keyword">if</span> width &gt; height
+        <span class="hljs-keyword">if</span> width &gt; MAX_SIZE
+          width = MAX_SIZE
+          height = height * (width/img.width())
       <span class="hljs-keyword">else</span>
-        width = img.width()
-        height = img.height()
-        <span class="hljs-keyword">if</span> width &gt; height
-          <span class="hljs-keyword">if</span> width &gt; MAX_SIZE
-            width = MAX_SIZE
-            height = height * (width/img.width())
-        <span class="hljs-keyword">else</span>
-          <span class="hljs-keyword">if</span> height &gt; MAX_SIZE
-            height = MAX_SIZE
-            width = width * (height/img.height())
-        img.batch().resize(width, height).rotate(rotate).writeFile path, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-          <span class="hljs-keyword">if</span> err <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not rotate image=<span class="hljs-subst">#{path}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
-          callback()
-
-  <span class="hljs-keyword">if</span> image.type <span class="hljs-keyword">is</span> <span class="hljs-string">'image/jpeg'</span>
-    utils.getRotation path, <span class="hljs-function"><span class="hljs-params">(err, rotate)</span> -&gt;</span>
-      <span class="hljs-keyword">if</span> err?
-        logger.log <span class="hljs-string">'info'</span>, err, <span class="hljs-string">'Utils'</span>
-        callback()
-      <span class="hljs-keyword">else</span>
-        <span class="hljs-keyword">if</span> rotate
-          resizeAndRotate image, rotate, callback
-        <span class="hljs-keyword">else</span>
-          resizeAndRotate image, <span class="hljs-number">0</span>, callback
-  <span class="hljs-keyword">else</span>
-    resizeAndRotate image, <span class="hljs-number">0</span>, callback</pre></div>
+        <span class="hljs-keyword">if</span> height &gt; MAX_SIZE
+          height = MAX_SIZE
+          width = width * (height/img.height())
+      gm(image.path).resize(width, height).autoOrient().noProfile().write image.path, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could not resize and orientate image error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+        callback()</pre></div>
         
       
         
@@ -356,27 +323,22 @@ Convert an image to .png if not yet so. Callback updated image object to store i
         
           <div class='highlight'><pre>utils.convertToPng = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
   <span class="hljs-keyword">if</span> image.type <span class="hljs-keyword">isnt</span> <span class="hljs-string">'image/png'</span>
-    lwip.open image.path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+    name = image.serverName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
+    path = image.path.replace image.serverName, name
+    gm(image.path).write path, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> err?
-        logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not open image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+        logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could convert image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
         callback <span class="hljs-literal">null</span>, image
       <span class="hljs-keyword">else</span>
-        name = image.serverName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
-        path = image.path.replace image.serverName, name
-        img.writeFile path, <span class="hljs-string">'png'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-          <span class="hljs-keyword">if</span> err?
-            logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"could not convert to png image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
-            callback <span class="hljs-literal">null</span>, image
-          <span class="hljs-keyword">else</span>
-            fs.removeSync image.path
-            serverName = image.serverName
-            image.serverName = name
-            image.clientName = image.clientName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
-            image.type = <span class="hljs-string">'image/png'</span>
-            image.extension = <span class="hljs-string">'png'</span>
-            image.url = image.url.replace serverName, name
-            image.path = path
-            callback <span class="hljs-literal">null</span>, image
+        fs.removeSync image.path
+        serverName = image.serverName
+        image.serverName = name
+        image.clientName = image.clientName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.png'</span>
+        image.type = <span class="hljs-string">'image/png'</span>
+        image.extension = <span class="hljs-string">'png'</span>
+        image.url = image.url.replace serverName, name
+        image.path = path
+        callback <span class="hljs-literal">null</span>, image
   <span class="hljs-keyword">else</span>
     callback <span class="hljs-literal">null</span>, image</pre></div>
         
@@ -396,29 +358,17 @@ Create a thumbnail for the given image. Callback its path and url to store in mo
 
         
           <div class='highlight'><pre>utils.createThumbnail = <span class="hljs-function"><span class="hljs-params">(image, callback)</span> -&gt;</span>
-  lwip.open image.path, <span class="hljs-function"><span class="hljs-params">(err, img)</span> -&gt;</span>
+  thumbSize = <span class="hljs-number">160</span>
+  imageName = image.serverName.split(<span class="hljs-string">'.'</span> + image.extension)[<span class="hljs-number">0</span>]
+  thumbName = imageName + <span class="hljs-string">'_thumbnail.'</span> + image.extension
+  thumbPath = image.path.replace image.serverName, thumbName
+  thumbUrl = image.url.replace image.serverName, thumbName
+  gm(image.path).resize(thumbSize, thumbSize, <span class="hljs-string">'^'</span>).gravity(<span class="hljs-string">'Center'</span>).extent(thumbSize, thumbSize).write thumbPath, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
     <span class="hljs-keyword">if</span> err?
-      logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not load image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
-      <span class="hljs-keyword">if</span> image.thumbPath?
-        callback <span class="hljs-literal">null</span>, image.thumbPath, image.thumbUrl
-      <span class="hljs-keyword">else</span>
-        callback <span class="hljs-literal">null</span>, image.path, image.url
-    <span class="hljs-keyword">else</span>
-      thumbSize = <span class="hljs-number">160</span>
-      <span class="hljs-keyword">if</span> img.width() &lt; img.height()
-        scale = (thumbSize / img.width())
-      <span class="hljs-keyword">else</span>
-        scale = (thumbSize / img.height())
-      imageName = image.serverName.split(<span class="hljs-string">'.'</span> + image.extension)[<span class="hljs-number">0</span>]
-      thumbName = imageName + <span class="hljs-string">'_thumbnail.'</span> + image.extension
-      thumbPath = image.path.replace image.serverName, thumbName
-      thumbUrl = image.url.replace image.serverName, thumbName
-      img.batch().scale(scale).crop(thumbSize, thumbSize).writeFile thumbPath, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-        <span class="hljs-keyword">if</span> err?
-          logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">"lwip could not create thumbnail for image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
-          thumbPath = image.path
-          thumbUrl = image.url
-        callback <span class="hljs-literal">null</span>, thumbPath, thumbUrl</pre></div>
+      logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could not create thumbnail for image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+      thumbPath = image.path
+      thumbUrl = image.url
+    callback <span class="hljs-literal">null</span>, thumbPath, thumbUrl</pre></div>
         
       
       <div class="fleur">h</div>

@@ -18,11 +18,7 @@ do ->
 
     updateImage = (file, name) ->
       if not name
-        name = 'undefined.png'
-        index = 0
-      else
-        values = name.split('_')
-        index = values[values.length-1].split('.')[0]
+        name = 'undefined_' + new Date().getTime() + '.png'
       data =
         transformRequest: angular.identity
         headers:
@@ -31,8 +27,6 @@ do ->
       formData = new FormData
       formData.append('filename', name)
       formData.append('file', file)
-      formData.append('processType', 'crop')
-      formData.append('index', index)
       $http.put('/upload', formData, data).then (res) ->
         res
 

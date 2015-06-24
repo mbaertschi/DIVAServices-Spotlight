@@ -3,7 +3,6 @@ do ->
 
   DiaSmartDropzoneController = ($timeout, diaSettings, diaStateManager, diaImagesService, toastr) ->
     vm = @
-    vm.availableIndexes = null
     vm.dropzone = null
     vm.element = null
     vm.uploadedImages = null
@@ -22,8 +21,6 @@ do ->
       diaSettings.fetch('dropzone').then (res) ->
         settings = res.settings
         max = (settings.maxFiles-1)
-        vm.availableIndexes = (index for index in [0..max])
-
         config =
           init: ->
             self = @
@@ -34,10 +31,6 @@ do ->
                 self.emit 'addedfile', image.mockFile
                 self.emit 'thumbnail', image.mockFile, image.thumbUrl
                 self.emit 'success', image.mockFile
-                # and handle index and maxFiles changes
-                index = vm.availableIndexes.indexOf image.index
-                if index >= 0
-                  vm.availableIndexes.splice index, 1
                 self.options.maxFiles -= 1
           addRemoveLinks : settings.addRemoveLinks
           maxFilesize: settings.maxFilesize
@@ -53,16 +46,12 @@ do ->
 
     initDropzone = (config) ->
       eventHandlers =
-        sending: (file, xhr, formData) ->
-          formData.append 'index', vm.availableIndexes.shift()
-
         success: (file, res) ->
           if res
             # new uploaded image
             vm.uploadedImages.push
               name: file.name
               serverName: res.serverName
-              index: res.index
             image =
               src: res.url
               name: res.serverName
@@ -82,13 +71,11 @@ do ->
           angular.forEach vm.uploadedImages, (image) ->
             if image.name is file.name
               removeImage = image
-              vm.availableIndexes.push (parseInt image.index)
 
           # its an existing image loaded from the server
           if not removeImage? and not (file.status is 'error')
             removeImage = {}
             removeImage.serverName = file.name
-            vm.availableIndexes.push (parseInt file.index)
 
           if removeImage?
             diaImagesService.delete(removeImage.serverName).then (res) ->
@@ -104,7 +91,6 @@ do ->
       angular.forEach eventHandlers, (handler, event) ->
         vm.dropzone.on event, handler
         return
-
 
   angular.module('app.images')
     .controller 'DiaSmartDropzoneController', DiaSmartDropzoneController

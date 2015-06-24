@@ -186,7 +186,10 @@ mongoose    = <span class="hljs-built_in">require</span> <span class="hljs-strin
 fs          = <span class="hljs-built_in">require</span> <span class="hljs-string">'fs-extra'</span>
 Validator   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jsonschema'</span>).Validator
 validator   = <span class="hljs-keyword">new</span> Validator
-_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span></pre></div>
+utils       = <span class="hljs-built_in">require</span> <span class="hljs-string">'./utils'</span>
+_           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
+gm          = <span class="hljs-built_in">require</span> <span class="hljs-string">'gm'</span>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span></pre></div>
         
       
         
@@ -354,18 +357,50 @@ the origin image will be passed on (if highlighters are defined in response)</p>
       <span class="hljs-keyword">if</span> responseErrors.length
         callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attribute">error</span>: responseErrors[<span class="hljs-number">0</span>].stack }
       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.image
-        image = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
-        timeStamp = <span class="hljs-keyword">new</span> Date()
-        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output'</span> + timeStamp.getTime() + <span class="hljs-string">'.png'</span>
+        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output_'</span> + <span class="hljs-keyword">new</span> Date().getTime() + <span class="hljs-string">'.png'</span>
+        values = path.split <span class="hljs-string">'/'</span>
+        serverName = values[values.length - <span class="hljs-number">1</span>]
         url = path.replace <span class="hljs-string">'public'</span>, <span class="hljs-string">''</span>
-        fs.writeFile path, image, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        image =
+          <span class="hljs-attribute">serverName</span>: serverName
+          <span class="hljs-attribute">clientName</span>: params.algorithm.name.trim().replace(<span class="hljs-string">' '</span>, <span class="hljs-string">'_'</span>) + <span class="hljs-string">'_'</span> + <span class="hljs-keyword">new</span> Date().getTime() + <span class="hljs-string">'.png'</span>
+          <span class="hljs-attribute">sessionId</span>: req.sessionID
+          <span class="hljs-attribute">extension</span>: <span class="hljs-string">'png'</span>
+          <span class="hljs-attribute">type</span>: <span class="hljs-string">'image/png'</span>
+          <span class="hljs-attribute">path</span>: path
+          <span class="hljs-attribute">url</span>: url
+        buffer = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
+        fs.writeFile path, buffer, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
           <span class="hljs-keyword">if</span> err?
-            callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err }
+            logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"fs could not write buffered image to disk error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'API'</span>
+            callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
           <span class="hljs-keyword">else</span>
-            result.image = url
-            callback <span class="hljs-literal">null</span>, result
-      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters
-        result.image = params.image.url
+            image.size = utils.getFilesizeInBytes path
+            utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
+              <span class="hljs-keyword">if</span> err?
+                callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+              <span class="hljs-keyword">else</span>
+                image.thumbPath = thumbPath
+                image.thumbUrl = thumbUrl
+                Image = mongoose.model <span class="hljs-string">'Image'</span>
+                query =
+                  <span class="hljs-attribute">sessionId</span>: req.sessionID
+                  <span class="hljs-attribute">serverName</span>: serverName
+                Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+                  <span class="hljs-keyword">if</span> err?
+                    logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'API'</span>
+                    callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+                  <span class="hljs-keyword">else</span>
+                    result.image = image
+                    callback <span class="hljs-literal">null</span>, result
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters</pre></div>
+        
+      
+        
+        <p>pass on input image as we want to display result highlighters on that image</p>
+
+        
+          <div class='highlight'><pre>        result.image = params.image
         callback <span class="hljs-literal">null</span>, result
       <span class="hljs-keyword">else</span>
         callback <span class="hljs-literal">null</span>, result

@@ -11,7 +11,6 @@ mongoose    = require 'mongoose'
 # `Image` schema definition
 ImageSchema = mongoose.Schema
   sessionId: String
-  index: Number
   serverName: String
   clientName: String
   size: String

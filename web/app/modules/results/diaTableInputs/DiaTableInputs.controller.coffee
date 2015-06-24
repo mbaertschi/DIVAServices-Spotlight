@@ -6,7 +6,7 @@ do ->
     vm.canvas = null
     vm.highlighter = vm.inputData?.highlighter or null
     vm.highlighters = vm.inputData?.highlighters or null
-    vm.image = vm.inputData?.image.path or null
+    vm.image = vm.inputData?.image?.url or null
     vm.inputs = vm.inputData?.inputs or null
     vm.paperScope = null
     vm.strokeWidth = null

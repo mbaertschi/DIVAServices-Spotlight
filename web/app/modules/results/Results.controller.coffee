@@ -46,7 +46,7 @@ do ->
           data: 'input.image'
           render: (data, type, row) ->
             if type is 'display'
-              '<div class="project-members"><img src=\"' + data.thumbPath + '\"></div>'
+              '<div class="project-members"><img src=\"' + data.thumbUrl + '\"></div>'
             else
               data.thumbPath
         }

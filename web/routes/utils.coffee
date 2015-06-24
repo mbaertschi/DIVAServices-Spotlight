@@ -8,8 +8,7 @@
 # Module dependencies
 fs        = require 'fs-extra'
 logger    = require '../lib/logger'
-ExifImage = require('exif').ExifImage
-lwip      = require 'lwip'
+gm        = require 'gm'
 
 # We don't want images to be larger than 1024 pixels with / height
 MAX_SIZE = 4000
@@ -54,68 +53,36 @@ utils.writeImage = (image, file, callback) ->
         callback null, utils.getFilesizeInBytes(image.path)
 
 # ---
-# **utils.getRotation**</br>
-# Read Exif meta-data from an image and callback rotation in degree</br>
-# `params:`
-#   * path `<String>` path to image location
-utils.getRotation = (path, callback) ->
-  try
-    new ExifImage image: path, (err, exifData) ->
-      if err
-        callback "could not extract exif meta-data from image=#{path} error=#{err}"
-      else
-        if exifData.image
-          rotate = 0
-          switch exifData.image.Orientation
-            when 3, 4 then rotate = 180
-            when 5, 6 then rotate = 90
-            when 7, 8 then rotate = 270
-            else rotate = 0
-          callback null, rotate
-        else callback null, 0
-  catch err
-    callback "could not load ExifImage on image=#{path} error=#{err}"
-
-# ---
-# **utils.orientateJpegImage**</br>
-# Resize and rotate an image. Callback once you are done</br>
+# **utils.getImageSize**</br>
+# Load image from disk and return its size (width and height in pixels)</br>
 # `params:`
 #   * image `<Object>` image object from mongoDB
-utils.orientateJpegImage = (image, callback) ->
-  path = image.path
+utils.getImageSize = (image, callback) ->
+  gm(image.path).size (err, size) ->
+    if err? then logger.log 'warn', "gm could not load image size error=#{err}", 'Utils'
+    callback err, size.width, size.height
 
-  resizeAndRotate = (image, rotate) ->
-    lwip.open path, (err, img) ->
-      if err?
-        logger.log 'info', "lwip could not load image=#{path} error=#{err}", 'Utils'
-        callback()
+# ---
+# **utils.processImage**</br>
+# Resize, auto orient, remove exif-metadata, and write image to disk</br>
+# `params:`
+#   * image `<Object>` image object from mongoDB
+utils.processImage = (image, callback) ->
+  utils.getImageSize image, (err, width, height) ->
+    if err?
+      callback()
+    else
+      if width > height
+        if width > MAX_SIZE
+          width = MAX_SIZE
+          height = height * (width/img.width())
       else
-        width = img.width()
-        height = img.height()
-        if width > height
-          if width > MAX_SIZE
-            width = MAX_SIZE
-            height = height * (width/img.width())
-        else
-          if height > MAX_SIZE
-            height = MAX_SIZE
-            width = width * (height/img.height())
-        img.batch().resize(width, height).rotate(rotate).writeFile path, (err) ->
-          if err then logger.log 'info', "lwip could not rotate image=#{path} error=#{err}", 'Utils'
-          callback()
-
-  if image.type is 'image/jpeg'
-    utils.getRotation path, (err, rotate) ->
-      if err?
-        logger.log 'info', err, 'Utils'
+        if height > MAX_SIZE
+          height = MAX_SIZE
+          width = width * (height/img.height())
+      gm(image.path).resize(width, height).autoOrient().noProfile().write image.path, (err) ->
+        if err? then logger.log 'warn', "gm could not resize and orientate image error=#{err}", 'Utils'
         callback()
-      else
-        if rotate
-          resizeAndRotate image, rotate, callback
-        else
-          resizeAndRotate image, 0, callback
-  else
-    resizeAndRotate image, 0, callback
 
 # ---
 # **utils.convertToPng**</br>
@@ -124,27 +91,22 @@ utils.orientateJpegImage = (image, callback) ->
 #   * image `<Object>` image object from mongoDB
 utils.convertToPng = (image, callback) ->
   if image.type isnt 'image/png'
-    lwip.open image.path, (err, img) ->
+    name = image.serverName.split('.')[0] + '.png'
+    path = image.path.replace image.serverName, name
+    gm(image.path).write path, (err) ->
       if err?
-        logger.log 'info', "lwip could not open image=#{image.serverName} error=#{err}", 'Utils'
+        logger.log 'warn', "gm could convert image=#{image.serverName} error=#{err}", 'Utils'
         callback null, image
       else
-        name = image.serverName.split('.')[0] + '.png'
-        path = image.path.replace image.serverName, name
-        img.writeFile path, 'png', (err) ->
-          if err?
-            logger.log 'info', "could not convert to png image=#{image.serverName} error=#{err}", 'Utils'
-            callback null, image
-          else
-            fs.removeSync image.path
-            serverName = image.serverName
-            image.serverName = name
-            image.clientName = image.clientName.split('.')[0] + '.png'
-            image.type = 'image/png'
-            image.extension = 'png'
-            image.url = image.url.replace serverName, name
-            image.path = path
-            callback null, image
+        fs.removeSync image.path
+        serverName = image.serverName
+        image.serverName = name
+        image.clientName = image.clientName.split('.')[0] + '.png'
+        image.type = 'image/png'
+        image.extension = 'png'
+        image.url = image.url.replace serverName, name
+        image.path = path
+        callback null, image
   else
     callback null, image
 
@@ -154,26 +116,14 @@ utils.convertToPng = (image, callback) ->
 # `params:`
 #   * image `<Object>` image object from mongoDB
 utils.createThumbnail = (image, callback) ->
-  lwip.open image.path, (err, img) ->
+  thumbSize = 160
+  imageName = image.serverName.split('.' + image.extension)[0]
+  thumbName = imageName + '_thumbnail.' + image.extension
+  thumbPath = image.path.replace image.serverName, thumbName
+  thumbUrl = image.url.replace image.serverName, thumbName
+  gm(image.path).resize(thumbSize, thumbSize, '^').gravity('Center').extent(thumbSize, thumbSize).write thumbPath, (err) ->
     if err?
-      logger.log 'info', "lwip could not load image=#{image.serverName} error=#{err}", 'Utils'
-      if image.thumbPath?
-        callback null, image.thumbPath, image.thumbUrl
-      else
-        callback null, image.path, image.url
-    else
-      thumbSize = 160
-      if img.width() < img.height()
-        scale = (thumbSize / img.width())
-      else
-        scale = (thumbSize / img.height())
-      imageName = image.serverName.split('.' + image.extension)[0]
-      thumbName = imageName + '_thumbnail.' + image.extension
-      thumbPath = image.path.replace image.serverName, thumbName
-      thumbUrl = image.url.replace image.serverName, thumbName
-      img.batch().scale(scale).crop(thumbSize, thumbSize).writeFile thumbPath, (err) ->
-        if err?
-          logger.log 'info', "lwip could not create thumbnail for image=#{image.serverName} error=#{err}", 'Utils'
-          thumbPath = image.path
-          thumbUrl = image.url
-        callback null, thumbPath, thumbUrl
+      logger.log 'warn', "gm could not create thumbnail for image=#{image.serverName} error=#{err}", 'Utils'
+      thumbPath = image.path
+      thumbUrl = image.url
+    callback null, thumbPath, thumbUrl
