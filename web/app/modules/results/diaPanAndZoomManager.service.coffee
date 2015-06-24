@@ -15,6 +15,7 @@ do ->
       reset: reset
 
     initPanAndZoom = (type, vm) ->
+      if /MAC/.test navigator.platform.toUpperCase() then pz.direction = 1 else pz.direction = -1
       @add type, vm.uuid, vm.paperScope
       vm.element.on 'mouseenter', (event) =>
         @activate vm.uuid
@@ -56,7 +57,7 @@ do ->
 
     changeZoom = (id, deltaY, viewPosition) ->
       calcNewZoom = (oldZoom, delta, c, p) ->
-        factor = 1.01
+        factor = 1.01 * pz.direction
         if delta < 0
           newZoom = oldZoom * factor
         else if delta > 0
@@ -83,7 +84,7 @@ do ->
 
     changeCenter = (id, deltaX, deltaY, deltaFactor) ->
       calcNewCenter = (oldCenter, deltaX, deltaY, factor) ->
-        offset = [deltaX * factor, -deltaY * factor]
+        offset = [deltaX * factor * pz.direction, -deltaY * factor * pz.direction]
         newCenter = [oldCenter.x + offset[0], oldCenter.y + offset[1]]
         newCenter
 
