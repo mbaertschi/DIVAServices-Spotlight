@@ -10,7 +10,7 @@ do ->
       link: link
 
     link = (scope, element, attrs) ->
-      scope.displayPayloads = false
+      scope.displayPayloads = true
 
     directive()
 
