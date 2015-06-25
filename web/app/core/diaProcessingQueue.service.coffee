@@ -23,10 +23,11 @@ do ->
 
     # handle aborted algorithms (from diaProcessingAlgrithm directive)
     abort = (entry) ->
-      # remove algorithm with given index from processing queue
+      # remove algorithm with given guid from processing queue
       angular.forEach queue, (queueEntry, index) ->
-        if entry.item.index is queueEntry.item.index
+        if entry.item.guid is queueEntry.item.guid
           queue.splice index, 1
+          entry.item.aborted = true
           entry.defer.reject 'Canceled by user'
           if index is 0 and queue.length
             execNext()
@@ -34,19 +35,23 @@ do ->
     # processes the next entry in queue as long as there is one
     execNext = ->
       task = queue[0]
+      task.item.start = new Date
+      task.item.started = true
       url = '/api/algorithm'
       data = task.item
 
       $http.post(url, data).then (res) ->
-        queue.shift()
-        task.defer.resolve res
-        if queue.length
-          execNext()
+        if not data.aborted
+          queue.shift()
+          task.defer.resolve res
+          if queue.length
+            execNext()
       , (err) ->
-        queue.shift()
-        task.defer.reject err
-        if queue.length
-          execNext()
+        if not data.aborted
+          queue.shift()
+          task.defer.reject err
+          if queue.length
+            execNext()
 
     # expose results array
     getResults = ->
@@ -59,10 +64,15 @@ do ->
     # add new algorithm to processing queue. We use promises in order to be able
     # to handle aborted algorithms
     push = (item) ->
+
+      # guid generator
+      guid = ->
+        s4 = ->
+          Math.floor((1 + Math.random()) * 0x10000).toString(16).substring 1
+        s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4()
+
       defer = $q.defer()
-      # store a reference to index in queue
-      item.index = queue.length
-      item.start = new Date
+      item.guid = guid()
       queue.push
         item: item
         defer: defer

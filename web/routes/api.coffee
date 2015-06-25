@@ -131,8 +131,12 @@ api = exports = module.exports = (router) ->
           callback null, image.toString('base64')
 
     processResponse = (result, callback) ->
+      if result is 'ERROR'
+        logger.log 'debug', "Remote host processing error for algorithm=#{params.algorithm.name}", 'API'
+        return callback { status: 400, error: 'Remote host processing error'}
       responseErrors = validator.validate(result, nconf.get('parser:details:responseSchema')).errors
       if responseErrors.length
+        logger.log 'debug', "algorithm response is invalid object=#{result}", 'API'
         callback { status: 400, error: responseErrors[0].stack }
       else if result.image
         path = params.image.path.replace '.png', '_output_' + new Date().getTime() + '.png'
