@@ -365,7 +365,7 @@ Create a thumbnail for the given image. Callback its path and url to store in mo
   thumbUrl = image.url.replace image.serverName, thumbName
   gm(image.path).resize(thumbSize, thumbSize, <span class="hljs-string">'^'</span>).gravity(<span class="hljs-string">'Center'</span>).extent(thumbSize, thumbSize).write thumbPath, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
     <span class="hljs-keyword">if</span> err?
-      logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could not create thumbnail for image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
+      logger.log <span class="hljs-string">'trace'</span>, <span class="hljs-string">"gm could not create thumbnail for image=<span class="hljs-subst">#{image.serverName}</span> error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
       thumbPath = image.path
       thumbUrl = image.url
     callback <span class="hljs-literal">null</span>, thumbPath, thumbUrl</pre></div>

@@ -117,8 +117,10 @@ api = exports = module.exports = (router) ->
   # The algorithm and image objects must conform to the mongoDB schemas specified for them. The image will
   # be sent to the remote host as base64 encoded image along with the other information. The response from
   # the remote host must meet the JSON-Schema specification defined in `./web/conf/schemas.json`. If response
-  # contains a base64 encoded image, this will be stored as .png image and passed on as result image. Otherwise
-  # the origin image will be passed on (if highlighters are defined in response)
+  # contains a base64 encoded image and storing result images is set to true in config file, the image will
+  # be stored as .png image and passed on as result image. If storage is set to false, the dataUrl will be
+  # passed on. If no result image is given the origin image will be passed on (if highlighters are defined in
+  # response)
   router.post '/api/algorithm', (req, res) ->
     params = req.body
     return res.status(400).send() if not params.algorithm or not params.image or not params.inputs or not params.highlighter
@@ -130,6 +132,32 @@ api = exports = module.exports = (router) ->
         else
           callback null, image.toString('base64')
 
+    storeImage = (result, image, callback) ->
+      buffer = new Buffer result.image, 'base64'
+      fs.writeFile image.path, buffer, (err) ->
+        if err?
+          logger.log 'warn', "fs could not write buffered image to disk error=#{err}", 'API'
+          callback { status: 500, error: err}
+        else
+          image.size = utils.getFilesizeInBytes image.path
+          utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+            if err?
+              callback { status: 500, error: err}
+            else
+              image.thumbPath = thumbPath
+              image.thumbUrl = thumbUrl
+              result.image = image
+              Image = mongoose.model 'Image'
+              query =
+                sessionId: req.sessionID
+                serverName: image.serverName
+              Image.update query, image, upsert: true, (err) ->
+                if err?
+                  logger.log 'warn', 'could not save image', 'API'
+                  callback { status: 500, error: err}
+                else
+                  callback null, result
+
     processResponse = (result, callback) ->
       if result is 'ERROR'
         logger.log 'debug', "Remote host processing error for algorithm=#{params.algorithm.name}", 'API'
@@ -138,10 +166,12 @@ api = exports = module.exports = (router) ->
       if responseErrors.length
         logger.log 'debug', "algorithm response is invalid object=#{result}", 'API'
         callback { status: 400, error: responseErrors[0].stack }
-      else if result.image
-        path = params.image.path.replace '.png', '_output_' + new Date().getTime() + '.png'
-        values = path.split '/'
-        serverName = values[values.length - 1]
+      else if result.image?
+        if /_output_/.test params.image.serverName
+          serverName = params.image.serverName.split('_output_')[0] + '_output_' + new Date().getTime() + '.png'
+        else
+          serverName = params.image.serverName.replace '.png', '_output_' + new Date().getTime() + '.png'
+        path = nconf.get('web:uploader:destination') + req.sessionID + '/' + serverName
         url = path.replace 'public', ''
         image =
           serverName: serverName
@@ -151,32 +181,15 @@ api = exports = module.exports = (router) ->
           type: 'image/png'
           path: path
           url: url
-        buffer = new Buffer result.image, 'base64'
-        fs.writeFile path, buffer, (err) ->
-          if err?
-            logger.log 'warn', "fs could not write buffered image to disk error=#{err}", 'API'
-            callback { status: 500, error: err}
-          else
-            image.size = utils.getFilesizeInBytes path
-            utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
-              if err?
-                callback { status: 500, error: err}
-              else
-                image.thumbPath = thumbPath
-                image.thumbUrl = thumbUrl
-                Image = mongoose.model 'Image'
-                query =
-                  sessionId: req.sessionID
-                  serverName: serverName
-                Image.update query, image, upsert: true, (err) ->
-                  if err?
-                    logger.log 'warn', 'could not save image', 'API'
-                    callback { status: 500, error: err}
-                  else
-                    result.image = image
-                    callback null, result
-      else if result.highlighters
-        # pass on input image as we want to display result highlighters on that image
+        if nconf.get 'images:storeResponse'
+          storeImage result, image, (err, result) ->
+            callback err, result
+        else
+          image.dataUrl = 'data:image/png;base64,' + result.image
+          image.saveButton = true
+          result.image = image
+          callback null, result
+      else if result.highlighters?
         result.image = params.image
         callback null, result
       else
@@ -226,3 +239,48 @@ api = exports = module.exports = (router) ->
                     if body.image? then body.image = 'Base64 encoded image'
                     if resPayloadHasImage then resultProcessed.resPayload.image = 'Base64 encoded image'
                     res.status(200).json resultProcessed
+
+  # ---
+  # **router.post** `/api/image`
+  #   * method: POST
+  #   * params:
+  #     * *base64Image* `<String>` base64 encoded image to store
+  #     * *serverName* `<String>` images server name to be stored in mongoDB
+  #     * *clientName* `<String>` images client name to be stored in mongoDB
+  #     * *path* `<String>` images path to be stored in mongoDB
+  #     * *url* `<String>` images url to be stored in mongoDB
+  #
+  # Saves an image to disk and to mongoDB
+  router.post '/api/image', (req, res) ->
+    params = req.body
+    image =
+      serverName: params.serverName
+      clientName: params.clientName
+      sessionId: req.sessionID
+      extension: 'png'
+      type: 'image/png'
+      path: params.path
+      url: params.url
+    base64Image = params.base64Image
+    utils.writeImage image, base64Image, (err, size) ->
+      if err?
+        res.status(500).json error: 'Could not save image to disk'
+      else
+        image.size = size
+        delete image.dataUrl
+        utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+          if err?
+            callback { status: 500, error: err}
+          else
+            image.thumbPath = thumbPath
+            image.thumbUrl = thumbUrl
+            Image = mongoose.model 'Image'
+            query =
+              sessionId: req.sessionID
+              serverName: image.serverName
+            Image.update query, image, upsert: true, (err) ->
+              if err?
+                logger.log 'warn', 'could not save image', 'API'
+                res.status(500).json 'Could not save image to mongoDB'
+              else
+                res.status(200).send()

@@ -7,6 +7,7 @@ do ->
       fetch: fetch
       put: updateImage
       delete: deleteImage
+      saveImage: saveImage
 
     fetch = ->
       $http.get('/upload').then (res) ->
@@ -32,6 +33,19 @@ do ->
 
     deleteImage = (serverName) ->
       $http.delete('/upload', params: serverName: serverName).then (res) ->
+        res
+
+    saveImage = (image, base64Image) ->
+      data =
+        transformRequest: angular.identity
+        headers:
+          'Content-Type': undefined
+          'X-Requested-With': 'XMLHttpRequest'
+      formData = new FormData
+      angular.forEach image, (value, key) ->
+        formData.append(key, value)
+      formData.append('base64Image', base64Image)
+      $http.post('/api/image', formData, data).then (res) ->
         res
 
     factory()

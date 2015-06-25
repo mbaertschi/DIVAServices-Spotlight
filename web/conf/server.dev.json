@@ -11,7 +11,7 @@
         "type": "console"
       }
     ],
-    "level": "TRACE"
+    "level": "DEBUG"
   },
   "poller": {
     "run": true,
@@ -51,5 +51,8 @@
   "server": {
     "timeout": 600000,
     "maxFileSize": 20971520
+  },
+  "images": {
+    "storeResponse": false
   }
 }

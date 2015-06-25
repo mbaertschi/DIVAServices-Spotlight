@@ -1,11 +1,12 @@
 do ->
   'use strict'
 
-  DiaTableOutputsController = ($timeout, diaPaperScopeManager) ->
+  DiaTableOutputsController = ($timeout, diaImagesService, diaPaperScopeManager, toastr) ->
     vm = @
     vm.canvas = null
     vm.highlighters = vm.outputData?.highlighters or null
-    vm.image = vm.outputData?.image?.url or null
+    vm.imageObject = vm.outputData?.image or null
+    vm.image = vm.outputData?.image?.dataUrl or vm.outputData?.image?.url or null
     vm.output = vm.outputData?.output or null
     vm.paperScope = null
     vm.strokeWidth = null
@@ -19,6 +20,14 @@ do ->
     vm.delta =
       x: 0
       y: 0
+
+    vm.saveImage = ->
+      base64Image = vm.canvas.toDataURL()
+      delete vm.imageObject.dataUrl
+      diaImagesService.saveImage(vm.imageObject, base64Image).then (res) ->
+        vm.imageObject.saveButton = false
+        toastr.info 'Successfully saved image', 'Info'
+      , (err) -> toastr.error 'Could not save image', 'Error'
 
     @init = (element) ->
       vm.element = element
@@ -49,5 +58,7 @@ do ->
 
   DiaTableOutputsController.$inject = [
     '$timeout'
+    'diaImagesService'
     'diaPaperScopeManager'
+    'toastr'
   ]
