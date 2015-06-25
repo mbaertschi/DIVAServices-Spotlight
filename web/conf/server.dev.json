@@ -51,5 +51,8 @@
   "server": {
     "timeout": 600000,
     "maxFileSize": 20971520
+  },
+  "images": {
+    "storeResponse": false
   }
 }

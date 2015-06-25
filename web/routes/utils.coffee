@@ -123,7 +123,7 @@ utils.createThumbnail = (image, callback) ->
   thumbUrl = image.url.replace image.serverName, thumbName
   gm(image.path).resize(thumbSize, thumbSize, '^').gravity('Center').extent(thumbSize, thumbSize).write thumbPath, (err) ->
     if err?
-      logger.log 'warn', "gm could not create thumbnail for image=#{image.serverName} error=#{err}", 'Utils'
+      logger.log 'trace', "gm could not create thumbnail for image=#{image.serverName} error=#{err}", 'Utils'
       thumbPath = image.path
       thumbUrl = image.url
     callback null, thumbPath, thumbUrl

@@ -23,30 +23,27 @@ do ->
 
     # handle aborted algorithms (from diaProcessingAlgrithm directive)
     abort = (entry) ->
-      # remove algorithm with given index from processing queue
-      angular.forEach queue, (queueEntry, index) ->
-        if entry.item.index is queueEntry.item.index
-          queue.splice index, 1
-          entry.defer.reject 'Canceled by user'
-          if index is 0 and queue.length
-            execNext()
+      queue.splice queue.indexOf(entry), 1
+      entry.item.aborted = true
+      entry.defer.reject 'Canceled by user'
 
-    # processes the next entry in queue as long as there is one
-    execNext = ->
-      task = queue[0]
-      url = '/api/algorithm'
-      data = task.item
+    # processes entry
+    exec = (entry) ->
+      task = queue[queue.indexOf entry]
+      if task?
+        task.item.start = new Date
+        task.item.started = true
+        url = '/api/algorithm'
+        data = task.item
 
-      $http.post(url, data).then (res) ->
-        queue.shift()
-        task.defer.resolve res
-        if queue.length
-          execNext()
-      , (err) ->
-        queue.shift()
-        task.defer.reject err
-        if queue.length
-          execNext()
+        $http.post(url, data).then (res) ->
+          if not data.aborted
+            queue.splice queue.indexOf(entry), 1
+            task.defer.resolve res
+        , (err) ->
+          if not data.aborted
+            queue.splice queue.indexOf(entry), 1
+            task.defer.reject err
 
     # expose results array
     getResults = ->
@@ -59,15 +56,20 @@ do ->
     # add new algorithm to processing queue. We use promises in order to be able
     # to handle aborted algorithms
     push = (item) ->
+
+      # guid generator
+      guid = ->
+        s4 = ->
+          Math.floor((1 + Math.random()) * 0x10000).toString(16).substring 1
+        s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4()
+
       defer = $q.defer()
-      # store a reference to index in queue
-      item.index = queue.length
-      item.start = new Date
-      queue.push
+      item.guid = guid()
+      entry =
         item: item
         defer: defer
-      if queue.length is 1
-        execNext()
+      queue.push entry
+      exec entry
       defer.promise.then (res) ->
         end = new Date
         duration = end / 1000 - item.start / 1000

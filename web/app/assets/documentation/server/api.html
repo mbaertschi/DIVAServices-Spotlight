@@ -337,8 +337,10 @@ in in <code>./web/conf/schemas.json</code></p>
 <p>The algorithm and image objects must conform to the mongoDB schemas specified for them. The image will
 be sent to the remote host as base64 encoded image along with the other information. The response from
 the remote host must meet the JSON-Schema specification defined in <code>./web/conf/schemas.json</code>. If response
-contains a base64 encoded image, this will be stored as .png image and passed on as result image. Otherwise
-the origin image will be passed on (if highlighters are defined in response)</p>
+contains a base64 encoded image and storing result images is set to true in config file, the image will
+be stored as .png image and passed on as result image. If storage is set to false, the dataUrl will be
+passed on. If no result image is given the origin image will be passed on (if highlighters are defined in
+response)</p>
 
         
           <div class='highlight'><pre>  router.post <span class="hljs-string">'/api/algorithm'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
@@ -352,14 +354,46 @@ the origin image will be passed on (if highlighters are defined in response)</p>
         <span class="hljs-keyword">else</span>
           callback <span class="hljs-literal">null</span>, image.toString(<span class="hljs-string">'base64'</span>)
 <span class="hljs-function">
+    <span class="hljs-title">storeImage</span> = <span class="hljs-params">(result, image, callback)</span> -&gt;</span>
+      buffer = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
+      fs.writeFile image.path, buffer, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-keyword">if</span> err?
+          logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"fs could not write buffered image to disk error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'API'</span>
+          callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+        <span class="hljs-keyword">else</span>
+          image.size = utils.getFilesizeInBytes image.path
+          utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> err?
+              callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+            <span class="hljs-keyword">else</span>
+              image.thumbPath = thumbPath
+              image.thumbUrl = thumbUrl
+              result.image = image
+              Image = mongoose.model <span class="hljs-string">'Image'</span>
+              query =
+                <span class="hljs-attribute">sessionId</span>: req.sessionID
+                <span class="hljs-attribute">serverName</span>: image.serverName
+              Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+                <span class="hljs-keyword">if</span> err?
+                  logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'API'</span>
+                  callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+                <span class="hljs-keyword">else</span>
+                  callback <span class="hljs-literal">null</span>, result
+<span class="hljs-function">
     <span class="hljs-title">processResponse</span> = <span class="hljs-params">(result, callback)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> result <span class="hljs-keyword">is</span> <span class="hljs-string">'ERROR'</span>
+        logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"Remote host processing error for algorithm=<span class="hljs-subst">#{params.algorithm.name}</span>"</span>, <span class="hljs-string">'API'</span>
+        <span class="hljs-keyword">return</span> callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attribute">error</span>: <span class="hljs-string">'Remote host processing error'</span>}
       responseErrors = validator.validate(result, nconf.get(<span class="hljs-string">'parser:details:responseSchema'</span>)).errors
       <span class="hljs-keyword">if</span> responseErrors.length
+        logger.log <span class="hljs-string">'debug'</span>, <span class="hljs-string">"algorithm response is invalid object=<span class="hljs-subst">#{result}</span>"</span>, <span class="hljs-string">'API'</span>
         callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">400</span>, <span class="hljs-attribute">error</span>: responseErrors[<span class="hljs-number">0</span>].stack }
-      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.image
-        path = params.image.path.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output_'</span> + <span class="hljs-keyword">new</span> Date().getTime() + <span class="hljs-string">'.png'</span>
-        values = path.split <span class="hljs-string">'/'</span>
-        serverName = values[values.length - <span class="hljs-number">1</span>]
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.image?
+        <span class="hljs-keyword">if</span> <span class="hljs-regexp">/_output_/</span>.test params.image.serverName
+          serverName = params.image.serverName.split(<span class="hljs-string">'_output_'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'_output_'</span> + <span class="hljs-keyword">new</span> Date().getTime() + <span class="hljs-string">'.png'</span>
+        <span class="hljs-keyword">else</span>
+          serverName = params.image.serverName.replace <span class="hljs-string">'.png'</span>, <span class="hljs-string">'_output_'</span> + <span class="hljs-keyword">new</span> Date().getTime() + <span class="hljs-string">'.png'</span>
+        path = nconf.get(<span class="hljs-string">'web:uploader:destination'</span>) + req.sessionID + <span class="hljs-string">'/'</span> + serverName
         url = path.replace <span class="hljs-string">'public'</span>, <span class="hljs-string">''</span>
         image =
           <span class="hljs-attribute">serverName</span>: serverName
@@ -369,38 +403,16 @@ the origin image will be passed on (if highlighters are defined in response)</p>
           <span class="hljs-attribute">type</span>: <span class="hljs-string">'image/png'</span>
           <span class="hljs-attribute">path</span>: path
           <span class="hljs-attribute">url</span>: url
-        buffer = <span class="hljs-keyword">new</span> Buffer result.image, <span class="hljs-string">'base64'</span>
-        fs.writeFile path, buffer, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-          <span class="hljs-keyword">if</span> err?
-            logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"fs could not write buffered image to disk error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'API'</span>
-            callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
-          <span class="hljs-keyword">else</span>
-            image.size = utils.getFilesizeInBytes path
-            utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
-              <span class="hljs-keyword">if</span> err?
-                callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
-              <span class="hljs-keyword">else</span>
-                image.thumbPath = thumbPath
-                image.thumbUrl = thumbUrl
-                Image = mongoose.model <span class="hljs-string">'Image'</span>
-                query =
-                  <span class="hljs-attribute">sessionId</span>: req.sessionID
-                  <span class="hljs-attribute">serverName</span>: serverName
-                Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
-                  <span class="hljs-keyword">if</span> err?
-                    logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'API'</span>
-                    callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
-                  <span class="hljs-keyword">else</span>
-                    result.image = image
-                    callback <span class="hljs-literal">null</span>, result
-      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters</pre></div>
-        
-      
-        
-        <p>pass on input image as we want to display result highlighters on that image</p>
-
-        
-          <div class='highlight'><pre>        result.image = params.image
+        <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'images:storeResponse'</span>
+          storeImage result, image, <span class="hljs-function"><span class="hljs-params">(err, result)</span> -&gt;</span>
+            callback err, result
+        <span class="hljs-keyword">else</span>
+          image.dataUrl = <span class="hljs-string">'data:image/png;base64,'</span> + result.image
+          image.saveButton = <span class="hljs-literal">true</span>
+          result.image = image
+          callback <span class="hljs-literal">null</span>, result
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters?
+        result.image = params.image
         callback <span class="hljs-literal">null</span>, result
       <span class="hljs-keyword">else</span>
         callback <span class="hljs-literal">null</span>, result
@@ -449,6 +461,62 @@ the origin image will be passed on (if highlighters are defined in response)</p>
                     <span class="hljs-keyword">if</span> body.image? <span class="hljs-keyword">then</span> body.image = <span class="hljs-string">'Base64 encoded image'</span>
                     <span class="hljs-keyword">if</span> resPayloadHasImage <span class="hljs-keyword">then</span> resultProcessed.resPayload.image = <span class="hljs-string">'Base64 encoded image'</span>
                     res.status(<span class="hljs-number">200</span>).json resultProcessed</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.post</strong> <code>/api/image</code></p>
+<ul>
+<li>method: POST</li>
+<li>params:<ul>
+<li><em>base64Image</em> <code>&lt;String&gt;</code> base64 encoded image to store</li>
+<li><em>serverName</em> <code>&lt;String&gt;</code> images server name to be stored in mongoDB</li>
+<li><em>clientName</em> <code>&lt;String&gt;</code> images client name to be stored in mongoDB</li>
+<li><em>path</em> <code>&lt;String&gt;</code> images path to be stored in mongoDB</li>
+<li><em>url</em> <code>&lt;String&gt;</code> images url to be stored in mongoDB</li>
+</ul>
+</li>
+</ul>
+<p>Saves an image to disk and to mongoDB</p>
+
+        
+          <div class='highlight'><pre>  router.post <span class="hljs-string">'/api/image'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    params = req.body
+    image =
+      <span class="hljs-attribute">serverName</span>: params.serverName
+      <span class="hljs-attribute">clientName</span>: params.clientName
+      <span class="hljs-attribute">sessionId</span>: req.sessionID
+      <span class="hljs-attribute">extension</span>: <span class="hljs-string">'png'</span>
+      <span class="hljs-attribute">type</span>: <span class="hljs-string">'image/png'</span>
+      <span class="hljs-attribute">path</span>: params.path
+      <span class="hljs-attribute">url</span>: params.url
+    base64Image = params.base64Image
+    utils.writeImage image, base64Image, <span class="hljs-function"><span class="hljs-params">(err, size)</span> -&gt;</span>
+      <span class="hljs-keyword">if</span> err?
+        res.status(<span class="hljs-number">500</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'Could not save image to disk'</span>
+      <span class="hljs-keyword">else</span>
+        image.size = size
+        <span class="hljs-keyword">delete</span> image.dataUrl
+        utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
+          <span class="hljs-keyword">if</span> err?
+            callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
+          <span class="hljs-keyword">else</span>
+            image.thumbPath = thumbPath
+            image.thumbUrl = thumbUrl
+            Image = mongoose.model <span class="hljs-string">'Image'</span>
+            query =
+              <span class="hljs-attribute">sessionId</span>: req.sessionID
+              <span class="hljs-attribute">serverName</span>: image.serverName
+            Image.update query, image, <span class="hljs-attribute">upsert</span>: <span class="hljs-literal">true</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+              <span class="hljs-keyword">if</span> err?
+                logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'could not save image'</span>, <span class="hljs-string">'API'</span>
+                res.status(<span class="hljs-number">500</span>).json <span class="hljs-string">'Could not save image to mongoDB'</span>
+              <span class="hljs-keyword">else</span>
+                res.status(<span class="hljs-number">200</span>).send()</pre></div>
         
       
       <div class="fleur">h</div>

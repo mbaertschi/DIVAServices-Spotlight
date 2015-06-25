@@ -1,5 +1,7 @@
 h1 Output
 canvas#output-canvas(ng-if='vm.image')
+.save-image-button.pull-right(ng-if='vm.imageObject.saveButton')
+  button.btn.btn-sm.btn-primary(ng-click='vm.saveImage()') Save Image
 .table-responsive.output-values(ng-if='vm.output')
   table.table.table-bordered
     thead
