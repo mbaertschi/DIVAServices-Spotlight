@@ -412,8 +412,18 @@ response)</p>
           result.image = image
           callback <span class="hljs-literal">null</span>, result
       <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> result.highlighters?
-        result.image = params.image
-        callback <span class="hljs-literal">null</span>, result
+        <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'images:storeResponse'</span>
+          callback <span class="hljs-literal">null</span>, result
+        <span class="hljs-keyword">else</span>
+          result.image = params.image
+          getImageAsBase64 result.image.path, <span class="hljs-function"><span class="hljs-params">(err, base64Image)</span> -&gt;</span>
+            <span class="hljs-keyword">if</span> err?
+              logger.log <span class="hljs-string">'warn'</span>, err, <span class="hljs-string">'API'</span>
+              callback <span class="hljs-literal">null</span>, result
+            <span class="hljs-keyword">else</span>
+              result.image.dataUrl = <span class="hljs-string">'data:image/png;base64,'</span> + base64Image
+              result.image.saveButton = <span class="hljs-literal">true</span>
+              callback <span class="hljs-literal">null</span>, result
       <span class="hljs-keyword">else</span>
         callback <span class="hljs-literal">null</span>, result
 
@@ -486,21 +496,23 @@ response)</p>
         
           <div class='highlight'><pre>  router.post <span class="hljs-string">'/api/image'</span>, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
     params = req.body
+    serverName = params.serverName.split(<span class="hljs-string">'_'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'_'</span> + <span class="hljs-keyword">new</span> Date().getTime()
+    path = params.path.replace params.serverName, serverName
+    url = params.url.replace params.serverName, serverName
     image =
-      <span class="hljs-attribute">serverName</span>: params.serverName
+      <span class="hljs-attribute">serverName</span>: serverName
       <span class="hljs-attribute">clientName</span>: params.clientName
       <span class="hljs-attribute">sessionId</span>: req.sessionID
       <span class="hljs-attribute">extension</span>: <span class="hljs-string">'png'</span>
       <span class="hljs-attribute">type</span>: <span class="hljs-string">'image/png'</span>
-      <span class="hljs-attribute">path</span>: params.path
-      <span class="hljs-attribute">url</span>: params.url
+      <span class="hljs-attribute">path</span>: path
+      <span class="hljs-attribute">url</span>: url
     base64Image = params.base64Image
     utils.writeImage image, base64Image, <span class="hljs-function"><span class="hljs-params">(err, size)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> err?
         res.status(<span class="hljs-number">500</span>).json <span class="hljs-attribute">error</span>: <span class="hljs-string">'Could not save image to disk'</span>
       <span class="hljs-keyword">else</span>
         image.size = size
-        <span class="hljs-keyword">delete</span> image.dataUrl
         utils.createThumbnail image, <span class="hljs-function"><span class="hljs-params">(err, thumbPath, thumbUrl)</span> -&gt;</span>
           <span class="hljs-keyword">if</span> err?
             callback { <span class="hljs-attribute">status</span>: <span class="hljs-number">500</span>, <span class="hljs-attribute">error</span>: err}
