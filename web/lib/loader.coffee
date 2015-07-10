@@ -27,7 +27,7 @@ loader.get = (settings, callback) ->
 
   settings.options.timeout ||= nconf.get 'server:timeout'
   settings.options.headers ||= {}
-  settings.retries ||= nconf.get 'loader: retries'
+  settings.retries ||= nconf.get 'loader:retries'
   settings.counter = 0
 
   async.retry settings.retries, ((next) ->

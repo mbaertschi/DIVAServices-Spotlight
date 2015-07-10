@@ -6,7 +6,7 @@
     panel(heading='Available algorithms', icon='tasks')
       .col-xs-12.text-muted(ng-if='!vm.algorithms.length') We are sorry. There are no algorihtms available
       .col-xs-12(ng-if='vm.algorithms.length')
-        table#algorithm-table.display.projects-table.table.table-striped.table-bordered.table-hover(dia-datatable='', data-table-options='vm.tableOptions', cellspacing='0', width='100%')
+        table#algorithm-table.table.table-striped.table-bordered.table-hover.dt-responsive(dia-datatable='', data-table-options='vm.tableOptions', cellspacing='0', width='100%')
           thead
             tr
               th Algorithm

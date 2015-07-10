@@ -1,13 +1,20 @@
 h1 Output
 canvas#output-canvas(ng-if='vm.image')
-.save-image-button.pull-right(ng-if='vm.imageObject.saveButton')
-  button.btn.btn-sm.btn-primary(ng-click='vm.saveImage()') Save Image
-.table-responsive.output-values(ng-if='vm.output')
-  table.table.table-bordered
-    thead
-      th Selector
-      th Value
-    tbody
-      tr(ng-repeat='(key, value) in vm.output')
-        td {{key}}
-        td {{value}}
+.col-xs-12.fix-padding
+  .save-image-button.pull-right(ng-if='vm.imageObject.saveButton')
+    button.btn.btn-sm.btn-primary(ng-click='vm.saveImage()') Save Image
+    span
+      input#svg-check-box(type='checkbox'
+                          ng-checked='vm.withSVG'
+                          ng-click='vm.toggleSVG()')
+    span With SVG
+.col-xs-12.fix-padding
+  .table-responsive.output-values(ng-if='vm.output')
+    table.table.table-bordered
+      thead
+        th Selector
+        th Value
+      tbody
+        tr(ng-repeat='(key, value) in vm.output')
+          td {{key}}
+          td {{value}}

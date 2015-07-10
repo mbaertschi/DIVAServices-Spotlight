@@ -7,7 +7,7 @@ Controller ResultsPageController
 do ->
   'use strict'
 
-  ResultsPageController = ($scope, diaProcessingQueue) ->
+  ResultsPageController = ($scope, $state, diaProcessingQueue) ->
     vm = @
     vm.results = diaProcessingQueue.getResults()
 
@@ -25,7 +25,6 @@ do ->
 
     vm.tableOptions =
       data: vm.results
-      iDisplayLength: 15,
       columns: [
         {
           class: 'details-control'
@@ -73,6 +72,15 @@ do ->
       order: [[5, 'desc']]
       pageLength: 20
       lengthMenu: [ [10, 20, 50, -1], [10, 20, 50, 'All'] ]
+      drawCallback: ->
+        table = @
+        table.on 'click', '.action-button-back', ->
+          entry = table.api().row($(this).parents('tr')).data()
+          $state.go 'algorithm', {id: entry.algorithm.id, backEntry: entry}
+        table.on 'click', '.action-button-delete', ->
+          entry = table.api().row($(this).parents('tr')).data()
+          table.api().row($(this).parents('tr')).remove().draw()
+          vm.delete entry
 
     vm
 
@@ -81,5 +89,6 @@ do ->
 
   ResultsPageController.$inject = [
     '$scope'
+    '$state'
     'diaProcessingQueue'
   ]

@@ -31,10 +31,9 @@ brunchSettings.config =
           'app/**/*config.coffee'
         ]
         after: [
-          'vendor/plugins/datatables-colvis/js/dataTables.colVis.js'
-          'vendor/plugins/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.js'
-          'vendor/plugins/datatables-tabletools/js/dataTables.tableTools.js'
-          'vendor/plugins/datatables-responsive/files/1.10/js/datatables.responsive.js'
+          'vendor/plugins/datatables/dataTables.colVis.min.js'
+          'vendor/plugins/datatables/dataTables.bootstrap.js'
+          'vendor/plugins/datatables/dataTables.responsive.min.js'
         ]
 
     stylesheets:

@@ -190,8 +190,18 @@ api = exports = module.exports = (router) ->
           result.image = image
           callback null, result
       else if result.highlighters?
-        result.image = params.image
-        callback null, result
+        if nconf.get 'images:storeResponse'
+          callback null, result
+        else
+          result.image = params.image
+          getImageAsBase64 result.image.path, (err, base64Image) ->
+            if err?
+              logger.log 'warn', err, 'API'
+              callback null, result
+            else
+              result.image.dataUrl = 'data:image/png;base64,' + base64Image
+              result.image.saveButton = true
+              callback null, result
       else
         callback null, result
 
@@ -253,21 +263,23 @@ api = exports = module.exports = (router) ->
   # Saves an image to disk and to mongoDB
   router.post '/api/image', (req, res) ->
     params = req.body
+    serverName = params.serverName.split('_')[0] + '_' + new Date().getTime()
+    path = params.path.replace params.serverName, serverName
+    url = params.url.replace params.serverName, serverName
     image =
-      serverName: params.serverName
+      serverName: serverName
       clientName: params.clientName
       sessionId: req.sessionID
       extension: 'png'
       type: 'image/png'
-      path: params.path
-      url: params.url
+      path: path
+      url: url
     base64Image = params.base64Image
     utils.writeImage image, base64Image, (err, size) ->
       if err?
         res.status(500).json error: 'Could not save image to disk'
       else
         image.size = size
-        delete image.dataUrl
         utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
           if err?
             callback { status: 500, error: err}

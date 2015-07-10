@@ -215,7 +215,7 @@ Make a GET request to a remote host</br>
 
   settings.options.timeout ||= nconf.get <span class="hljs-string">'server:timeout'</span>
   settings.options.headers ||= {}
-  settings.retries ||= nconf.get <span class="hljs-string">'loader: retries'</span>
+  settings.retries ||= nconf.get <span class="hljs-string">'loader:retries'</span>
   settings.counter = <span class="hljs-number">0</span>
 
   async.retry settings.retries, <span class="hljs-function">(<span class="hljs-params">(next)</span> -&gt;</span>

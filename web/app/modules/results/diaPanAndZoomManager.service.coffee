@@ -15,13 +15,14 @@ do ->
       reset: reset
 
     initPanAndZoom = (type, vm) ->
+      canvas = vm.element.find('canvas')
       if /MAC/.test navigator.platform.toUpperCase() then pz.direction = 1 else pz.direction = -1
       @add type, vm.uuid, vm.paperScope
-      vm.element.on 'mouseenter', (event) =>
+      canvas.on 'mouseenter', (event) =>
         @activate vm.uuid
-      vm.element.on 'mouseleave', =>
+      canvas.on 'mouseleave', =>
         @reset vm.uuid
-      vm.element.on 'mousewheel', (event) =>
+      canvas.on 'mousewheel', (event) =>
         if event.shiftKey
           @changeCenter vm.uuid, event.deltaX, event.deltaY, event.deltaFactor
           event.preventDefault()
@@ -30,13 +31,13 @@ do ->
           viewPosition = vm.paperScope.view.viewToProject mousePosition
           @changeZoom vm.uuid, event.deltaY, viewPosition
           event.preventDefault()
-      vm.element.on 'mousedown', (event) ->
+      canvas.on 'mousedown', (event) ->
         vm.drag.x = event.pageX
         vm.drag.y = event.pageY
         vm.drag.state = true
-      vm.element.on 'mouseup', ->
+      canvas.on 'mouseup', ->
         vm.drag.state = false
-      vm.element.on 'mousemove', (event) =>
+      canvas.on 'mousemove', (event) =>
         if vm.drag.state
           vm.delta.x = event.pageX - vm.drag.x
           vm.delta.y = event.pageY - vm.drag.y

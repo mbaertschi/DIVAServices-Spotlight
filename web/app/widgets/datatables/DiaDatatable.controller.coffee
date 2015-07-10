@@ -6,7 +6,7 @@ Controller diaDatatable
 do ->
   'use strict'
 
-  DiaDatatableController = ($scope, $state, $compile) ->
+  DiaDatatableController = ($scope, $compile) ->
     vm = @
     vm.element = null
     vm.dataTable = undefined
@@ -24,17 +24,6 @@ do ->
           sSearch: '<span class=\'input-group-addon input-sm\'><i class=\'fa fa-search\'></i></span> '
           sLengthMenu: '_MENU_'
         autoWidth: false
-        smartResponsiveHelper: null
-        preDrawCallback: ->
-          # Initialize the responsive datatables helper once.
-          if !@smartResponsiveHelper
-            @smartResponsiveHelper = new ResponsiveDatatablesHelper(vm.element,
-              tablet: 1024
-              phone: 480)
-        rowCallback: (nRow) ->
-          @smartResponsiveHelper.createExpandIcon nRow
-        drawCallback: (oSettings) ->
-          @smartResponsiveHelper.respond()
 
       if vm.tableOptions
         vm.options = angular.extend(vm.options, vm.tableOptions)
@@ -60,24 +49,10 @@ do ->
 
       vm.dataTable = vm.element.DataTable(vm.options)
 
-      vm.dataTable.on 'click', '.action-button-back', ->
-        entry = vm.dataTable.row($(this).parents('tr')).data()
-        $state.go 'algorithm', {id: entry.algorithm.id, backEntry: entry}
-
-      vm.dataTable.on 'click', '.action-button-delete', ->
-        entry = vm.dataTable.row($(this).parents('tr')).data()
-        vm.dataTable.row($(this).parents('tr')).remove().draw()
-        vm.clickDelete entry: entry
-
-      vm.dataTable.on 'click', '.action-button-apply', ->
-        entry = vm.dataTable.row($(this).parents('tr')).data()
-        $state.go 'algorithm', {id: entry._id}
-
   angular.module('app.widgets')
     .controller 'DiaDatatableController', DiaDatatableController
 
   DiaDatatableController.$inject = [
     '$scope'
-    '$state'
     '$compile'
   ]
