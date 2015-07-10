@@ -45,7 +45,7 @@ do ->
       drawCallback: ->
         table = @
         table.on 'click', '.action-button-apply', ->
-          entry = table.api().row($(this).parents('tr')).data()
+          entry = table.api().row($(this).parents('tr')).data() or table.api().row($(this).parents('tr').prev()).data()
           $state.go 'algorithm', id: entry._id
 
     if socketPrepService.settings.run
