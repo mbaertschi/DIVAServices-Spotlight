@@ -13,6 +13,7 @@ do ->
     vm.strokeColor = 'red'
     vm.fillColor = null
     vm.uuid = vm.outputData?.uuid or new Date
+    vm.withSVG = 0
     vm.drag =
       x: 0
       y: 0
@@ -21,11 +22,12 @@ do ->
       x: 0
       y: 0
 
+    vm.toggleSVG = ->
+      if vm.withSVG then vm.withSVG = 0 else vm.withSVG = 1
+
     vm.saveImage = ->
-      base64Image = vm.canvas.toDataURL()
-      delete vm.imageObject.dataUrl
+      if vm.withSVG then base64Image = vm.canvas.toDataURL() else base64Image = vm.imageObject.dataUrl
       diaImagesService.saveImage(vm.imageObject, base64Image).then (res) ->
-        vm.imageObject.saveButton = false
         toastr.info 'Successfully saved image', 'Info'
       , (err) -> toastr.error 'Could not save image', 'Error'
 
