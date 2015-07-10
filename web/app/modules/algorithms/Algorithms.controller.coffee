@@ -13,7 +13,6 @@ do ->
 
     vm.tableOptions =
       data: vm.algorithms
-      iDisplayLength: 15,
       columns: [
         {
           data: 'name'
@@ -43,6 +42,11 @@ do ->
       order: [[3, 'desc']]
       pageLength: 20
       lengthMenu: [ [10, 20, 50, -1], [10, 20, 50, 'All'] ]
+      drawCallback: ->
+        table = @
+        table.on 'click', '.action-button-apply', ->
+          entry = table.api().row($(this).parents('tr')).data()
+          $state.go 'algorithm', id: entry._id
 
     if socketPrepService.settings.run
       $scope.$on 'socket:update algorithms', (ev, algorithms) ->
