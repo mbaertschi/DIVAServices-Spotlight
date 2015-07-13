@@ -74,12 +74,14 @@ utils.processImage = (image, callback) ->
     else
       if width > height
         if width > MAX_SIZE
+          originWidth = width
           width = MAX_SIZE
-          height = height * (width/img.width())
+          height = height * (width/originWidth)
       else
         if height > MAX_SIZE
+          originHeight = height
           height = MAX_SIZE
-          width = width * (height/img.height())
+          width = width * (height/originHeight)
       gm(image.path).resize(width, height).autoOrient().noProfile().write image.path, (err) ->
         if err? then logger.log 'warn', "gm could not resize and orientate image error=#{err}", 'Utils'
         callback()

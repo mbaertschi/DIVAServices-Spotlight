@@ -296,12 +296,14 @@ Resize, auto orient, remove exif-metadata, and write image to disk</br>
     <span class="hljs-keyword">else</span>
       <span class="hljs-keyword">if</span> width &gt; height
         <span class="hljs-keyword">if</span> width &gt; MAX_SIZE
+          originWidth = width
           width = MAX_SIZE
-          height = height * (width/img.width())
+          height = height * (width/originWidth)
       <span class="hljs-keyword">else</span>
         <span class="hljs-keyword">if</span> height &gt; MAX_SIZE
+          originHeight = height
           height = MAX_SIZE
-          width = width * (height/img.height())
+          width = width * (height/originHeight)
       gm(image.path).resize(width, height).autoOrient().noProfile().write image.path, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
         <span class="hljs-keyword">if</span> err? <span class="hljs-keyword">then</span> logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">"gm could not resize and orientate image error=<span class="hljs-subst">#{err}</span>"</span>, <span class="hljs-string">'Utils'</span>
         callback()</pre></div>
