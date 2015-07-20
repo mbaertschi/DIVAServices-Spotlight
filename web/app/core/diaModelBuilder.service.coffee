@@ -76,7 +76,7 @@ do ->
           item.highlighter =
             type: type
             closed: path.closed
-            position: [path.position.x, path.position.y]
+            position: [parseInt(path.position.x), parseInt(path.position.y)]
             radius: path.bounds.width / 2
         else
           item.highlighter =
@@ -84,8 +84,8 @@ do ->
             closed: path.closed
             segments: []
           angular.forEach path.segments, (segment) ->
-            x = segment.point.x
-            y = segment.point.y
+            x = parseInt segment.point.x
+            y = parseInt segment.point.y
             @.push [x, y]
           , item.highlighter.segments
 
