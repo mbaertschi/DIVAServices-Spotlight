@@ -36,21 +36,27 @@ utils.writeImage = (image, file, callback) ->
   matches = file.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
   imageBuffer = {}
 
-  if (matches.length isnt 3)
-    logger.log 'warn', 'invalid input string for image', 'Utils'
-    callback 'Invalid input string'
-  else
-    imageBuffer.type = matches[1];
-    imageBuffer.data = new Buffer(matches[2], 'base64');
-
+  write = (imageBuffer, callback) ->
     fs.ensureDirSync 'public/uploads/' + image.sessionId
-
     fs.writeFile image.path, imageBuffer.data, (err) ->
       if err?
         logger.log 'warn', 'there was an error while storing one of the images', 'Utils'
         callback err
       else
         callback null, utils.getFilesizeInBytes(image.path)
+
+  if matches?
+    if matches.length isnt 3
+      logger.log 'warn', 'invalid input string from image', 'Utils'
+      return callback 'Invalid input string'
+    else
+      imageBuffer.type = matches[1];
+      imageBuffer.data = new Buffer matches[2], 'base64'
+      write imageBuffer, callback
+  else
+    imageBuffer.type = undefined
+    imageBuffer.data = new Buffer file.replace('data:image/png;base64,', ''), 'base64'
+    write imageBuffer, callback
 
 # ---
 # **utils.getImageSize**</br>

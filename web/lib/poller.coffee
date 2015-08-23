@@ -31,6 +31,7 @@ poller = exports = module.exports = class Poller
   constructor: (db, pusher) ->
     logger.log 'info', 'initializing', 'Poller'
     @db = db
+    @polling = false
     @Algorithm = mongoose.model 'Algorithm'
     if (nconf.get 'pusher:run') then @pusher = pusher
 
@@ -43,6 +44,19 @@ poller = exports = module.exports = class Poller
       setTimeout (-> process.exit(0)), 2000
 
   # ---
+  # **sync**</br>
+  # This function should only be called from the api when a user wants to manually
+  # sync the algorithms with DIVAServices backend. If the poll cycle is already running
+  # return immediately, otherwise start with next iteration.
+  sync: (callback) =>
+    if not @polling
+      @_nextIteration ->
+        callback 'sync done'
+      , true
+    else
+      callback 'poll cycle already running'
+
+  # ---
   # **_nextIteration**</br>
   # Main entrance for polling ceycle. Interval is specified in `./web/conf/server.[dev/prod].json`.
   # Following tasks are executed in every iteration:</br>
@@ -51,8 +65,12 @@ poller = exports = module.exports = class Poller
   # 3. *compare and store* all algorithms fetched from hosts
   # 4. *remove* all invalid algorithms
   # 5. *push* all changes to clients
-  _nextIteration: (callback) =>
+  #
+  # If the sync parameter is set to true, we asume that this function was called remotely to sync the
+  # algorithms. In this case we immediately callback after completion
+  _nextIteration: (callback, sync) =>
     logger.log 'info', 'next iteration', 'Poller'
+    @polling = true
     async.waterfall [(next) =>
         @_loadHosts next
       , (hosts, next) =>
@@ -65,8 +83,12 @@ poller = exports = module.exports = class Poller
     ], (err, changedAlgorithms, addedAlgorithms, removedAlgorithms) =>
       if err?
         logger.log 'error', "iteration status=failed with error=#{err}"
-        @_logPause (interval) ->
-          setTimeout (-> callback()), interval
+        @polling = false
+        if sync
+          callback()
+        else
+          @_logPause (interval) ->
+            setTimeout (-> callback()), interval
       else
         if @pusher
           if changedAlgorithms.length > 0
@@ -78,8 +100,12 @@ poller = exports = module.exports = class Poller
         if changedAlgorithms.length is 0 and addedAlgorithms.length is 0 and removedAlgorithms.length is 0
           logger.log 'info', 'no changes to apply', 'Poller'
         logger.log 'info', 'iteration status=succeeded', 'Poller'
-        @_logPause (interval) ->
-          setTimeout (-> callback()), interval
+        @polling = false
+        if sync
+          callback()
+        else
+          @_logPause (interval) ->
+            setTimeout (-> callback()), interval
 
   # ---
   # **_loadHosts**</br>

@@ -219,6 +219,7 @@ Assign mongoDB and pusher</br>
           <div class='highlight'><pre>  <span class="hljs-attribute">constructor</span>: <span class="hljs-function"><span class="hljs-params">(db, pusher)</span> -&gt;</span>
     logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'initializing'</span>, <span class="hljs-string">'Poller'</span>
     <span class="hljs-property">@db</span> = db
+    <span class="hljs-property">@polling</span> = <span class="hljs-literal">false</span>
     <span class="hljs-property">@Algorithm</span> = mongoose.model <span class="hljs-string">'Algorithm'</span>
     <span class="hljs-keyword">if</span> (nconf.get <span class="hljs-string">'pusher:run'</span>) <span class="hljs-keyword">then</span> <span class="hljs-property">@pusher</span> = pusher</pre></div>
         
@@ -245,6 +246,27 @@ Start poller</p>
         
       
         
+        <p><strong>sync</strong></br>
+This function should only be called from the api when a user wants to manually
+sync the algorithms with DIVAServices backend. If the poll cycle is already running
+return immediately, otherwise start with next iteration.</p>
+
+        
+          <div class='highlight'><pre>  <span class="hljs-attribute">sync</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-property">@polling</span>
+      <span class="hljs-property">@_nextIteration</span> -&gt;
+        callback <span class="hljs-string">'sync done'</span>
+      , <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">else</span>
+      callback <span class="hljs-string">'poll cycle already running'</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
         <p><strong>_nextIteration</strong></br>
 Main entrance for polling ceycle. Interval is specified in <code>./web/conf/server.[dev/prod].json</code>.
 Following tasks are executed in every iteration:</br></p>
@@ -255,10 +277,13 @@ Following tasks are executed in every iteration:</br></p>
 <li><em>remove</em> all invalid algorithms</li>
 <li><em>push</em> all changes to clients</li>
 </ol>
+<p>If the sync parameter is set to true, we asume that this function was called remotely to sync the
+algorithms. In this case we immediately callback after completion</p>
 
         
-          <div class='highlight'><pre>  <span class="hljs-attribute">_nextIteration</span>: <span class="hljs-function"><span class="hljs-params">(callback)</span> =&gt;</span>
+          <div class='highlight'><pre>  <span class="hljs-attribute">_nextIteration</span>: <span class="hljs-function"><span class="hljs-params">(callback, sync)</span> =&gt;</span>
     logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'next iteration'</span>, <span class="hljs-string">'Poller'</span>
+    <span class="hljs-property">@polling</span> = <span class="hljs-literal">true</span>
     async.waterfall [(next) =&gt;
         <span class="hljs-property">@_loadHosts</span> next
       , <span class="hljs-function"><span class="hljs-params">(hosts, next)</span> =&gt;</span>
@@ -271,8 +296,12 @@ Following tasks are executed in every iteration:</br></p>
     ], <span class="hljs-function"><span class="hljs-params">(err, changedAlgorithms, addedAlgorithms, removedAlgorithms)</span> =&gt;</span>
       <span class="hljs-keyword">if</span> err?
         logger.log <span class="hljs-string">'error'</span>, <span class="hljs-string">"iteration status=failed with error=<span class="hljs-subst">#{err}</span>"</span>
-        <span class="hljs-property">@_logPause</span> (interval) -&gt;
-          setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval
+        <span class="hljs-property">@polling</span> = <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">if</span> sync
+          callback()
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-property">@_logPause</span> (interval) -&gt;
+            setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval
       <span class="hljs-keyword">else</span>
         <span class="hljs-keyword">if</span> <span class="hljs-property">@pusher</span>
           <span class="hljs-keyword">if</span> changedAlgorithms.length &gt; <span class="hljs-number">0</span>
@@ -284,8 +313,12 @@ Following tasks are executed in every iteration:</br></p>
         <span class="hljs-keyword">if</span> changedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> addedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> removedAlgorithms.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
           logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'no changes to apply'</span>, <span class="hljs-string">'Poller'</span>
         logger.log <span class="hljs-string">'info'</span>, <span class="hljs-string">'iteration status=succeeded'</span>, <span class="hljs-string">'Poller'</span>
-        <span class="hljs-property">@_logPause</span> (interval) -&gt;
-          setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval</pre></div>
+        <span class="hljs-property">@polling</span> = <span class="hljs-literal">false</span>
+        <span class="hljs-keyword">if</span> sync
+          callback()
+        <span class="hljs-keyword">else</span>
+          <span class="hljs-property">@_logPause</span> (interval) -&gt;
+            setTimeout (<span class="hljs-function">-&gt;</span> callback()), interval</pre></div>
         
       
         

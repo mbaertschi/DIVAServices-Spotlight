@@ -9,9 +9,8 @@
 # Require Express Router
 router      = require('express').Router()
 
-# Pass Express Router to all routing modules
-api         = require('./api')(router)
-uploader    = require('./uploadManager')(router)
-
 # Expose router
-module.exports = router
+module.exports = (poller) ->
+  require('./api')(router, poller)
+  require('./uploadManager')(router)
+  router

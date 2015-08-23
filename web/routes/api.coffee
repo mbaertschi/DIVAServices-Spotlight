@@ -16,9 +16,27 @@ utils       = require './utils'
 _           = require 'lodash'
 gm          = require 'gm'
 logger      = require '../lib/logger'
+basicAuth   = require 'basic-auth'
 
 # Expose api routes
-api = exports = module.exports = (router) ->
+api = exports = module.exports = (router, poller) ->
+
+  # ---
+  # enable basic authorization if defined so in settings
+  auth = (req, res, next) ->
+    if nconf.get 'basicAuth:enabled'
+      unauthorized = (res) ->
+        res.set 'WWW-Authenticate', 'Basic realm=Authorization Required'
+        res.sendStatus 401
+      user = basicAuth req
+      if !user or !user.name or !user.pass
+        return unauthorized(res)
+      if user.name is nconf.get('basicAuth:user') and user.pass is nconf.get('basicAuth:pass')
+        next()
+      else
+        unauthorized res
+    else
+      next()
 
   # ---
   # **router.get** `/api/settings`
@@ -36,6 +54,19 @@ api = exports = module.exports = (router) ->
       settings = nconf.get 'web'
 
     res.status(200).json settings
+
+  # ---
+  # **router.get** `/api/sync`
+  #   * method: GET
+  #   * return: status of poller synchronization
+  #
+  # This route will manually trigger the poller to sync the algorithms
+  router.get '/api/sync', auth, (req, res) ->
+    poller.sync (err) ->
+      if err?
+        res.status(200).json status: err
+      else
+        res.status(200).json status: 'sync done'
 
   # ---
   # **router.get** `/api/algorithms`
