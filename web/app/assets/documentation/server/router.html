@@ -185,18 +185,13 @@ for handling all routing from DIVAServices Spotlight.</p>
         
       
         
-        <p>Pass Express Router to all routing modules</p>
-
-        
-          <div class='highlight'><pre>api         = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./api'</span>)(router)
-uploader    = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./uploadManager'</span>)(router)</pre></div>
-        
-      
-        
         <p>Expose router</p>
 
         
-          <div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = router</pre></div>
+          <div class='highlight'><pre><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(poller)</span> -&gt;</span>
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">'./api'</span>)(router, poller)
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">'./uploadManager'</span>)(router)
+  router</pre></div>
         
       
       <div class="fleur">h</div>

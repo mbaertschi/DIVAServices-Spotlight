@@ -189,14 +189,40 @@ validator   = <span class="hljs-keyword">new</span> Validator
 utils       = <span class="hljs-built_in">require</span> <span class="hljs-string">'./utils'</span>
 _           = <span class="hljs-built_in">require</span> <span class="hljs-string">'lodash'</span>
 gm          = <span class="hljs-built_in">require</span> <span class="hljs-string">'gm'</span>
-logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span></pre></div>
+logger      = <span class="hljs-built_in">require</span> <span class="hljs-string">'../lib/logger'</span>
+basicAuth   = <span class="hljs-built_in">require</span> <span class="hljs-string">'basic-auth'</span></pre></div>
         
       
         
         <p>Expose api routes</p>
 
         
-          <div class='highlight'><pre>api = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(router)</span> -&gt;</span></pre></div>
+          <div class='highlight'><pre>api = exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(router, poller)</span> -&gt;</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p>enable basic authorization if defined so in settings</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function">  <span class="hljs-title">auth</span> = <span class="hljs-params">(req, res, next)</span> -&gt;</span>
+    <span class="hljs-keyword">if</span> nconf.get <span class="hljs-string">'basicAuth:enabled'</span>
+<span class="hljs-function">      <span class="hljs-title">unauthorized</span> = <span class="hljs-params">(res)</span> -&gt;</span>
+        res.set <span class="hljs-string">'WWW-Authenticate'</span>, <span class="hljs-string">'Basic realm=Authorization Required'</span>
+        res.sendStatus <span class="hljs-number">401</span>
+      user = basicAuth req
+      <span class="hljs-keyword">if</span> !user <span class="hljs-keyword">or</span> !user.name <span class="hljs-keyword">or</span> !user.pass
+        <span class="hljs-keyword">return</span> unauthorized(res)
+      <span class="hljs-keyword">if</span> user.name <span class="hljs-keyword">is</span> nconf.get(<span class="hljs-string">'basicAuth:user'</span>) <span class="hljs-keyword">and</span> user.pass <span class="hljs-keyword">is</span> nconf.get(<span class="hljs-string">'basicAuth:pass'</span>)
+        next()
+      <span class="hljs-keyword">else</span>
+        unauthorized res
+    <span class="hljs-keyword">else</span>
+      next()</pre></div>
         
       
         
@@ -226,6 +252,28 @@ client settings specified in <code>./web/conf/client.[dev/prod].json</code></li>
       settings = nconf.get <span class="hljs-string">'web'</span>
 
     res.status(<span class="hljs-number">200</span>).json settings</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>router.get</strong> <code>/api/sync</code></p>
+<ul>
+<li>method: GET</li>
+<li>return: status of poller synchronization</li>
+</ul>
+<p>This route will manually trigger the poller to sync the algorithms</p>
+
+        
+          <div class='highlight'><pre>  router.get <span class="hljs-string">'/api/sync'</span>, auth, <span class="hljs-function"><span class="hljs-params">(req, res)</span> -&gt;</span>
+    poller.sync (err) -&gt;
+      <span class="hljs-keyword">if</span> err?
+        res.status(<span class="hljs-number">200</span>).json <span class="hljs-attribute">status</span>: err
+      <span class="hljs-keyword">else</span>
+        res.status(<span class="hljs-number">200</span>).json <span class="hljs-attribute">status</span>: <span class="hljs-string">'sync done'</span></pre></div>
         
       
         

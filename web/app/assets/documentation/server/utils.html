@@ -237,22 +237,28 @@ Write a base64 encoded image to disk and callback its file size</br>
           <div class='highlight'><pre>utils.writeImage = <span class="hljs-function"><span class="hljs-params">(image, file, callback)</span> -&gt;</span>
   matches = file.match(<span class="hljs-regexp">/^data:([A-Za-z-+\/]+);base64,(.+)$/</span>)
   imageBuffer = {}
-
-  <span class="hljs-keyword">if</span> (matches.length <span class="hljs-keyword">isnt</span> <span class="hljs-number">3</span>)
-    logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'invalid input string for image'</span>, <span class="hljs-string">'Utils'</span>
-    callback <span class="hljs-string">'Invalid input string'</span>
-  <span class="hljs-keyword">else</span>
-    imageBuffer.type = matches[<span class="hljs-number">1</span>];
-    imageBuffer.data = <span class="hljs-keyword">new</span> Buffer(matches[<span class="hljs-number">2</span>], <span class="hljs-string">'base64'</span>);
-
+<span class="hljs-function">
+  <span class="hljs-title">write</span> = <span class="hljs-params">(imageBuffer, callback)</span> -&gt;</span>
     fs.ensureDirSync <span class="hljs-string">'public/uploads/'</span> + image.sessionId
-
     fs.writeFile image.path, imageBuffer.data, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
       <span class="hljs-keyword">if</span> err?
         logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'there was an error while storing one of the images'</span>, <span class="hljs-string">'Utils'</span>
         callback err
       <span class="hljs-keyword">else</span>
-        callback <span class="hljs-literal">null</span>, utils.getFilesizeInBytes(image.path)</pre></div>
+        callback <span class="hljs-literal">null</span>, utils.getFilesizeInBytes(image.path)
+
+  <span class="hljs-keyword">if</span> matches?
+    <span class="hljs-keyword">if</span> matches.length <span class="hljs-keyword">isnt</span> <span class="hljs-number">3</span>
+      logger.log <span class="hljs-string">'warn'</span>, <span class="hljs-string">'invalid input string from image'</span>, <span class="hljs-string">'Utils'</span>
+      <span class="hljs-keyword">return</span> callback <span class="hljs-string">'Invalid input string'</span>
+    <span class="hljs-keyword">else</span>
+      imageBuffer.type = matches[<span class="hljs-number">1</span>];
+      imageBuffer.data = <span class="hljs-keyword">new</span> Buffer matches[<span class="hljs-number">2</span>], <span class="hljs-string">'base64'</span>
+      write imageBuffer, callback
+  <span class="hljs-keyword">else</span>
+    imageBuffer.type = <span class="hljs-literal">undefined</span>
+    imageBuffer.data = <span class="hljs-keyword">new</span> Buffer file.replace(<span class="hljs-string">'data:image/png;base64,'</span>, <span class="hljs-string">''</span>), <span class="hljs-string">'base64'</span>
+    write imageBuffer, callback</pre></div>
         
       
         

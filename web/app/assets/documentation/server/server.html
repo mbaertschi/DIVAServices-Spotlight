@@ -209,7 +209,6 @@ http        = <span class="hljs-built_in">require</span> <span class="hljs-strin
 sysPath     = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
 slashes     = <span class="hljs-built_in">require</span> <span class="hljs-string">'connect-slashes'</span>
 bodyParser  = <span class="hljs-built_in">require</span> <span class="hljs-string">'body-parser'</span>
-router      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./routes/router'</span>
 Poller      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/poller'</span>
 Pusher      = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/pusher'</span>
 Mongo       = <span class="hljs-built_in">require</span> <span class="hljs-string">'./lib/mongo'</span>
@@ -324,7 +323,8 @@ method and handle image deletion (on disk and in mongoDB)</p>
         <p>Setup our routes</p>
 
         
-          <div class='highlight'><pre>  app.use router</pre></div>
+          <div class='highlight'><pre>  router = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./routes/router'</span>)(poller)
+  app.use router</pre></div>
         
       
         

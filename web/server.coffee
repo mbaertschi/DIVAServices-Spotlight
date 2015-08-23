@@ -27,7 +27,6 @@ http        = require 'http'
 sysPath     = require 'path'
 slashes     = require 'connect-slashes'
 bodyParser  = require 'body-parser'
-router      = require './routes/router'
 Poller      = require './lib/poller'
 Pusher      = require './lib/pusher'
 Mongo       = require './lib/mongo'
@@ -86,6 +85,7 @@ server.startServer = (port, path, callback) ->
   app.use bodyParser.json()
 
   # Setup our routes
+  router = require('./routes/router')(poller)
   app.use router
 
   # Route all non-existent files to `index.html`

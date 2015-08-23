@@ -56,5 +56,10 @@
   },
   "images": {
     "storeResponse": false
+  },
+  "basicAuth": {
+    "enabled": true,
+    "user": "foo",
+    "pass": "bar"
   }
 }
