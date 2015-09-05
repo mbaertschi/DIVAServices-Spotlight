@@ -16,9 +16,8 @@ do ->
       diaPaperManager.reset()
 
       # dynamicall load tool service
-      validHighlighters = ['polygonTool', 'rectangleTool', 'circleTool']
       serviceName = vm.highlighter + 'Tool'
-      if serviceName in validHighlighters and $injector.has serviceName
+      if $injector.has serviceName
         toolService = $injector.get serviceName
         toolService.setDescription vm
 

@@ -18,7 +18,7 @@ do ->
           data: 'name'
           render: (data, type, row) ->
             if type is 'display'
-              '<span class="text-capitalize">' + data + '</span>'
+              '<span class="text-capitalize algorithm-name">' + data + '</span>'
             else
               data
         }
@@ -46,6 +46,9 @@ do ->
         table = @
         table.on 'click', '.action-button-apply', ->
           entry = table.api().row($(this).parents('tr')).data() or table.api().row($(this).parents('tr').prev()).data()
+          $state.go 'algorithm', id: entry._id
+        table.on 'click', '.algorithm-name', ->
+          entry = table.api().row($(this).parents('tr')).data() or table.api().row($(this).parents('thr').prev()).data()
           $state.go 'algorithm', id: entry._id
 
     if socketPrepService.settings.run
