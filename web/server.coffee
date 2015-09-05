@@ -34,6 +34,10 @@ mongoose    = require 'mongoose'
 SessionStore= require './lib/sessionStore'
 Uploader    = require './routes/uploader'
 
+# Init `logger`
+logger = require './lib/logger'
+logger.init()
+
 # Expose `server`
 server = exports = module.exports = {}
 

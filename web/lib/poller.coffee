@@ -169,8 +169,7 @@ poller = exports = module.exports = class Poller
   # **_compareAndStoreAlgorithms**</br>
   # Iterates over all algorithms and compares them to algorithms stored in mongoDB.
   #   * New algorithms are stored in `addedAlgorithms`
-  #   * Updated algorithms are stored in `changedAlgorithms`
-  #   * Removed algorithms are stored in `removedAlgorithms`</br>
+  #   * Updated algorithms are stored in `changedAlgorithms`</br>
   #
   # Returns those three arrays</br>
   # `params:`

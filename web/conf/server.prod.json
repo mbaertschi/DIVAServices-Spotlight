@@ -11,7 +11,10 @@
         "type": "console"
       }
     ],
-    "level": "INFO"
+    "level": "INFO",
+    "mailLevels": ["error"],
+    "interval": 300000,
+    "mailAddresses": ["michael.baertschi@zebbra.ch"]
   },
   "poller": {
     "run": true,

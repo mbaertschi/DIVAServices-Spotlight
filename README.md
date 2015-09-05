@@ -63,7 +63,7 @@ The DIVAServices Spotlight application can be started within three environments.
   ```bash
   $ export NODE_ENV=dev && nf -j Procfile.dev start
   # or
-  $ nf -j Procfile.dev -e dev.env start
+  $ nf -j Procfile.dev -e etc/dev.env start
   ```
   This configuration is recommended if you want to develop.
   2. Testing mode
@@ -71,7 +71,7 @@ The DIVAServices Spotlight application can be started within three environments.
   ```bash
   $ export NODE_ENV=test && nf -j Procfile.dev start
   # or
-  $ nf -j Procfile.dev -e test.env start
+  $ nf -j Procfile.dev -e etc/test.env start
   ```
   This configuration is mandatory for running the tests.
   3. Production mode
@@ -82,7 +82,7 @@ The DIVAServices Spotlight application can be started within three environments.
   # and run with
   $ export NODE_ENV=prod && nf start
   # or
-  $ nf -e prod.env start
+  $ nf -e etc/prod.env start
   ```
   This configuration is used for production.
 
@@ -98,7 +98,7 @@ If you want to run the tests manually:
 
   ```bash
   Shell 1
-  $ nf -j Procfile.dev -e test.env start
+  $ nf -j Procfile.dev -e etc/test.env start
 
   Shell 2
   $ cd test
@@ -122,7 +122,7 @@ If you want to run the tests manually:
 To start and stop dummy rest server and web client with one command:
 
 ```bash
-$ nf -j Procfile.dev -e dev.env start
+$ nf -j Procfile.dev -e etc/dev.env start
 ```
 
 For manually starting backend server
@@ -148,5 +148,5 @@ To run DIVAServices Spotlight in production mode follow those steps:
 
 ```bash
 $ cd web && rm -r public && brunch b -P && cd ..
-$ nf -e prod.env start
+$ nf -e etc/prod.env start
 ```

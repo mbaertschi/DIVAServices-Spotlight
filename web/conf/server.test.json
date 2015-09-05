@@ -1,6 +1,9 @@
 {
   "logger": {
-    "appenders": []
+    "appenders": [],
+    "mailLevels": [],
+    "interval": 300000,
+    "mailAddresses": ["michael.baertschi@zebbra.ch"]
   },
   "poller": {
     "run": false,
