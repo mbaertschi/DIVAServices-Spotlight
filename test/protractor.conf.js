@@ -3,7 +3,7 @@ exports.config = {
   // Order is important. Always put images before algorithms and
   // algorithms before results
   specs: [
-    './frontend/e2e/specs/dashboard.coffee',
+    './frontend/e2e/specs/home.coffee',
     './frontend/e2e/specs/documents.coffee',
     './frontend/e2e/specs/images.coffee',
     './frontend/e2e/specs/algorithms.coffee',
