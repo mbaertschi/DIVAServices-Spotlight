@@ -106,7 +106,7 @@ api = exports = module.exports = (router, poller) ->
 
     Algorithm = mongoose.model 'Algorithm'
     Algorithm.findById params.id, (err, algorithm) ->
-      if err
+      if err or not algorithm?
         res.status(404).json error: 'Not found'
       else
         url = algorithm.url
