@@ -7,7 +7,7 @@ do ->
   routerProvider = ($urlRouterProvider) ->
     $urlRouterProvider.otherwise ($injector) ->
       $state = $injector.get '$state'
-      $state.go 'dashboard'
+      $state.go 'home'
 
   # include abstract state main for layout rendering
   stateProvider = ($stateProvider) ->

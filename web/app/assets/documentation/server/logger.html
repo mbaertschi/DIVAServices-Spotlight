@@ -182,7 +182,9 @@ to abstract the logging functionality.</p>
 
         
           <div class='highlight'><pre>log4js      = <span class="hljs-built_in">require</span> <span class="hljs-string">'log4js'</span>
-nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span></pre></div>
+nconf       = <span class="hljs-built_in">require</span> <span class="hljs-string">'nconf'</span>
+nodemailer  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'nodemailer'</span>)
+transporter = nodemailer.createTransport()</pre></div>
         
       
         
@@ -192,6 +194,61 @@ nconf       = <span class="hljs-built_in">require</span> <span class="hljs-strin
           <div class='highlight'><pre>log4js.configure <span class="hljs-attribute">appenders</span>: nconf.get <span class="hljs-string">'logger:appenders'</span>
 logger = log4js.getLogger <span class="hljs-string">'server'</span>
 logger.setLevel nconf.get <span class="hljs-string">'logger:level'</span></pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>sendMail</strong></br>
+Iteratively flushes the message queue and sends the logged error messages
+to the specified eMail addresses</p>
+
+        
+          <div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">sendMail</span> = =&gt;</span>
+  skipMessages = [
+    <span class="hljs-regexp">/Error: This is a sample skip message/</span>
+  ]
+
+  errorMessages = <span class="hljs-string">''</span>
+  <span class="hljs-keyword">for</span> msg <span class="hljs-keyword">in</span> <span class="hljs-property">@queue</span>
+    skip = <span class="hljs-literal">false</span>
+    <span class="hljs-keyword">for</span> reg <span class="hljs-keyword">in</span> skipMessages
+      <span class="hljs-keyword">if</span> reg.test msg <span class="hljs-keyword">then</span> skip = <span class="hljs-literal">true</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> skip <span class="hljs-keyword">then</span> errorMessages += msg + <span class="hljs-string">"\n"</span>
+
+  <span class="hljs-property">@queue</span> = []
+
+  <span class="hljs-keyword">if</span> errorMessages <span class="hljs-keyword">isnt</span> <span class="hljs-string">''</span>
+    mailAddresses = nconf.get(<span class="hljs-string">'logger:mailAddresses'</span>)
+    <span class="hljs-keyword">for</span> mailAddress <span class="hljs-keyword">in</span> mailAddresses
+      transporter.sendMail {
+        <span class="hljs-attribute">from</span>: <span class="hljs-string">'info@divaservices.ch'</span>
+        <span class="hljs-attribute">to</span>: mailAddress
+        <span class="hljs-attribute">subject</span>: <span class="hljs-string">"DivaServices Spotlight Error(s)"</span>
+        <span class="hljs-attribute">text</span>: errorMessages
+      }, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+        <span class="hljs-built_in">console</span>.log <span class="hljs-string">"there was an error while sending mail to <span class="hljs-subst">#{mailAddress}</span>"</span> <span class="hljs-keyword">if</span> err?</pre></div>
+        
+      
+        
+        <hr>
+
+        
+      
+        
+        <p><strong>exports.init</strong></br>
+Expose init method</br>
+Inits the message queue which is flushed every 5 minutes to send the logged
+error messages to the specified eMail addresses</p>
+
+        
+          <div class='highlight'><pre>exports.init = <span class="hljs-function">-&gt;</span>
+  <span class="hljs-property">@queue</span> = []
+  setInterval sendMail, nconf.get(<span class="hljs-string">'logger:interval'</span>)
+  sendMail()</pre></div>
         
       
         
@@ -210,8 +267,11 @@ Expose log method</br>
 </ul>
 
         
-          <div class='highlight'><pre>exports.log = <span class="hljs-function"><span class="hljs-params">(level, msg, <span class="hljs-built_in">module</span>)</span> -&gt;</span>
+          <div class='highlight'><pre>exports.log = <span class="hljs-function"><span class="hljs-params">(level, msg, <span class="hljs-built_in">module</span>)</span> =&gt;</span>
   level = level || <span class="hljs-string">'info'</span>
+
+  <span class="hljs-keyword">if</span> level <span class="hljs-keyword">in</span> nconf.get(<span class="hljs-string">'logger:mailLevels'</span>)
+    <span class="hljs-property">@queue</span>.push <span class="hljs-string">"<span class="hljs-subst">#{<span class="hljs-keyword">new</span> Date}</span> level=<span class="hljs-subst">#{level}</span> module=<span class="hljs-subst">#{<span class="hljs-built_in">module</span>}</span> <span class="hljs-subst">#{msg}</span>"</span>
 
   <span class="hljs-keyword">if</span> <span class="hljs-built_in">module</span>?
     logger[level] msg + <span class="hljs-string">" [<span class="hljs-subst">#{<span class="hljs-built_in">module</span>}</span>]"</span>

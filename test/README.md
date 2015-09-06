@@ -1,4 +1,4 @@
-Automated Frontend Test
+Automated Testing
 =======================
 
 This will run the e2e tests with protractor and the server tests with mocha
@@ -30,7 +30,7 @@ Assuming you are in the root folder of the project and you have `foreman` instal
 
 ```bash
 Shell 1
-$ nf -j Procfile.dev -e dev.env start         # npm -g install foreman
+$ nf -j Procfile.dev -e etc/test.env start
 ```
 
 ```bash

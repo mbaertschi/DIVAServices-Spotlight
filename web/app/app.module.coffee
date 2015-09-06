@@ -4,7 +4,7 @@ do ->
   angular.module 'app', [
     'app.core'
     'app.widgets'
-    'app.dashboard'
+    'app.home'
     'app.docs'
     'app.algorithms'
     'app.algorithm'
