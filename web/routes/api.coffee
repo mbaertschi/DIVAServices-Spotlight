@@ -195,7 +195,8 @@ api = exports = module.exports = (router, poller) ->
         return callback { status: 400, error: 'Remote host processing error'}
       responseErrors = validator.validate(result, nconf.get('parser:details:responseSchema')).errors
       if responseErrors.length
-        logger.log 'debug', "algorithm response is invalid object=#{result}", 'API'
+        logger.log 'debug', "algorithm response is invalid object=#{JSON.stringify(result)}", 'API'
+        logger.log 'debug', responseErrors[0]
         callback { status: 400, error: responseErrors[0].stack }
       else if result.image?
         if /_output_/.test params.image.serverName

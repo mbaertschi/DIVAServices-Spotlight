@@ -174,7 +174,7 @@
             "additionalItems": false
           }
         },
-        "additionalProperties": false
+        "additionalProperties": true
       },
       "algorithmSchema": {
         "id": "algorithmSchema",
