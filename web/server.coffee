@@ -86,7 +86,7 @@ server.startServer = (port, path, callback) ->
   app.use uploader
 
   # Enable body parser for json
-  app.use bodyParser.json()
+  app.use bodyParser.json limit: nconf.get 'server:bodyParserLimit'
 
   # Setup our routes
   router = require('./routes/router')(poller)

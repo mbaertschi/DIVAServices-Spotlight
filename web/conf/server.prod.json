@@ -55,7 +55,8 @@
     "port": 3000,
     "path": "public",
     "timeout": 600000,
-    "maxFileSize": 20971520
+    "maxFileSize": 20971520,
+    "bodyParserLimit": "50mb"
   },
   "images": {
     "storeResponse": false
