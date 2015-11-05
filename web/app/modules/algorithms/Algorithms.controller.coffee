@@ -11,6 +11,7 @@ do ->
     vm = @
     vm.algorithms = algorithmsPrepService.algorithms
 
+    console.log 'algorithms: ' + JSON.stringify(vm.algorithms)
     vm.tableOptions =
       data: vm.algorithms
       columns: [
@@ -22,13 +23,8 @@ do ->
             else
               data
         }
-        { data: 'host' }
+        { data : 'type'}
         { data: 'description' }
-        {
-          data: '_lastChange'
-          render: (data, type, row) ->
-            moment(data).format 'DD.MM.YY HH:mm:ss'
-        }
         {
           data: '_id'
           width: '1%'

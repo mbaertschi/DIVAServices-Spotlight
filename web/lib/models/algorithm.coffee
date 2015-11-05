@@ -14,6 +14,7 @@ logger      = require '../logger'
 AlgorithmSchema = mongoose.Schema
   name: String
   description: String
+  type: String
   url: String
   host: String
   _lastChange: Date

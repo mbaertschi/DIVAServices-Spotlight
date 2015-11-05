@@ -1,7 +1,7 @@
 {
-  "name": "dia-distributed",
+  "name": "DIVAServices-Spotlight",
   "version": "1.0.0",
-  "description": "Web Application for AI Services",
+  "description": "Web Application for DIA Services",
   "main": "server.js",
   "author": "Michael Bärtschi",
   "license": "MIT",
