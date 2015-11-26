@@ -23,7 +23,11 @@ do ->
             else
               data
         }
-        { data : 'type'}
+        {
+          data : 'type'
+          render: (data, type, row) ->
+            data ||= 'general'
+        }
         { data: 'description' }
         {
           data: '_id'
