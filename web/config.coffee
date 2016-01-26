@@ -57,15 +57,6 @@ brunchSettings.config =
 
   plugins:
 
-    coffeelint:
-      pattern: /^app\/.*\.coffee$/
-      options:
-        max_line_length:
-          level: "ignore"
-        indentation:
-          value: 2
-          level: "error"
-
     jaded:
       staticPatterns: /^app\/(.+)\.jade$/
       jade:
