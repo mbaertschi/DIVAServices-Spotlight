@@ -17,6 +17,10 @@ _           = require 'lodash'
 gm          = require 'gm'
 logger      = require '../lib/logger'
 basicAuth   = require 'basic-auth'
+md5         = require 'md5'
+url         = require 'url'
+request     = require('request').defaults(encoding: null)
+async       = require 'async'
 
 # Expose api routes
 api = exports = module.exports = (router, poller) ->
@@ -110,11 +114,10 @@ api = exports = module.exports = (router, poller) ->
       if err or not algorithm?
         res.status(404).json error: 'Not found'
       else
-        url = algorithm.url
 
         settings =
           options:
-            uri: url
+            uri: algorithm.url
             timeout: nconf.get 'server:timeout'
             headers: {}
           retries: nconf.get 'poller:retries'
@@ -165,32 +168,38 @@ api = exports = module.exports = (router, poller) ->
           callback null, image.toString('base64')
 
     storeImage = (result, image, callback) ->
-      buffer = new Buffer result.image, 'base64'
-      fs.writeFile image.path, buffer, (err) ->
-        if err?
-          logger.log 'warn', "fs could not write buffered image to disk error=#{err}", 'API'
-          callback { status: 500, error: err}
-        else
-          image.size = utils.getFilesizeInBytes image.path
-          utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+      logger.log 'info', result.outputImage
+      request.get result.outputImage , (error, response, body) ->
+        if !error and response.statusCode == 200
+          buffer = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64')
+          logger.log 'info', 'writing file to: ' + image.path
+          fs.writeFile image.path, buffer, (err) ->
             if err?
+              logger.log 'warn', "fs could not write buffered image to disk error=#{err}", 'API'
               callback { status: 500, error: err}
             else
-              image.thumbPath = thumbPath
-              image.thumbUrl = thumbUrl
-              result.image = image
-              Image = mongoose.model 'Image'
-              query =
-                sessionId: req.sessionID
-                serverName: image.serverName
-              Image.update query, image, upsert: true, (err) ->
+              image.size = utils.getFilesizeInBytes image.path
+              utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
                 if err?
-                  logger.log 'warn', 'could not save image', 'API'
                   callback { status: 500, error: err}
                 else
-                  callback null, result
+                  image.thumbPath = thumbPath
+                  image.thumbUrl = thumbUrl
+                  result.image = image
+                  Image = mongoose.model 'Image'
+                  query =
+                    sessionId: req.sessionID
+                    serverName: image.serverName
+                  Image.update query, image, upsert: true, (err) ->
+                    if err?
+                      logger.log 'warn', 'could not save image', 'API'
+                      callback { status: 500, error: err}
+                    else
+                      callback null, result
 
     processResponse = (result, callback) ->
+      if(err?)
+        logger.log 'error', err
       if result is 'ERROR'
         logger.log 'debug', "Remote host processing error for algorithm=#{params.algorithm.name}", 'API'
         return callback { status: 400, error: 'Remote host processing error'}
@@ -199,13 +208,13 @@ api = exports = module.exports = (router, poller) ->
         logger.log 'debug', "algorithm response is invalid object=#{JSON.stringify(result)}", 'API'
         logger.log 'debug', responseErrors[0]
         callback { status: 400, error: responseErrors[0].stack }
-      else if result.image?
+      else if result.outputImage?
         if /_output_/.test params.image.serverName
           serverName = params.image.serverName.split('_output_')[0] + '_output_' + new Date().getTime() + '.png'
         else
           serverName = params.image.serverName.replace '.png', '_output_' + new Date().getTime() + '.png'
         path = nconf.get('web:uploader:destination') + req.sessionID + '/' + serverName
-        url = path.replace 'public', ''
+
         image =
           serverName: serverName
           clientName: params.algorithm.name.trim().replace(' ', '_') + '_' + new Date().getTime() + '.png'
@@ -213,12 +222,12 @@ api = exports = module.exports = (router, poller) ->
           extension: 'png'
           type: 'image/png'
           path: path
-          url: url
+          url: path.replace 'public', ''
         if nconf.get 'images:storeResponse'
           storeImage result, image, (err, result) ->
             callback err, result
         else
-          image.dataUrl = 'data:image/png;base64,' + result.image
+          image.dataUrl = result.outputImage
           image.saveButton = true
           result.image = image
           callback null, result
@@ -232,7 +241,7 @@ api = exports = module.exports = (router, poller) ->
               logger.log 'warn', err, 'API'
               callback null, result
             else
-              result.image.dataUrl = 'data:image/png;base64,' + base64Image
+              result.image.dataUrl = result.outputImage
               result.image.saveButton = true
               callback null, result
       else
@@ -243,45 +252,99 @@ api = exports = module.exports = (router, poller) ->
       if err or not algorithm?
         res.status(404).send()
       else
-        body =
-          inputs: params.inputs
-          highlighter: params.highlighter
+        logger.log 'trace', url
+        urlObj = url.parse(algorithm.url)
+        baseUrl = urlObj.protocol + '//' + urlObj.host
 
         getImageAsBase64 params.image.path, (err, base64Image) ->
           if err?
             res.status(500).json error: err
           else
-            body.image = base64Image
-
+            #check if image is on server
             settings =
               options:
-                uri: algorithm.url
+                uri: baseUrl + '/image/check/'+md5(base64Image)
                 timeout: nconf.get 'server:timeout'
                 headers: {}
-                method: 'POST'
+                method: 'GET'
                 json: true
-
-            loader.post settings, body, (err, result) ->
-              if err?
-                if _.isNumber err
-                  res.status(err).send()
-                else
-                  res.status(500).json err
-              else if not result?
-                res.status(500).json error: 'no response received'
+            loader.get settings, (err, result) ->
+              images = []
+              if(result.imageAvailable)
+                imageBody =
+                  type: 'md5'
+                  value: md5(base64Image)
               else
-                if result?.image? then resPayloadHasImage = true
-                processResponse result, (err, resultProcessed) ->
-                  if err?
-                    res.status(err.status).json err.error
+                imageBody =
+                  type: 'image'
+                  value: base64Image
+              images.push imageBody
+              body =
+                inputs: params.inputs
+                highlighter: params.highlighter
+                images: images
+              settings =
+                options:
+                  uri: algorithm.url
+                  timeout: nconf.get 'server:timeout'
+                  headers: {}
+                  method: 'POST'
+                  json: true
+
+              loader.post settings, body, (err, result) ->
+                if err?
+                  if _.isNumber err
+                    res.status(err).send()
                   else
-                    resultProcessed.reqPayload = body
-                    resultProcessed.resPayload =
-                      output: result.output
-                      highlighters: result.highlighters
-                    if body.image? then body.image = 'Base64 encoded image'
-                    if resPayloadHasImage then resultProcessed.resPayload.image = 'Base64 encoded image'
-                    res.status(200).json resultProcessed
+                    res.status(500).json err
+                else if not result?
+                  res.status(500).json error: 'no response received'
+                else
+                  async.waterfall [
+                    (callback) ->
+                      finished = false
+                      settings =
+                        options:
+                          uri: result.results[0].resultLink
+                          timeout: nconf.get 'server:timeout'
+                          headers: {}
+                          method: 'GET'
+                          json: true
+                      async.doUntil  ((cb) ->
+                        loader.get settings, (err, result) ->
+                          if result.status is 'done'
+                            logger.log 'debug', 'result ready 1'
+                            finished = true
+                            cb null, result
+                          else
+                            logger.log 'debug', 'result not ready'
+                            setTimeout ( ->
+                              cb null, result
+                              return
+                            ), 5000
+                        ),(->
+                          finished == true
+                        ),(err,result) ->
+                          logger.log 'debug', 'result ready 2'
+                          callback err, result
+                    (result, callback) ->
+                      logger.log 'info', result
+                      if result?.outputImage? then resPayloadHasImage = true
+                      processResponse result, (err, resultProcessed) ->
+                        if err?
+                          res.status(err.status).json err.error
+                        else
+                          resultProcessed.reqPayload = body
+                          resultProcessed.resPayload =
+                            output: result.output
+                            highlighters: result.highlighters
+                          if body.image? then body.image = 'Base64 encoded image'
+                          if resPayloadHasImage then resultProcessed.resPayload.image = result.outputImage
+                          callback null,resultProcessed
+                  ], (err, result) ->
+                    res.status(200).json result
+
+
 
   # ---
   # **router.post** `/api/image`
@@ -298,7 +361,6 @@ api = exports = module.exports = (router, poller) ->
     params = req.body
     serverName = params.serverName.split('_')[0] + '_' + new Date().getTime()
     path = params.path.replace params.serverName, serverName
-    url = params.url.replace params.serverName, serverName
     image =
       serverName: serverName
       clientName: params.clientName
@@ -306,7 +368,9 @@ api = exports = module.exports = (router, poller) ->
       extension: 'png'
       type: 'image/png'
       path: path
-      url: url
+      url: params.url.replace params.serverName, serverName
+      md5: md5(params.base64Image)
+
     base64Image = params.base64Image
     utils.writeImage image, base64Image, (err, size) ->
       if err?

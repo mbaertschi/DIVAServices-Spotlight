@@ -20,6 +20,7 @@ ImageSchema = mongoose.Schema
   path: String
   thumbUrl: String
   thumbPath: String
+  md5: String
 
 # Set the images sessionId as its index
 ImageSchema.index sessionId: 1

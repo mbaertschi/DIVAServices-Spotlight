@@ -88,6 +88,7 @@ uploadManager = exports = module.exports = (router) ->
             if err? then logger.log 'info', "could not store image=#{image.serverName} error=#{err}", 'UploadManager'
             res.imageData = image
             res.status(200).json res.imageData
+          
 
   # ---
   # **router.put** `/upload`

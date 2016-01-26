@@ -35,10 +35,6 @@ do ->
         task.item.started = true
         url = '/api/algorithm'
         data = task.item
-        #TODO:
-        # - If we get a response with status 'planned' -> notify
-        #   - start polling for the result url
-        #   - if results are there -> notify
         $http.post(url, data).then (res) ->
           if not data.aborted
             queue.splice queue.indexOf(entry), 1

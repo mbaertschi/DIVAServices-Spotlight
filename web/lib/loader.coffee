@@ -36,7 +36,6 @@ loader.get = (settings, callback) ->
   ), (err, result) ->
     logger.log 'debug', "#{settings.retries} attempts failed with error=#{err}", 'Loader' if err?
     callback err, result
-
 # ---
 # **loader.post**</br>
 # Make a POST request to a remote host</br>
@@ -72,7 +71,7 @@ _load = (settings, callback) ->
   request options, (err, res, body) ->
     return callback err if err?
 
-    if res.statusCode isnt 200
+    if !(res.statusCode in [200, 202])
       return callback res.statusCode
 
     callback null, body

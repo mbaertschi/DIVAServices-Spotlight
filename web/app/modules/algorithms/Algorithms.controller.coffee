@@ -11,7 +11,6 @@ do ->
     vm = @
     vm.algorithms = algorithmsPrepService.algorithms
 
-    console.log 'algorithms: ' + JSON.stringify(vm.algorithms)
     vm.tableOptions =
       data: vm.algorithms
       columns: [

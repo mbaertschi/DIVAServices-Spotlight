@@ -7,6 +7,7 @@
 # Copyright &copy; Michael Bärtschi, MIT Licensed.
 
 # Module dependencies
+md5         = require 'md5'
 multer      = require 'multer'
 fs          = require 'fs-extra'
 nconf       = require 'nconf'
@@ -34,6 +35,7 @@ uploader = exports = module.exports = class Uploader
         fs.ensureDirSync newPath
         newPath
       onFileUploadComplete: (file, req, res) ->
+        md5String = md5(fs.readFileSync(file.path, 'base64'))
         Image = mongoose.model 'Image'
         url = file.path.replace 'public', ''
 
@@ -50,6 +52,7 @@ uploader = exports = module.exports = class Uploader
           extension: file.extension
           url: url
           path: file.path
+          md5: md5String
 
         res.imageData = image
 
