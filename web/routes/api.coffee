@@ -79,6 +79,7 @@ api = exports = module.exports = (router, poller) ->
     fields =
       name: true
       description: true
+      type: true
       url: true
       host: true
       _lastChange: true

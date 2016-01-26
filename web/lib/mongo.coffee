@@ -63,6 +63,7 @@ mongo = exports = module.exports = class Mongo
     fields =
       name: true
       description: true
+      type: true
       url: true
       host: true
 
@@ -82,6 +83,7 @@ mongo = exports = module.exports = class Mongo
     fields =
       name: true
       description: true
+      type: true
       url: true
       host: true
 
