@@ -270,6 +270,7 @@ api = exports = module.exports = (router, poller) ->
                 json: true
             loader.get settings, (err, result) ->
               images = []
+              #if image available add the md5 information
               if(result.imageAvailable)
                 imageBody =
                   type: 'md5'
@@ -279,6 +280,7 @@ api = exports = module.exports = (router, poller) ->
                   type: 'image'
                   value: base64Image
               images.push imageBody
+              #create the request body
               body =
                 inputs: params.inputs
                 highlighter: params.highlighter
@@ -290,7 +292,7 @@ api = exports = module.exports = (router, poller) ->
                   headers: {}
                   method: 'POST'
                   json: true
-
+              #execute POST request to start execution on the backend
               loader.post settings, body, (err, result) ->
                 if err?
                   if _.isNumber err
@@ -300,6 +302,7 @@ api = exports = module.exports = (router, poller) ->
                 else if not result?
                   res.status(500).json error: 'no response received'
                 else
+                  #
                   async.waterfall [
                     (callback) ->
                       finished = false
@@ -310,14 +313,13 @@ api = exports = module.exports = (router, poller) ->
                           headers: {}
                           method: 'GET'
                           json: true
+                      #poll in 5 second intervals for the results
                       async.doUntil  ((cb) ->
                         loader.get settings, (err, result) ->
                           if result.status is 'done'
-                            logger.log 'debug', 'result ready 1'
                             finished = true
                             cb null, result
                           else
-                            logger.log 'debug', 'result not ready'
                             setTimeout ( ->
                               cb null, result
                               return
@@ -325,10 +327,9 @@ api = exports = module.exports = (router, poller) ->
                         ),(->
                           finished == true
                         ),(err,result) ->
-                          logger.log 'debug', 'result ready 2'
                           callback err, result
+                    #process the result
                     (result, callback) ->
-                      logger.log 'info', result
                       if result?.outputImage? then resPayloadHasImage = true
                       processResponse result, (err, resultProcessed) ->
                         if err?
@@ -338,7 +339,7 @@ api = exports = module.exports = (router, poller) ->
                           resultProcessed.resPayload =
                             output: result.output
                             highlighters: result.highlighters
-                          if body.image? then body.image = 'Base64 encoded image'
+                          if body.images[0]? and body.images[0].type is 'image' then body.images[0].value = 'Base64 encoded image'
                           if resPayloadHasImage then resultProcessed.resPayload.image = result.outputImage
                           callback null,resultProcessed
                   ], (err, result) ->
@@ -361,6 +362,18 @@ api = exports = module.exports = (router, poller) ->
     params = req.body
     serverName = params.serverName.split('_')[0] + '_' + new Date().getTime()
     path = params.path.replace params.serverName, serverName
+    if(params.image.startsWith('http://'))
+      #download image
+      request.get params.image, (error, response, body) ->
+        if not error and response.statusCode is 200
+           buffer = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64')
+           base64Image = buffer
+           saveImage base64Image, params, path, serverName, req, res
+    else
+      base64Image = params.image
+      saveImage base64Image, params, path, serverName, req, res
+
+  saveImage = (base64Image, params, path, serverName, req,  res) ->
     image =
       serverName: serverName
       clientName: params.clientName
@@ -369,9 +382,8 @@ api = exports = module.exports = (router, poller) ->
       type: 'image/png'
       path: path
       url: params.url.replace params.serverName, serverName
-      md5: md5(params.base64Image)
+      md5: md5(base64Image)
 
-    base64Image = params.base64Image
     utils.writeImage image, base64Image, (err, size) ->
       if err?
         res.status(500).json error: 'Could not save image to disk'

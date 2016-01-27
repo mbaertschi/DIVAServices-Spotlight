@@ -35,7 +35,7 @@ do ->
       $http.delete('/upload', params: serverName: serverName).then (res) ->
         res
 
-    saveImage = (image, base64Image) ->
+    saveImage = (image, imageToSave) ->
       data =
         transformRequest: angular.identity
         headers:
@@ -44,7 +44,7 @@ do ->
       formData = new FormData
       angular.forEach image, (value, key) ->
         formData.append(key, value)
-      formData.append('base64Image', base64Image)
+      formData.append('image', imageToSave)
       $http.post('/api/image', formData, data).then (res) ->
         res
 

@@ -26,8 +26,8 @@ do ->
       if vm.withSVG then vm.withSVG = 0 else vm.withSVG = 1
 
     vm.saveImage = ->
-      if vm.withSVG then base64Image = vm.canvas.toDataURL() else base64Image = vm.imageObject.dataUrl
-      diaImagesService.saveImage(vm.imageObject, base64Image).then (res) ->
+      if vm.withSVG then image = vm.canvas.toDataURL() else image = vm.imageObject.dataUrl
+      diaImagesService.saveImage(vm.imageObject, image).then (res) ->
         toastr.info 'Successfully saved image', 'Info'
       , (err) -> toastr.error 'Could not save image', 'Error'
 
