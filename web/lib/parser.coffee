@@ -37,14 +37,14 @@ parser.parseRoot = (structure, callback) ->
     valid = false
   finally
     if valid
-      hostErrors = validator.validate(structure, nconf.get('parser:root:hostSchema')).errors
+      hostErrors = validator.validate(structure, nconf.get('hostSchema')).errors
       if hostErrors.length
         callback hostErrors[0].message
       else
         _structure =
           records: []
         async.each structure, (algorithm, next) ->
-          algorithmErrors = validator.validate(algorithm, nconf.get('parser:root:algorithmSchema')).errors
+          algorithmErrors = validator.validate(algorithm, nconf.get('algorithmSchema')).errors
           if algorithmErrors.length
             logger.log 'info', "skipping algorithm=#{algorithm.name} error=#{algorithmErrors[0].message} view=root view", 'Parser'
             next()
@@ -90,7 +90,7 @@ parser.parseDetails = (algorithm, callback) ->
         valid = false
       finally
         if valid
-          algorithmErrors = validator.validate(details, nconf.get('parser:details:algorithmSchema')).errors
+          algorithmErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
           if algorithmErrors.length
             values = algorithmErrors[0].stack.split('.')
             errorMessage = values[values.length-1]

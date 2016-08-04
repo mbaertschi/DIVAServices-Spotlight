@@ -131,7 +131,7 @@ api = exports = module.exports = (router, poller) ->
             valid = false
           finally
             if valid
-              algorithmDetailsErrors = validator.validate(details, nconf.get('parser:details:algorithmSchema')).errors
+              algorithmDetailsErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
               if algorithmDetailsErrors.length
                 res.status(400).json error: 'invalid json structure'
               else
@@ -203,7 +203,7 @@ api = exports = module.exports = (router, poller) ->
       if result is 'ERROR'
         logger.log 'debug', "Remote host processing error for algorithm=#{params.algorithm.name}", 'API'
         return callback { status: 400, error: 'Remote host processing error'}
-      responseErrors = validator.validate(result, nconf.get('parser:details:responseSchema')).errors
+      responseErrors = validator.validate(result, nconf.get('responseSchema')).errors
       if responseErrors.length
         logger.log 'debug', "algorithm response is invalid object=#{JSON.stringify(result)}", 'API'
         logger.log 'debug', responseErrors[0]
@@ -215,9 +215,11 @@ api = exports = module.exports = (router, poller) ->
           serverName = params.image.serverName.replace '.png', '_output_' + new Date().getTime() + '.png'
         path = nconf.get('web:uploader:destination') + req.sessionID + '/' + serverName
 
+        logger.log 'debug', JSON.stringify(params), 'API'
+
         image =
           serverName: serverName
-          clientName: params.algorithm.name.trim().replace(' ', '_') + '_' + new Date().getTime() + '.png'
+          clientName: params.algorithm.general.name.trim().replace(' ', '_') + '_' + new Date().getTime() + '.png'
           sessionId: req.sessionID
           extension: 'png'
           type: 'image/png'
@@ -343,6 +345,7 @@ api = exports = module.exports = (router, poller) ->
                           if resPayloadHasImage then resultProcessed.resPayload.image = result.outputImage
                           callback null,resultProcessed
                   ], (err, result) ->
+                    logger.log 'trace', result
                     res.status(200).json result
 
 

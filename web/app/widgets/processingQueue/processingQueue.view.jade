@@ -9,7 +9,7 @@
       a
         span.thumb
           img(ng-src='{{entry.item.image.thumbUrl}}')
-        span.name.text-capitalize.text-muted {{entry.item.algorithm.name}}
+        span.name.text-capitalize.text-muted {{entry.item.algorithm.general.name}}
         span.running-information.text-muted(ng-if='!entry.item.started') [waiting]
         span.running-information.text-muted(ng-if='entry.item.started', moment-duration='entry.item.start')
         span.remove-icon.text-danger.i.fa.fa-times-circle(ng-click='cancel(entry)')

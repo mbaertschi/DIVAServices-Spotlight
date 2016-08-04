@@ -8,8 +8,8 @@
         a#link(ui-sref='algorithms') here
         | to go back to algorithms page.
     .col-md-12(ng-if='vm.algorithm')
-      panel(heading='{{vm.algorithm.name}}', icon='info-circle', go-to='vm.goBack()', go-to-text='Go back')
-        table.table-responsive(ng-if='vm.infos.length')
+      panel(heading='{{vm.algorithm.general.name}}', icon='info-circle', go-to='vm.goBack()', go-to-text='Go back')
+        table.table-responsive(ng-if='vm.algorithm')
           table.table.table-bordered.table-striped
             tbody(ng-repeat='info in vm.infos')
               tr(ng-repeat='(key, val) in info')

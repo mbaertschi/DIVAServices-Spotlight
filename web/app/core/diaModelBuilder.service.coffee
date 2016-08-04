@@ -25,7 +25,7 @@ do ->
       data.algorithm.id = id
 
       if algorithm.description? then data.infos.push description: algorithm.description
-      angular.forEach algorithm.info, (value, key) ->
+      angular.forEach algorithm.general, (value, key) ->
         obj = {}
         if key is 'expectedRuntime' and not isNaN(parseFloat(value))
           runtime = parseFloat value
@@ -34,7 +34,6 @@ do ->
         else
           obj[key] = value
         data.infos.push obj
-
       # prepare input information
       angular.forEach algorithm.input, (entry) ->
         key = Object.keys(entry)[0]
@@ -97,8 +96,8 @@ do ->
         algorithm:
           id: input.algorithm.id
           uuid: input.uuid
-          name: input.algorithm.name
-          description: input.algorithm.description
+          name: input.algorithm.general.name
+          description: input.algorithm.general.description
         submit:
           start: input.start
           end: input.end

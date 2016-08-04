@@ -77,7 +77,7 @@ do ->
         item.duration = duration.toFixed(2)
         item.uuid = end.getTime()
         $rootScope.finished++
-        toastr.info "Algorithm #{item.algorithm.name} is done", 'Info'
+        toastr.info "Algorithm #{item.algorithm.general.name} is done", 'Info'
         results.push diaModelBuilder.prepareResultForDatatable(item, res.data).result
       , (err) ->
         if err.data? then code = err.data.code else code = 500
