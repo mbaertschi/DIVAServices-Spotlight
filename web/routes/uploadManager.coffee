@@ -11,6 +11,8 @@
 mongoose  = require 'mongoose'
 fs        = require 'fs-extra'
 logger    = require '../lib/logger'
+loader    = require '../lib/loader'
+nconf     = require 'nconf'
 async     = require 'async'
 utils     = require './utils'
 
@@ -78,17 +80,39 @@ uploadManager = exports = module.exports = (router) ->
     query =
       sessionId: res.imageData.sessionId
       serverName: res.imageData.serverName
-    utils.processImage res.imageData, ->
-      utils.convertToPng res.imageData, (err, image) ->
-        utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
-          image.thumbPath = thumbPath
-          image.thumbUrl = thumbUrl
-          Image = mongoose.model 'Image'
-          Image.update query, image, upsert: true, (err) ->
-            if err? then logger.log 'info', "could not store image=#{image.serverName} error=#{err}", 'UploadManager'
-            res.imageData = image
-            res.status(200).json res.imageData
-          
+    
+    Host = mongoose.model 'Host'
+    Host.find {}, (err, hosts) ->
+      host = hosts[0]
+      
+      body =
+        images: [
+          {
+            type: "image"
+            value: res.imageData.base64
+          }
+        ]
+      settings =
+        options:
+          uri: host.url + '/upload'
+          timeout: nconf.get 'server:timeout'
+          headers: {}
+          method: 'POST'
+          json: true
+    
+      loader.post settings, body, (err, result) ->
+        utils.processImage res.imageData, ->
+          utils.convertToPng res.imageData, (err, image) ->
+            utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+              image.thumbPath = thumbPath
+              image.thumbUrl = thumbUrl
+              image.coll = result.collection
+              Image = mongoose.model 'Image'
+              Image.update query, image, upsert: true, (err) ->
+                if err? then logger.log 'info', "could not store image=#{image.serverName} error=#{err}", 'UploadManager'
+                res.imageData = image
+                res.status(200).json res.imageData
+              
 
   # ---
   # **router.put** `/upload`

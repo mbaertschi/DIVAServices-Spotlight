@@ -73,5 +73,4 @@ _load = (settings, callback) ->
 
     if !(res.statusCode in [200, 202])
       return callback res.statusCode
-
     callback null, body

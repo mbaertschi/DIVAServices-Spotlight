@@ -13,6 +13,7 @@ ImageSchema = mongoose.Schema
   sessionId: String
   serverName: String
   clientName: String
+  coll: String
   size: String
   type: String
   extension: String

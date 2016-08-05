@@ -5,8 +5,8 @@ do ->
     vm = @
     vm.canvas = null
     vm.highlighters = vm.outputData?.highlighters or null
-    vm.imageObject = vm.outputData?.image or null
-    vm.image = vm.outputData?.image?.dataUrl or vm.outputData?.image?.url or null
+    vm.imageObject = vm.outputData?.output[0].file or null
+    vm.image = vm.outputData?.output[0].file.url or null
     vm.output = vm.outputData?.output or null
     vm.paperScope = null
     vm.strokeWidth = null

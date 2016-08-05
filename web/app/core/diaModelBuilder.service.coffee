@@ -42,12 +42,13 @@ do ->
           data.highlighter = entry.highlighter
         else
           # setup inputs
-          data.inputs.push entry
-          switch key
-            when 'select'
-              data.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
-            else
-              data.model[entry[key].name] = entry[key].options.default or null
+          if(entry.userdefined)
+            data.inputs.push entry
+            switch key
+              when 'select'
+                data.model[entry[key].name] = entry[key].options.values[entry[key].options.default]
+              else
+                data.model[entry[key].name] = entry[key].options.default or null
 
       data: data
 

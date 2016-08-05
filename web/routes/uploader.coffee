@@ -53,6 +53,7 @@ uploader = exports = module.exports = class Uploader
           url: url
           path: file.path
           md5: md5String
+          base64: fs.readFileSync(file.path, 'base64')
 
         res.imageData = image
 

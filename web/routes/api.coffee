@@ -160,13 +160,6 @@ api = exports = module.exports = (router, poller) ->
     params = req.body
     return res.status(400).send() if not params.algorithm or not params.image or not params.inputs or not params.highlighter
 
-    getImageAsBase64 = (path, callback) ->
-      fs.readFile path, (err, image) ->
-        if err?
-          callback "could not base64 encode image"
-        else
-          callback null, image.toString('base64')
-
     storeImage = (result, image, callback) ->
       logger.log 'info', result.outputImage
       request.get result.outputImage , (error, response, body) ->
@@ -258,95 +251,87 @@ api = exports = module.exports = (router, poller) ->
         urlObj = url.parse(algorithm.url)
         baseUrl = urlObj.protocol + '//' + urlObj.host
 
-        getImageAsBase64 params.image.path, (err, base64Image) ->
+        images = []
+        #if image available add the md5 information
+        imageBody =
+          type: 'collection'
+          value: params.image.coll
+        
+        images.push imageBody
+        #create the request body
+        body =
+          inputs: params.inputs
+          highlighter: params.highlighter
+          images: images
+        settings =
+          options:
+            uri: algorithm.url
+            timeout: nconf.get 'server:timeout'
+            headers: {}
+            method: 'POST'
+            json: true
+        #execute POST request to start execution on the backend
+        loader.post settings, body, (err, result) ->
           if err?
-            res.status(500).json error: err
+            if _.isNumber err
+              logger.log 'debug', err
+              res.status(err).send()
+            else
+              logger.log 'debug', err
+              res.status(500).json err
+          else if not result?
+            res.status(500).json error: 'no response received'
           else
-            #check if image is on server
-            settings =
-              options:
-                uri: baseUrl + '/image/check/'+md5(base64Image)
-                timeout: nconf.get 'server:timeout'
-                headers: {}
-                method: 'GET'
-                json: true
-            loader.get settings, (err, result) ->
-              images = []
-              #if image available add the md5 information
-              if(result.imageAvailable)
-                imageBody =
-                  type: 'md5'
-                  value: md5(base64Image)
-              else
-                imageBody =
-                  type: 'image'
-                  value: base64Image
-              images.push imageBody
-              #create the request body
-              body =
-                inputs: params.inputs
-                highlighter: params.highlighter
-                images: images
-              settings =
-                options:
-                  uri: algorithm.url
-                  timeout: nconf.get 'server:timeout'
-                  headers: {}
-                  method: 'POST'
-                  json: true
-              #execute POST request to start execution on the backend
-              loader.post settings, body, (err, result) ->
-                if err?
-                  if _.isNumber err
-                    res.status(err).send()
+            #
+            async.waterfall [
+              (callback) ->
+                finished = false
+                settings =
+                  options:
+                    uri: result.results[0].resultLink
+                    timeout: nconf.get 'server:timeout'
+                    headers: {}
+                    method: 'GET'
+                    json: true
+                #poll in 5 second intervals for the results
+                async.doUntil  ((cb) ->
+                  loader.get settings, (err, result) ->
+                    if result.status is 'done'
+                      finished = true
+                      cb null, result
+                    else
+                      setTimeout ( ->
+                        cb null, result
+                        return
+                      ), 5000
+                ),(->
+                  finished == true
+                ),(err,result) ->
+                  callback err, result
+                  #process the result
+              (result, callback) ->
+
+                #check if a visualization file is available
+                files = _.filter(result.output, (entry) ->
+                  return _.has(entry, 'file')
+                )
+                visualization = _.filter(files, (file) ->
+                  return file.file.options.visualization
+                )
+                if visualization.size > 0 then resPayloadHasImage = true
+                processResponse result, (err, resultProcessed) ->
+                  if err?
+                    res.status(err.status).json err.error
                   else
-                    res.status(500).json err
-                else if not result?
-                  res.status(500).json error: 'no response received'
-                else
-                  #
-                  async.waterfall [
-                    (callback) ->
-                      finished = false
-                      settings =
-                        options:
-                          uri: result.results[0].resultLink
-                          timeout: nconf.get 'server:timeout'
-                          headers: {}
-                          method: 'GET'
-                          json: true
-                      #poll in 5 second intervals for the results
-                      async.doUntil  ((cb) ->
-                        loader.get settings, (err, result) ->
-                          if result.status is 'done'
-                            finished = true
-                            cb null, result
-                          else
-                            setTimeout ( ->
-                              cb null, result
-                              return
-                            ), 5000
-                        ),(->
-                          finished == true
-                        ),(err,result) ->
-                          callback err, result
-                    #process the result
-                    (result, callback) ->
-                      if result?.outputImage? then resPayloadHasImage = true
-                      processResponse result, (err, resultProcessed) ->
-                        if err?
-                          res.status(err.status).json err.error
-                        else
-                          resultProcessed.reqPayload = body
-                          resultProcessed.resPayload =
-                            output: result.output
-                            highlighters: result.highlighters
-                          if body.images[0]? and body.images[0].type is 'image' then body.images[0].value = 'Base64 encoded image'
-                          if resPayloadHasImage then resultProcessed.resPayload.image = result.outputImage
-                          callback null,resultProcessed
-                  ], (err, result) ->
-                    logger.log 'trace', result
-                    res.status(200).json result
+                    resultProcessed.reqPayload = body
+                    resultProcessed.resPayload =
+                      output: result.output
+                      highlighters: result.highlighters
+                    if resPayloadHasImage then resultProcessed.resPayload.image = visualization[0]
+                    callback null,resultProcessed
+              ], (err, result) ->
+                logger.log 'trace', result
+                res.status(200).json result
 
 
 
@@ -377,34 +362,56 @@ api = exports = module.exports = (router, poller) ->
       saveImage base64Image, params, path, serverName, req, res
 
   saveImage = (base64Image, params, path, serverName, req,  res) ->
-    image =
-      serverName: serverName
-      clientName: params.clientName
-      sessionId: req.sessionID
-      extension: 'png'
-      type: 'image/png'
-      path: path
-      url: params.url.replace params.serverName, serverName
-      md5: md5(base64Image)
+    Host = mongoose.model 'Host'
+    Host.find {}, (err, hosts) ->
+      host = hosts[0]
+      
+      body =
+        images: [
+          {
+            type: "image"
+            value: base64Image
+          }
+        ]
+      settings =
+        options:
+          uri: algorithm.url
+          timeout: nconf.get 'server:timeout'
+          headers: {}
+          method: 'POST'
+          json: true
+      
+      loader.post settings, body, (err, result) ->
 
-    utils.writeImage image, base64Image, (err, size) ->
-      if err?
-        res.status(500).json error: 'Could not save image to disk'
-      else
-        image.size = size
-        utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
+        image =
+          serverName: serverName
+          clientName: params.clientName
+          coll: result.collection
+          sessionId: req.sessionID
+          extension: 'png'
+          type: 'image/png'
+          path: path
+          url: params.url.replace params.serverName, serverName
+          md5: md5(base64Image)
+
+        utils.writeImage image, base64Image, (err, size) ->
           if err?
-            callback { status: 500, error: err}
+            res.status(500).json error: 'Could not save image to disk'
           else
-            image.thumbPath = thumbPath
-            image.thumbUrl = thumbUrl
-            Image = mongoose.model 'Image'
-            query =
-              sessionId: req.sessionID
-              serverName: image.serverName
-            Image.update query, image, upsert: true, (err) ->
+            image.size = size
+            utils.createThumbnail image, (err, thumbPath, thumbUrl) ->
               if err?
-                logger.log 'warn', 'could not save image', 'API'
-                res.status(500).json 'Could not save image to mongoDB'
+                callback { status: 500, error: err}
               else
-                res.status(200).send()
+                image.thumbPath = thumbPath
+                image.thumbUrl = thumbUrl
+                Image = mongoose.model 'Image'
+                query =
+                  sessionId: req.sessionID
+                  serverName: image.serverName
+                Image.update query, image, upsert: true, (err) ->
+                  if err?
+                    logger.log 'warn', 'could not save image', 'API'
+                    res.status(500).json 'Could not save image to mongoDB'
+                  else
+                    res.status(200).send()
