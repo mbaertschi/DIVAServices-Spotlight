@@ -9,7 +9,8 @@ do ->
       drawCircle: drawCircle
       drawRectangle: drawRectangle
       drawPoint: drawPoint
-      drawLine: drawLine
+      drawPolygon: drawPolygon
+      drawArray: drawArray
 
     setup = (type, vm) ->
       vm.paperScope = new paper.PaperScope
@@ -37,8 +38,10 @@ do ->
               @drawRectangle vm, highlighter.rectangle
             when 'point'
               @drawPoint vm, highlighter.point
-            when 'line'
-              @drawLine vm, highlighter.line
+            when 'polygon'
+              @drawPolygon vm, highlighter.polygon
+            when 'array'
+              @drawArray vm, highlighter.array
             else null
         callback()
       else
@@ -87,23 +90,37 @@ do ->
       path.strokeWidth = 1
       path.scale vm.scale, [0, 0]
 
-    drawLine = (vm, line) ->
+    drawPolygon = (vm, polygon) ->
       path = new vm.paperScope.Path
-      if line.strokeColor?
-        color = line.strokeColor
+      if polygon.strokeColor?
+        color = polygon.strokeColor
         path.strokeColor = new vm.paperScope.Color color[0], color[1], color[2]
       else
         path.strokeColor = vm.strokeColor
-      angular.forEach line.segments, (segment) ->
+      angular.forEach polygon.segments, (segment) ->
         x = segment[0]
         y = segment[1]
         @.add new vm.paperScope.Point x, y
       , path
       path.scale vm.scale, [0, 0]
       path.closed = false
+    
+    drawArray = (vm, array) ->
+      path = new vm.paperScope.Path
+      if array.options.strokeColor?
+        color = array.options.strokeColor
+        path.strokeColor = new vm.paperScope.Color color[0], color[1], color[2]
+      else
+        path.strokeColor = vm.strokeColor
+      angular.forEach array.values[0], (values) ->
+        x = values[0]
+        y = values[1]
+        @.add new vm.paperScope.Point x,y
+      , path
+      path.scale vm.scale, [0, 0]
+      path.closed = false
 
     factory()
-
   angular.module('app.results')
     .factory 'diaPaperScopeManager', diaPaperScopeManager
 

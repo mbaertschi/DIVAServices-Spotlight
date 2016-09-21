@@ -1,6 +1,6 @@
 {
   "algorithmSchema": {
-    "id": "algorithmSchema",
+    "id": "#algorithmSchema",
     "$schema": "http://json-schema.org/schema#",
     "description": "schema for an algorithm overview entry",
     "type": "object",
@@ -26,6 +26,7 @@
         "maxLength": 50
       },
       "url": {
+        "type":"string",
         "format": "uri"
       }
     },

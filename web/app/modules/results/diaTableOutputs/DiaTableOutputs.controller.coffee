@@ -4,9 +4,9 @@ do ->
   DiaTableOutputsController = ($timeout, diaImagesService, diaPaperScopeManager, toastr) ->
     vm = @
     vm.canvas = null
-    vm.highlighters = vm.outputData?.highlighters or null
-    vm.imageObject = vm.outputData?.output[0].file or null
-    vm.image = vm.outputData?.output[0].file.url or null
+    vm.highlighters = vm.outputData?.highlighter or null
+    vm.imageObject = vm.outputData?.visualization?.file? or null
+    vm.image = vm.outputData?.visualization?.file?.url or null
     vm.output = vm.outputData?.output or null
     vm.paperScope = null
     vm.strokeWidth = null

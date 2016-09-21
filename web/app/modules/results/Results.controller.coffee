@@ -10,7 +10,6 @@ do ->
   ResultsPageController = ($scope, $state, diaProcessingQueue) ->
     vm = @
     vm.results = diaProcessingQueue.getResults()
-
     vm.delete = (entry) ->
       angular.forEach vm.results, (result, index) ->
         if entry.algorithm.uuid is result.algorithm.uuid

@@ -146,8 +146,7 @@ api = exports = module.exports = (router, poller) ->
   #     * *algorithm* `<Object>` the algorithm to use
   #     * *image* `<Object>` the image to process
   #     * *inputs* `<Object>` additional information for the algorithm
-  #     * *highlighter* `<Object>` the selected region
-  #   * return: the result of the algorithm applied on the image with the given additional information
+    #   * return: the result of the algorithm applied on the image with the given additional information
   #
   # The algorithm and image objects must conform to the mongoDB schemas specified for them. The image will
   # be sent to the remote host as base64 encoded image along with the other information. The response from
@@ -158,7 +157,7 @@ api = exports = module.exports = (router, poller) ->
   # response)
   router.post '/api/algorithm', (req, res) ->
     params = req.body
-    return res.status(400).send() if not params.algorithm or not params.image or not params.inputs or not params.highlighter
+    return res.status(400).send() if not params.algorithm or not params.image or not params.inputs
 
     storeImage = (result, image, callback) ->
       logger.log 'info', result.outputImage
@@ -256,12 +255,11 @@ api = exports = module.exports = (router, poller) ->
         imageBody =
           type: 'collection'
           value: params.image.coll
-        
+
         images.push imageBody
         #create the request body
         body =
           inputs: params.inputs
-          highlighter: params.highlighter
           images: images
         settings =
           options:
@@ -274,10 +272,10 @@ api = exports = module.exports = (router, poller) ->
         loader.post settings, body, (err, result) ->
           if err?
             if _.isNumber err
-              logger.log 'debug', err
+              logger.log 'error', err
               res.status(err).send()
             else
-              logger.log 'debug', err
+              logger.log 'error', err
               res.status(500).json err
           else if not result?
             res.status(500).json error: 'no response received'
@@ -365,7 +363,7 @@ api = exports = module.exports = (router, poller) ->
     Host = mongoose.model 'Host'
     Host.find {}, (err, hosts) ->
       host = hosts[0]
-      
+
       body =
         images: [
           {
@@ -380,7 +378,7 @@ api = exports = module.exports = (router, poller) ->
           headers: {}
           method: 'POST'
           json: true
-      
+
       loader.post settings, body, (err, result) ->
 
         image =

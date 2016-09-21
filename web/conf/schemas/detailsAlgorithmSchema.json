@@ -21,7 +21,19 @@
         "maxLength": 25
       },
       "highlighter": {
-        "enum": ["polygon", "rectangle", "circle", "line"]
+        "type":"object",
+        "required":[
+          "type",
+          "userdefined"
+        ],
+        "properties":{
+          "userdefined":{
+            "type":"boolean"
+          },
+          "type":{
+            "enum": ["polygon", "rectangle", "circle", "line"]
+          }
+        }
       },
       "description": {
         "type": "string",
@@ -32,9 +44,13 @@
         "type": "object",
         "required": [
           "name",
-          "options"
+          "options",
+          "userdefined"
         ],
         "properties": {
+          "userdefined":{
+            "type":"boolean"
+          },
           "name": {
             "$ref": "#/definitions/name"
           },
@@ -73,11 +89,15 @@
         "type": "object",
         "required": [
           "name",
-          "options"
+          "options",
+          "userdefined"
         ],
         "properties": {
           "name": {
             "$ref": "#/definitions/name"
+          },
+          "userdefined":{
+            "type":"boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -111,11 +131,15 @@
         "type": "object",
         "required": [
           "name",
-          "options"
+          "options",
+          "userdefined"
         ],
         "properties": {
           "name": {
             "$ref": "#/definitions/name"
+          },
+          "userdefined":{
+            "type":"boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -153,11 +177,15 @@
         "type": "object",
         "required": [
           "name",
-          "options"
+          "options",
+          "userdefined"
         ],
         "properties": {
           "name": {
             "$ref": "#/definitions/name"
+          },
+          "userdefined":{
+            "type":"boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -263,6 +291,9 @@
             },
             "resultFile":{
               "$ref": "#/definitions/nonuser"
+            },
+            "mcr2014b":{
+              "$ref":"#/definitions/nonuser"
             }
           },
           "additionalProperties": false
