@@ -100,9 +100,12 @@ do ->
         if 'array' of entry
           if entry.array.options? and entry.array.options.visualization
             highlighter.push(entry)
+        if 'highlighter' of entry
+          highlighter.push.apply(highlighter, entry.highlighter)
 
       output['visualization'] = visualization
       output['highlighter'] = highlighter
+      console.log input
       result =
         algorithm:
           id: input.algorithm.id
@@ -121,14 +124,14 @@ do ->
         output: output
 
       result.output.uuid = input.uuid
-      
+      console.log result
       if angular.equals {}, result.input.inputs then result.input.inputs = null
       if angular.equals {}, result.output.output then result.output.output = null
 
       
       if result.input.inputs == null
         result.input.highlighter = null
-      else if angular.equals {}, result.input.inputs.highlighter
+      else if not angular.isDefined result.input.inputs.highlighter 
         result.input.highlighter = null
       else
         parsedHighlighter = {}

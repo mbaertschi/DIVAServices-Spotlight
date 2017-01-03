@@ -26,6 +26,7 @@ do ->
       queue.splice queue.indexOf(entry), 1
       entry.item.aborted = true
       entry.defer.reject 'Canceled by user'
+      $http.delete('/api/algorithm/', entry.item)
 
     # processes entry
     exec = (entry) ->

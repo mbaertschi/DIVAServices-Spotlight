@@ -4,14 +4,14 @@
     "$schema": "http://json-schema.org/schema#",
     "description": "schema for an algorithm details view entry",
     "definitions": {
-      "nonuser":{
-        "type":"object",
-        "required":[
+      "nonuser": {
+        "type": "object",
+        "required": [
           "userdefined"
         ],
-        "properties":{
-          "userdefined":{
-            "type":"boolean"
+        "properties": {
+          "userdefined": {
+            "type": "boolean"
           }
         }
       },
@@ -21,17 +21,22 @@
         "maxLength": 25
       },
       "highlighter": {
-        "type":"object",
-        "required":[
+        "type": "object",
+        "required": [
           "type",
           "userdefined"
         ],
-        "properties":{
-          "userdefined":{
-            "type":"boolean"
+        "properties": {
+          "userdefined": {
+            "type": "boolean"
           },
-          "type":{
-            "enum": ["polygon", "rectangle", "circle", "line"]
+          "type": {
+            "enum": [
+              "polygon",
+              "rectangle",
+              "circle",
+              "line"
+            ]
           }
         }
       },
@@ -48,8 +53,8 @@
           "userdefined"
         ],
         "properties": {
-          "userdefined":{
-            "type":"boolean"
+          "userdefined": {
+            "type": "boolean"
           },
           "name": {
             "$ref": "#/definitions/name"
@@ -96,8 +101,8 @@
           "name": {
             "$ref": "#/definitions/name"
           },
-          "userdefined":{
-            "type":"boolean"
+          "userdefined": {
+            "type": "boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -138,8 +143,8 @@
           "name": {
             "$ref": "#/definitions/name"
           },
-          "userdefined":{
-            "type":"boolean"
+          "userdefined": {
+            "type": "boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -173,6 +178,35 @@
         },
         "additionalProperties": false
       },
+      "inputFile": {
+        "type": "object",
+        "required": [
+          "name",
+          "options"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "options": {
+            "type": "object",
+            "required": [
+              "required"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              },
+              "default": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "checkbox": {
         "type": "object",
         "required": [
@@ -184,8 +218,8 @@
           "name": {
             "$ref": "#/definitions/name"
           },
-          "userdefined":{
-            "type":"boolean"
+          "userdefined": {
+            "type": "boolean"
           },
           "description": {
             "$ref": "#/definitions/description"
@@ -216,9 +250,9 @@
       "input"
     ],
     "properties": {
-      "general":{
-        "type":"object",
-        "properties":{
+      "general": {
+        "type": "object",
+        "properties": {
           "name": {
             "type": "string",
             "minLength": 2,
@@ -280,20 +314,32 @@
             "checkbox": {
               "$ref": "#/definitions/checkbox"
             },
-            "inputImage":{
+            "inputFile": {
+              "$ref": "#/definitions/inputFile"
+            },
+            "inputImage": {
               "$ref": "#/definitions/nonuser"
             },
-            "outputFolder":{
+            "outputFolder": {
               "$ref": "#/definitions/nonuser"
             },
-            "inputFileExtension":{
+            "inputFileExtension": {
               "$ref": "#/definitions/nonuser"
             },
-            "resultFile":{
+            "resultFile": {
               "$ref": "#/definitions/nonuser"
             },
-            "mcr2014b":{
-              "$ref":"#/definitions/nonuser"
+            "mcr2014b": {
+              "$ref": "#/definitions/nonuser"
+            },
+            "host": {
+              "$ref": "#/definitions/nonuser"
+            },
+            "json": {
+              "$ref": "#/definitions/nonuser"
+            },
+            "outputImage": {
+              "$ref": "#/definitions/nonuser"
             }
           },
           "additionalProperties": false

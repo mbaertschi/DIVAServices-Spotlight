@@ -112,7 +112,7 @@ do ->
         path.strokeColor = new vm.paperScope.Color color[0], color[1], color[2]
       else
         path.strokeColor = vm.strokeColor
-      angular.forEach array.values[0], (values) ->
+      angular.forEach array.values, (values) ->
         x = values[0]
         y = values[1]
         @.add new vm.paperScope.Point x,y

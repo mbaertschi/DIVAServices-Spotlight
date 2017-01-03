@@ -139,6 +139,12 @@ api = exports = module.exports = (router, poller) ->
             else
               res.status(400).json error: 'invalid json structure'
 
+
+  #TODO Fix this route to properly delete the running process
+  router.delete '/api/algorithm', (req, res) ->
+    params = req.body
+    params.started = false
+    res.status(200).send
   # ---
   # **router.post** `/api/algorithm`
   #   * method: POST
@@ -146,7 +152,7 @@ api = exports = module.exports = (router, poller) ->
   #     * *algorithm* `<Object>` the algorithm to use
   #     * *image* `<Object>` the image to process
   #     * *inputs* `<Object>` additional information for the algorithm
-    #   * return: the result of the algorithm applied on the image with the given additional information
+  #   * return: the result of the algorithm applied on the image with the given additional information
   #
   # The algorithm and image objects must conform to the mongoDB schemas specified for them. The image will
   # be sent to the remote host as base64 encoded image along with the other information. The response from
@@ -283,7 +289,7 @@ api = exports = module.exports = (router, poller) ->
             #
             async.waterfall [
               (callback) ->
-                finished = false
+                logger.log 'info', 'url: '  + result.results[0].resultLink
                 settings =
                   options:
                     uri: result.results[0].resultLink
@@ -294,42 +300,53 @@ api = exports = module.exports = (router, poller) ->
                 #poll in 5 second intervals for the results
                 async.doUntil  ((cb) ->
                   loader.get settings, (err, result) ->
+                    logger.log 'info', 'status: ' + JSON.stringify(result.status)
                     if result.status is 'done'
-                      finished = true
-                      cb null, result
+                      params.started  = false
+                      if(result.statusCode == 500)
+                        error =
+                          status: 500
+                          error: result.statusMessage
+                        cb error, null
+                      else
+                        cb null, result
                     else
                       setTimeout ( ->
                         cb null, result
                         return
                       ), 5000
                 ),(->
-                  finished == true
+                  params.started == false
                 ),(err,result) ->
-                  callback err, result
+                  callback null, err, result
                   #process the result
-              (result, callback) ->
-
-                #check if a visualization file is available
-                files = _.filter(result.output, (entry) ->
-                  return _.has(entry, 'file')
-                )
-                visualization = _.filter(files, (file) ->
-                  return file.file.options.visualization
-                )
-                if visualization.size > 0 then resPayloadHasImage = true
-                processResponse result, (err, resultProcessed) ->
-                  if err?
-                    res.status(err.status).json err.error
-                  else
-                    resultProcessed.reqPayload = body
-                    resultProcessed.resPayload =
-                      output: result.output
-                      highlighters: result.highlighters
-                    if resPayloadHasImage then resultProcessed.resPayload.image = visualization[0]
-                    callback null,resultProcessed
+              (error, result, callback) ->
+                if(error?)
+                  res.status(error.status).json error.error
+                  callback error, null
+                else
+                  #check if a visualization file is available
+                  files = _.filter(result.output, (entry) ->
+                    return _.has(entry, 'file')
+                  )
+                  visualization = _.filter(files, (file) ->
+                    return file.file.options.visualization
+                  )
+                  if visualization.size > 0 then resPayloadHasImage = true
+                  processResponse result, (err, resultProcessed) ->
+                    if err?
+                      res.status(err.status).json err.error
+                    else
+                      resultProcessed.reqPayload = body
+                      resultProcessed.resPayload =
+                        output: result.output
+                        highlighters: result.highlighters
+                      if resPayloadHasImage then resultProcessed.resPayload.image = visualization[0]
+                      callback null,resultProcessed
               ], (err, result) ->
-                logger.log 'trace', result
-                res.status(200).json result
+                if(!err?)
+                  logger.log 'trace', result
+                  res.status(200).json result
 
 
 
