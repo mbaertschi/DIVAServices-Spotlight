@@ -259,14 +259,13 @@ api = exports = module.exports = (router, poller) ->
         images = []
         #if image available add the md5 information
         imageBody =
-          type: 'collection'
-          value: params.image.coll
+          inputImage: params.image.coll + "/*"
 
         images.push imageBody
         #create the request body
         body =
-          inputs: params.inputs
-          images: images
+          parameters: params.inputs
+          data: images
         settings =
           options:
             uri: algorithm.url
@@ -294,13 +293,14 @@ api = exports = module.exports = (router, poller) ->
                   options:
                     uri: result.results[0].resultLink
                     timeout: nconf.get 'server:timeout'
-                    headers: {}
+                    headers:
+                      'Content-Type': 'application/json'
                     method: 'GET'
                     json: true
                 #poll in 5 second intervals for the results
                 async.doUntil  ((cb) ->
                   loader.get settings, (err, result) ->
-                    logger.log 'info', 'status: ' + JSON.stringify(result.status)
+                    logger.log 'info', 'status: ' + result.status
                     if result.status is 'done'
                       params.started  = false
                       if(result.statusCode == 500)

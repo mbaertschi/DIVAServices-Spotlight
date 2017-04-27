@@ -178,7 +178,7 @@
         },
         "additionalProperties": false
       },
-      "inputFile": {
+      "file": {
         "type": "object",
         "required": [
           "name",
@@ -194,14 +194,15 @@
           "options": {
             "type": "object",
             "required": [
-              "required"
+              "required",
+              "mimeType"
             ],
             "properties": {
               "required": {
                 "type": "boolean"
               },
-              "default": {
-                "type": "string"
+              "mimeType":{
+                "type":"string"
               }
             }
           }
@@ -314,8 +315,8 @@
             "checkbox": {
               "$ref": "#/definitions/checkbox"
             },
-            "inputFile": {
-              "$ref": "#/definitions/inputFile"
+            "file": {
+              "$ref": "#/definitions/file"
             },
             "inputImage": {
               "$ref": "#/definitions/nonuser"

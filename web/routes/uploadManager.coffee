@@ -86,7 +86,7 @@ uploadManager = exports = module.exports = (router) ->
       host = hosts[0]
       
       body =
-        images: [
+        files: [
           {
             type: "image"
             value: res.imageData.base64

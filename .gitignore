@@ -25,3 +25,5 @@ data/
 
 # images folder from tests
 ./images/
+web/.vscode/
+.vscode/
