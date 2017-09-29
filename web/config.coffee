@@ -15,8 +15,6 @@ brunchSettings.config =
   modules:
     definition: false
     wrapper: false
-    definition: "commonjs"
-    wrapper: "commonjs"
     
   sourceMaps: true
 

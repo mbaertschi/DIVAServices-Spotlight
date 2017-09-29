@@ -94,7 +94,7 @@ uploadManager = exports = module.exports = (router) ->
         ]
       settings =
         options:
-          uri: host.url + '/upload'
+          uri: host.url + '/collections'
           timeout: nconf.get 'server:timeout'
           headers: {}
           method: 'POST'
