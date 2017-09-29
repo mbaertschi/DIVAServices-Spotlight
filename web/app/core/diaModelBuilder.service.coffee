@@ -111,7 +111,8 @@ do ->
           visualization: true
           type: 'image'
         visFile['name'] = 'visualization.png'
-        output['visualization'] = visFile
+        output['visualization'] = {}
+        output.visualization['file'] = visFile
       else
         output['visualization'] = visualization
       output['highlighter'] = highlighter
