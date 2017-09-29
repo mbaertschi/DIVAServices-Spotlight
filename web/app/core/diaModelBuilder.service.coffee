@@ -103,7 +103,17 @@ do ->
         if 'highlighter' of entry
           highlighter.push.apply(highlighter, entry.highlighter)
 
-      output['visualization'] = visualization
+      if(!visualization?)
+        visFile = {}
+        visFile['mime-type'] = 'image/png'
+        visFile['url'] = input.image.url
+        visFile['options'] =
+          visualization: true
+          type: 'image'
+        visFile['name'] = 'visualization.png'
+        output['visualization'] = visFile
+      else
+        output['visualization'] = visualization
       output['highlighter'] = highlighter
       console.log input
       result =
