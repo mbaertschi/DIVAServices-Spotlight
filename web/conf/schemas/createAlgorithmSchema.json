@@ -11,6 +11,9 @@
       },
       "highlighter": {
         "type": "object",
+        "required": [
+          "type"
+        ],
         "properties": {
           "type": {
             "enum": [
@@ -24,13 +27,85 @@
       },
       "description": {
         "type": "string",
-        "minLength": 3,
+        "minLength": 0,
         "maxLength": 255
+      },
+      "file": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "options"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "options": {
+            "type": "object",
+            "required": [
+              "required",
+              "mimeTypes"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              },
+              "mimeTypes": {
+                "type": "object",
+                "required": true,
+                "properties": {
+                  "allowed": {
+                    "infoText": "Allowed mime-types for this input",
+                    "type": "array",
+                    "required": true
+                  },
+                  "default": {
+                    "infoText": "Default mime-type to use",
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "folder": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "options"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "options": {
+            "type": "object",
+            "required": [
+              "required"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
       },
       "number": {
         "type": "object",
         "required": [
           "name",
+          "description",
           "options"
         ],
         "properties": {
@@ -72,6 +147,7 @@
         "type": "object",
         "required": [
           "name",
+          "description",
           "options"
         ],
         "properties": {
@@ -110,6 +186,7 @@
         "type": "object",
         "required": [
           "name",
+          "description",
           "options"
         ],
         "properties": {
@@ -152,6 +229,7 @@
         "type": "object",
         "required": [
           "name",
+          "description",
           "options"
         ],
         "properties": {
@@ -179,45 +257,121 @@
           }
         },
         "additionalProperties": false
+      },
+      "outputNumber": {
+        "type": "object",
+        "required": [
+          "name",
+          "options"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "options": {
+            "type": "object",
+            "required": [],
+            "properties": {
+              "default": {
+                "type": "number"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "steps": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputFile": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "options": {
+            "type": "object",
+            "required": [
+              "mimeTypes"
+            ],
+            "properties": {
+              "mimeTypes": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "outputFolder": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/definitions/name"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          }
+        }
       }
     },
     "type": "object",
     "required": [
-      "name",
-      "description",
+      "general",
       "input",
-      "namespace",
-      "output",
-      "file",
-      "language",
-      "executable"
+      "method"
     ],
     "properties": {
-      "name": {
-        "type": "string",
-        "minLength": 2,
-        "maxLength": 50
-      },
-      "description": {
-        "type": "string",
-        "minLength": 5
-      },
-      "namespace":{
-        "type":"string",
-        "minLength": 3,
-        "maxLength": 20
-      },
-      "url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "info": {
+      "general": {
         "type": "object",
+        "required": [
+          "name",
+          "description",
+          "author",
+          "type",
+          "email"
+        ],
         "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
           "author": {
             "type": "string",
             "minLenght": 5,
-            "maxLength": 50
+            "maxLength": 250
+          },
+          "type": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 250
           },
           "email": {
             "type": "string",
@@ -228,9 +382,6 @@
             "format": "uri"
           },
           "DOI": {
-            "type": "string"
-          },
-          "exptectedRuntime": {
             "type": "string"
           },
           "purpose": {
@@ -262,38 +413,85 @@
             "checkbox": {
               "$ref": "#/definitions/checkbox"
             },
-            "inputImage":{
-              "type":"object"
+            "file": {
+              "$ref": "#/definitions/file"
             },
-            "outputImage":{
-              "type":"object"
+            "folder": {
+              "$ref": "#/definitions/folder"
             },
-            "resultFile":{
-              "type":"object"
+            "outputImage": {
+              "type": "object"
             },
-            "inputFileExtension":{
-              "type":"object"
+            "resultFile": {
+              "type": "object"
             },
-            "outputFolder":{
-              "type":"object"
+            "inputFileExtension": {
+              "type": "object"
+            },
+            "outputFolder": {
+              "type": "object"
+            },
+            "host": {
+              "type": "object"
+            },
+            "mcr2014b": {
+              "type": "object"
             }
           },
           "additionalProperties": false
         },
         "additionalItems": false
       },
-      "output":{
-        "type":"string"
+      "output": {
+        "type": "array",
+        "items": {
+          "description": "Output types",
+          "properties": {
+            "number": {
+              "$ref": "#/definitions/outputNumber"
+            },
+            "file": {
+              "$ref": "#/definitions/outputFile"
+            },
+            "folder": {
+              "$ref": "#/definitions/outputFolder"
+            }
+          },
+          "additionalProperties": false
+        },
+        "additionalItems": false
       },
-      "file":{
-        "type":"string",
-        "format":"uri"
-      },
-      "language":{
-        "type":"string"
-      },
-      "executable":{
-        "type":"string"
+      "method": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "uri"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "executableType": {
+            "type": "string"
+          },
+          "executable_path": {
+            "type": "string"
+          },
+          "imageType": {
+            "type": "string",
+            "enum": [
+              "docker",
+              "file"
+            ]
+          },
+          "imageName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "executableType",
+          "imageType"
+        ]
       }
     },
     "additionalProperties": false
