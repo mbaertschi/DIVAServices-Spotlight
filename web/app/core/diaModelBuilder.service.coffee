@@ -76,6 +76,15 @@ do ->
             closed: path.closed
             position: [parseInt(path.position.x), parseInt(path.position.y)]
             radius: path.bounds.width / 2
+        else if type is 'rectangle'
+         item.inputs.highlighter =
+           type: type
+           closed: path.closed
+           segments: []
+         item.inputs.highlighter.segments.push([path.segments[0].point.x, path.segments[0].point.y])
+         item.inputs.highlighter.segments.push([path.segments[3].point.x, path.segments[3].point.y])
+         item.inputs.highlighter.segments.push([path.segments[2].point.x, path.segments[2].point.y])
+         item.inputs.highlighter.segments.push([path.segments[1].point.x, path.segments[1].point.y])
         else
           item.inputs.highlighter =
             type: type

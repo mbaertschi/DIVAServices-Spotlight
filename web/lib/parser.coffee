@@ -44,18 +44,18 @@ parser.parseRoot = (structure, callback) ->
         _structure =
           records: []
         async.each structure, (algorithm, next) ->
-          algorithmErrors = validator.validate(algorithm, nconf.get('algorithmSchema')).errors
-          if algorithmErrors.length
-            logger.log 'info', "skipping algorithm=#{algorithm.name} error=#{algorithmErrors[0].message} view=root view", 'Parser'
-            next()
-          else
-            parser.parseDetails algorithm, (err) ->
-              if err?
-                logger.log 'info', err, 'Parser'
-                next()
-              else
-                _structure.records.push algorithm
-                next()
+          #algorithmErrors = validator.validate(algorithm, nconf.get('algorithmSchema')).errors
+          #if algorithmErrors.length
+          #  logger.log 'info', "skipping algorithm=#{algorithm.name} error=#{algorithmErrors[0].message} view=root view", 'Parser'
+          #  next()
+          #else
+          parser.parseDetails algorithm, (err) ->
+            if err?
+              logger.log 'info', err, 'Parser'
+              next()
+            else
+              _structure.records.push algorithm
+              next()
         , (err) ->
           if err?
             logger.log 'info', "could not parse algorithm error=#{err}", 'Parser'
@@ -90,12 +90,12 @@ parser.parseDetails = (algorithm, callback) ->
         valid = false
       finally
         if valid
-          algorithmErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
-          if algorithmErrors.length
-            values = algorithmErrors[0].stack.split('.')
-            errorMessage = values[values.length-1]
-            callback "skipping algorithm=#{algorithm.name} error=#{errorMessage} view=details view"
-          else
-            callback()
+          #algorithmErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
+          #if algorithmErrors.length
+            #values = algorithmErrors[0].stack.split('.')
+            #errorMessage = values[values.length-1]
+            #callback "skipping algorithm=#{algorithm.name} error=#{errorMessage} view=details view"
+          #else
+          callback()
         else
           callback "skipping algorithm=#{algorithm.name}, error=not a valid JSON format"

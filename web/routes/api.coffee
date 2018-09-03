@@ -131,11 +131,11 @@ api = exports = module.exports = (router, poller) ->
             valid = false
           finally
             if valid
-              algorithmDetailsErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
-              if algorithmDetailsErrors.length
-                res.status(400).json error: 'invalid json structure'
-              else
-                res.status(200).json details
+              #algorithmDetailsErrors = validator.validate(details, nconf.get('detailsAlgorithmSchema')).errors
+              #if algorithmDetailsErrors.length
+              #  res.status(400).json error: 'invalid json structure'
+              #else
+              res.status(200).json details
             else
               res.status(400).json error: 'invalid json structure'
 
@@ -201,12 +201,12 @@ api = exports = module.exports = (router, poller) ->
       if result is 'ERROR'
         logger.log 'debug', "Remote host processing error for algorithm=#{params.algorithm.name}", 'API'
         return callback { status: 400, error: 'Remote host processing error'}
-      responseErrors = validator.validate(result, nconf.get('responseSchema')).errors
-      if responseErrors.length
-        logger.log 'debug', "algorithm response is invalid object=#{JSON.stringify(result)}", 'API'
-        logger.log 'debug', responseErrors[0]
-        callback { status: 400, error: responseErrors[0].stack }
-      else if result.outputImage?
+      #responseErrors = validator.validate(result, nconf.get('responseSchema')).errors
+      #if responseErrors.length
+      #  logger.log 'debug', "algorithm response is invalid object=#{JSON.stringify(result)}", 'API'
+      #  logger.log 'debug', responseErrors[0]
+      #  callback { status: 400, error: responseErrors[0].stack }
+      if result.outputImage?
         if /_output_/.test params.image.serverName
           serverName = params.image.serverName.split('_output_')[0] + '_output_' + new Date().getTime() + '.png'
         else
@@ -326,6 +326,7 @@ api = exports = module.exports = (router, poller) ->
                   callback error, null
                 else
                   #check if a visualization file is available
+                  logger.log 'info', JSON.stringify(result)
                   files = _.filter(result.output, (entry) ->
                     return _.has(entry, 'file')
                   )

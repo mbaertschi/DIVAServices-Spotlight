@@ -89,7 +89,8 @@ uploadManager = exports = module.exports = (router) ->
         files: [
           {
             type: "image"
-            value: res.imageData.base64
+            value: res.imageData.base64,
+            name: "image.png"
           }
         ]
       settings =
