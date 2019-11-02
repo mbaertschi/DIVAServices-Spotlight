@@ -37,7 +37,7 @@
     "lodash": "^3.10.0",
     "log4js": "^0.6.26",
     "moment": "^2.10.3",
-    "mongoose": "^4.0.6",
+    "mongoose": "^5.7.7",
     "multer": "^0.1.8",
     "nconf": "^0.7.1",
     "ng-annotate-uglify-js-brunch": "^2.0.0",
