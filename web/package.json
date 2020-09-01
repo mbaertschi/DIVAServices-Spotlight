@@ -29,7 +29,7 @@
     "express": "^4.13.1",
     "express-session": "^1.11.3",
     "fs-extra": "^0.22.1",
-    "gm": "1.18.1",
+    "gm": "1.23.1",
     "jaded-brunch": "^1.7.13",
     "javascript-brunch": "^1.7.1",
     "jsonschema": "1.0.1",
